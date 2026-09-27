@@ -9,7 +9,13 @@ CREATE TABLE hotels (
 	hotel_name TEXT NOT NULL,
 	city TEXT NOT NULL,
 	country TEXT NOT NULL,
-	star_rating INTEGER NOT NULL CHECK (star_rating BETWEEN 1 AND 5),
+	star_rating INTEGER NOT NULL,
+	cleanliness_base REAL NOT NULL,
+	comfort_base REAL NOT NULL,
+	facilities_base REAL NOT NULL,
+	location_base REAL NOT NULL,
+	staff_base REAL NOT NULL,
+	value_for_money_base REAL NOT NULL,
 	lat REAL NOT NULL,
 	lon REAL NOT NULL
 );
@@ -26,14 +32,14 @@ CREATE TABLE users (
 CREATE TABLE reviews (
 	review_id INTEGER PRIMARY KEY,
 	user_id INTEGER NOT NULL REFERENCES users(user_id),
-	hotel_id INTEGER NOT NULL REFERENCES hotels(hotel_id),
+	hotel_id INTEGER NOT NULL REFERENCES hotels(hotel_id) ON DELETE CASCADE,
 	review_date TEXT NOT NULL CHECK (review_date IS date(review_date)),
-	score_overall REAL NOT NULL CHECK (score_overall BETWEEN 0 AND 10),
-	score_cleanliness REAL NOT NULL CHECK (score_cleanliness BETWEEN 0 AND 10),
-	score_comfort REAL NOT NULL CHECK (score_comfort BETWEEN 0 AND 10),
-	score_facilities REAL NOT NULL CHECK (score_facilities BETWEEN 0 AND 10),
-	score_location REAL NOT NULL CHECK (score_location BETWEEN 0 AND 10),
-	score_staff REAL NOT NULL CHECK (score_staff BETWEEN 0 AND 10),
-	score_value_for_money REAL NOT NULL CHECK (score_value_for_money BETWEEN 0 AND 10),
+	score_overall REAL NOT NULL,
+	score_cleanliness REAL NOT NULL,
+	score_comfort REAL NOT NULL,
+	score_facilities REAL NOT NULL,
+	score_location REAL NOT NULL,
+	score_staff REAL NOT NULL,
+	score_value_for_money REAL NOT NULL,
 	review_text TEXT
 );
