@@ -217,4 +217,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# PowerBI
+**/.pbi/
+**/cache/
+**/LocalSettings.json
 data/
