@@ -22,6 +22,19 @@ Asimismo, dado que la percepción de calidad-precio varía según el segmento de
 
 Finalmente, para superar la rigidez de los motores de búsqueda actuales, se integra la similitud coseno vectorial, permitiendo recomendaciones adaptativas y personalizadas que simplifican la búsqueda del viajero.
 
+## Pregunta principal de investigación
+
+¿De qué manera un marco analítico basado en corrección probabilística bayesiana, pruebas de varianza multivariadas y sistemas de similitud vectorial permite corregir las distorsiones de evaluación y optimizar la recomendación de alojamientos según el perfil del viajero?
+
+### Preguntas específicas de investigación
+
+¿En qué medida el uso de promedios bayesianos altera el ordenamiento de destinos y hoteles al penalizar el bajo volumen de evaluaciones, en comparación con los modelos de ranking tradicionales basados en promedios simples?
+
+¿Existen diferencias estadísticamente significativas en la percepción de la relación calidad-precio entre usuarios al segmentarlos por categoría del hotel, tipo de viajero, grupo etario y condición de turismo interno vs. receptivo, y cuál es la magnitud de dicho efecto? 
+
+¿Cómo debe estructurarse la arquitectura matemática de un recomendador descriptivo para que el cálculo de puntajes ponderados refleje dinámicamente las preferencias históricas de cada perfil de viajero? 
+
+¿Qué nivel de precisión y ajuste alcanza un motor de recomendación basado en similitud coseno sobre vectores n-dimensionales de sub-calificaciones para identificar hoteles verdaderamente similares?
 
 
 ## Objetivo General
