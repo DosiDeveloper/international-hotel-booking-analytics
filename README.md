@@ -100,4 +100,14 @@ Variable | Descripción | Uso en el Proyecto
 **score_value_for_money** | Puntuación otorgada a la relación calidad-precio. | Evaluación de la percepción del costo vs. beneficio.
 **review_text** | Texto explicativo o comentarios del cliente. | Minería de texto para la generación de embeddings para el recomendador descriptivo.
 
+## Herramientas tecnológicas utilizadas
+- Python: Lenguaje de programación multiproposito.
+
+- Sqlite3: Motor de base de datos relacional ligero y sin servidor.
+
+- DuckDB / Motherduck: DuckDB es un motor SQL analítico optimizado para procesamiento ultrarrápido de datos en local, y MotherDuck es su plataforma complementaria en la nube.
+
+- PowerBI: Herramienta de inteligencia de negocios de Microsoft para la realización de dashboards interactivos.
+
+
 Dataset [en kaggle](https://www.kaggle.com/datasets/alperenmyung/international-hotel-booking-analytics)
