@@ -49,4 +49,55 @@ Desarrollar un marco analítico integral para la evaluación y recomendación de
 
 - Implementar un motor de sugerencia de "hoteles similares" basado en el cálculo de similitud coseno, comparando los vectores n-dimensionales de las sub-calificaciones de cada establecimiento para ofrecer alternativas de alojamiento altamente correlacionadas a las preferencias del usuario.
 
+## Diccionario de datos
+El conjunto de datos se sustenta en tres tablas principales conectadas a través de los identificadores únicos de usuario (user_id) y hotel (hotel_id).
+
+1. **Tabla hotels** (Catálogo de Hoteles):
+Esta tabla funciona como catálogo de hoteles y contiene hoteles únicos con atributos clave como hotel_id, nombre, ciudad y categoría. Proporciona el contexto fundamental para todos los demás datos, lo que permite analizar el rendimiento de los hoteles según su ubicación y calidad.
+
+Variable | Descripción | Uso en el Proyecto
+:--- | :--- | :---
+**hotel_id** | Identificador único del hotel. | Clave primaria para vincular con las reseñas.
+**hotel_name** | Nombre comercial del hotel. | Identificación de establecimientos en dashboards y reportes.
+**city** | Ciudad de ubicación del hotel. | Segmentación geográfica y análisis a nivel ciudad.
+**country** | País de ubicación del hotel. | Análisis regional e internacional.
+**star_rating** | Categoría o clasificación por estrellas. | Análisis de desempeño según la categoría del hotel.
+**lat / lon** | Coordenadas de latitud y longitud geográfica. | Mapeo de ubicación y análisis de geolocalización.
+**cleanliness_base** | Calificación base esperada para la limpieza. | Ranking inicial de calidad del establecimiento en limpieza.
+**comfort_base** | Calificación base esperada para el confort y comodidad. | Ranking inicial de calidad en confort.
+**facilities_base** | Calificación base esperada para las instalaciones. | Ranking inicial de calidad de la infraestructura.
+**location_base** | Calificación base esperada para la ubicación. | Ranking inicial de atractivo de la zona.
+**staff_base** | Calificación base esperada para el servicio del personal. | Ranking inicial de atención al cliente.
+**value_for_money_base** | Calificación base esperada para la relación precio-calidad. | Ranking inicial de percepción de valor.
+
+2. **Tabla users** (Perfil de Clientes):
+Este archivo proporciona una lista de clientes únicos, ofreciendo información demográfica esencial con columnas como user_id, country y age. Estos datos son vitales para segmentar a los clientes y comprender cómo la demografía influye en el comportamiento de las reseñas
+
+Variable | Descripción | Uso en el Proyecto
+:--- | :--- | :---
+**user_id** | Identificador único del cliente. | Clave primaria para relacionar con sus reseñas.
+**user_gender** | Género registrado del usuario. | Segmentación de clientes por género.
+**country** | País de origen o residencia del usuario. | Análisis de comportamiento por nacionalidad.
+**age_group** | Rango de edad del usuario. | Análisis demográfico y perfilado de audiencia.
+**traveller_type** | Tipo de viajero (Solo, Pareja, Familia, Negocios). | Segmentación de mercado y patrones de consumo.
+**join_date** | Fecha de registro del usuario en la plataforma. | Cohortes de usuarios y análisis de antigüedad.
+
+3. **Tabla reviews** (Transacciones y Evaluaciones):
+Como tabla transaccional central, constituye el núcleo del conjunto de datos. Vincula a los usuarios con los hoteles que reseñaron, capturando detalles cruciales como review_id, hotel_id, user_id y una puntuación numérica de la reseña. Esta tabla es especialmente valiosa por su enfoque en la retroalimentación cuantitativa.
+
+Variable | Descripción | Uso en el Proyecto
+:--- | :--- | :---
+**review_id** | Identificador único de la reseña. | Clave primaria de la transacción/evaluación.
+**user_id** | Identificador único del cliente. | Clave foránea que conecta con la tabla **users**.
+**hotel_id** | Identificador único del hotel. | Clave foránea que conecta con la tabla **hotels**.
+**review_date** | Fecha de publicación de la reseña. | Análisis de tendencias temporales y estacionalidad.
+**score_overall** | Calificación general otorgada por el cliente. | Métrica principal de satisfacción general del cliente.
+**score_cleanliness** | Puntuación otorgada específicamente a la limpieza. | Evaluación de percepción de higiene y limpieza.
+**score_comfort** | Puntuación otorgada al confort y las habitaciones. | Evaluación de comodidad del hospedaje.
+**score_facilities** | Puntuación otorgada a las instalaciones y servicios. | Evaluación de infraestructura (piscina, wifi, gimnasio, etc.).
+**score_location** | Puntuación otorgada a la ubicación del hotel. | Evaluación de la conveniencia de la localización.
+**score_staff** | Puntuación otorgada a la atención del personal. | Evaluación de la calidad de servicio y trato al cliente.
+**score_value_for_money** | Puntuación otorgada a la relación calidad-precio. | Evaluación de la percepción del costo vs. beneficio.
+**review_text** | Texto explicativo o comentarios del cliente. | Minería de texto para la generación de embeddings para el recomendador descriptivo.
+
 Dataset [en kaggle](https://www.kaggle.com/datasets/alperenmyung/international-hotel-booking-analytics)
