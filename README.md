@@ -18,13 +18,13 @@ Finalmente, los sistemas de búsqueda actuales suelen ofrecer listados estático
 
 Los rankings hoteleros tradicionales basados en promedios simples generan distorsiones al igualar calificaciones de hoteles con miles de reseñas con los hoteles de apenas unas pocas. Para resolver esto, se propone el uso de promedios bayesianos, los cuales ajustan las puntuaciones con rigor estadístico para reflejar un ranking justo.
 
-Asimismo, dado que la percepción de calidad-precio varía según el segmento de usuario (negocios, familias o turistas), el estudio utiliza pruebas estadísticas (ANOVA o Kruskal-Wallis) para validar estas diferencias por perfil.
+Asimismo, dado que la percepción de calidad-precio varía según la clasificacion de los usuarios (negocios, familias o turistas), el estudio utiliza pruebas estadísticas (ANOVA o Kruskal-Wallis) para validar estas diferencias por perfil.
 
 Finalmente, para superar la rigidez de los motores de búsqueda actuales, se integra la similitud coseno vectorial, permitiendo recomendaciones adaptativas y personalizadas que simplifican la búsqueda del viajero.
 
 ## Pregunta principal de investigación
 
-¿De qué manera un marco analítico basado en corrección probabilística bayesiana, pruebas de varianza multivariadas y sistemas de similitud vectorial permite corregir las distorsiones de evaluación y optimizar la recomendación de alojamientos según el perfil del viajero?
+¿Cómo permite la combinación del promedio bayesiano y el análisis de similitud vectorial corregir el sesgo en las puntuaciones y optimizar la recomendación de alojamientos por clasificación de usuarios?
 
 ### Preguntas específicas de investigación
 
@@ -33,9 +33,6 @@ Finalmente, para superar la rigidez de los motores de búsqueda actuales, se int
 ¿Existen diferencias estadísticamente significativas en la percepción de la relación calidad-precio entre usuarios al segmentarlos por categoría del hotel, tipo de viajero, grupo etario y condición de turismo interno vs. receptivo, y cuál es la magnitud de dicho efecto? 
 
 ¿Cómo debe estructurarse la arquitectura matemática de un recomendador descriptivo para que el cálculo de puntajes ponderados refleje dinámicamente las preferencias históricas de cada perfil de viajero? 
-
-¿Qué nivel de precisión y ajuste alcanza un motor de recomendación basado en similitud coseno sobre vectores n-dimensionales de sub-calificaciones para identificar hoteles verdaderamente similares?
-
 
 ## Objetivo General
 Desarrollar un marco analítico integral para la evaluación y recomendación de alojamientos hoteleros, aplicando técnicas de corrección probabilística, pruebas de hipótesis y sistemas de similitud vectorial para optimizar la comprensión de la percepción de valor y mejorar la toma de decisiones de distintos perfiles de viajeros.
