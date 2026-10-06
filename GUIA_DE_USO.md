@@ -5,6 +5,7 @@
 ## 1. Antes de empezar (Configuración)
 
 ### 1.1 Crear entorno virtual SIEMPRE
+
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
@@ -12,13 +13,15 @@ source venv/bin/activate  # Linux/Mac
 ```
 
 ### 1.2 Instalar dependencias
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 1.3 Verificar que el código corre
+
 ```bash
-python main.py  # o el archivo principal
+python .\src\setup.py
 ```
 
 **Regla de oro:** Si no corre localmente, no commitees.
@@ -27,20 +30,21 @@ python main.py  # o el archivo principal
 
 ## 2. Errores Comunes en Python
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| `ModuleNotFoundError` | Falta instalar paquete | `pip install <paquete>` |
-| `IndentationError` | Espacios mezclados con tabs | Usar solo 4 espacios |
-| `TypeError: argument` | Argumentos incorrectos | Revisar función |
-| `KeyError` | Key que no existe | Usar `.get()` o verificar |
-| `ValueError: truth value` | Comparar Series pandas | Usar `.any()` o `.all()` |
-| `SettingWithCopyWarning` | Modificar vista vs copia | Usar `.loc[]` |
-| `MemoryError` | Dataset muy grande | Procesar por chunks |
-| `UnicodeDecodeError` | Encoding incorrecto | `encoding='utf-8'` |
-| `AttributeError` | Método no existe | Verificar documentación |
-| `FileNotFoundError` | Archivo no encontrado | Verificar ruta |
+| Error                     | Causa                       | Solución                  |
+| ------------------------- | --------------------------- | ------------------------- |
+| `ModuleNotFoundError`     | Falta instalar paquete      | `pip install <paquete>`   |
+| `IndentationError`        | Espacios mezclados con tabs | Usar solo 4 espacios      |
+| `TypeError: argument`     | Argumentos incorrectos      | Revisar función           |
+| `KeyError`                | Key que no existe           | Usar `.get()` o verificar |
+| `ValueError: truth value` | Comparar Series pandas      | Usar `.any()` o `.all()`  |
+| `SettingWithCopyWarning`  | Modificar vista vs copia    | Usar `.loc[]`             |
+| `MemoryError`             | Dataset muy grande          | Procesar por chunks       |
+| `UnicodeDecodeError`      | Encoding incorrecto         | `encoding='utf-8'`        |
+| `AttributeError`          | Método no existe            | Verificar documentación   |
+| `FileNotFoundError`       | Archivo no encontrado       | Verificar ruta            |
 
 **Ejemplo de error común:**
+
 ```python
 # ❌ MAL
 valores = [1, 2, 3]
@@ -55,15 +59,16 @@ if len(valores) > 5:
 
 ## 3. Errores Comunes en SQL
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| `no such table` | Tabla no existe | Verificar nombre y conexión |
-| `column mismatch` | Columnas incorrectas | Verificar INSERT |
-| `FOREIGN KEY constraint` | Violación de integridad | Verificar datos referenciados |
-| `near "WHERE": syntax error` | Falta WHERE | Siempre incluir WHERE |
-| `unrecognized token` | Comillas incorrectas | Usar comillas simples |
+| Error                        | Causa                   | Solución                      |
+| ---------------------------- | ----------------------- | ----------------------------- |
+| `no such table`              | Tabla no existe         | Verificar nombre y conexión   |
+| `column mismatch`            | Columnas incorrectas    | Verificar INSERT              |
+| `FOREIGN KEY constraint`     | Violación de integridad | Verificar datos referenciados |
+| `near "WHERE": syntax error` | Falta WHERE             | Siempre incluir WHERE         |
+| `unrecognized token`         | Comillas incorrectas    | Usar comillas simples         |
 
 **Ejemplo peligroso:**
+
 ```sql
 -- ❌ MAL: Borra TODO
 DELETE FROM ventas;
@@ -76,16 +81,17 @@ DELETE FROM ventas WHERE id = 123;
 
 ## 4. Errores Comunes en Git
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| `fatal: not a git repository` | No inicializado | `git init` |
-| `rejected (non-fast-forward)` | Commits pendientes | `git pull --rebase` |
-| `merge conflict` | Cambios en misma línea | Resolver y `git add .` |
-| `fatal: refusing to merge` | Historial no relacionado | `git pull --allow-unrelated-histories` |
-| `error: pathspec 'X'` | Rama no existe | Verificar nombre |
-| `dirty working tree` | Cambios sin commit | `git stash` o `git commit` |
+| Error                         | Causa                    | Solución                               |
+| ----------------------------- | ------------------------ | -------------------------------------- |
+| `fatal: not a git repository` | No inicializado          | `git init`                             |
+| `rejected (non-fast-forward)` | Commits pendientes       | `git pull --rebase`                    |
+| `merge conflict`              | Cambios en misma línea   | Resolver y `git add .`                 |
+| `fatal: refusing to merge`    | Historial no relacionado | `git pull --allow-unrelated-histories` |
+| `error: pathspec 'X'`         | Rama no existe           | Verificar nombre                       |
+| `dirty working tree`          | Cambios sin commit       | `git stash` o `git commit`             |
 
 **Reglas de oro:**
+
 1. Nunca hacer `git push --force` a `main`
 2. Siempre sincronizar antes de trabajar: `git pull --rebase origin main`
 3. Commits pequeños y descriptivos
@@ -94,14 +100,15 @@ DELETE FROM ventas WHERE id = 123;
 
 ## 5. Errores Comunes en Streamlit
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Página se recarga | Session state mal usado | Usar `st.session_state` |
-| Widget no retiene valor | No inicializar estado | `if 'key' not in st.session_state` |
-| Gráfico no aparece | Falta `st.pyplot()` | Agregar después de figura |
-| Imports circulares | Dependencias cruzadas | Reorganizar imports |
+| Error                   | Causa                   | Solución                           |
+| ----------------------- | ----------------------- | ---------------------------------- |
+| Página se recarga       | Session state mal usado | Usar `st.session_state`            |
+| Widget no retiene valor | No inicializar estado   | `if 'key' not in st.session_state` |
+| Gráfico no aparece      | Falta `st.pyplot()`     | Agregar después de figura          |
+| Imports circulares      | Dependencias cruzadas   | Reorganizar imports                |
 
 **Ejemplo de session_state:**
+
 ```python
 import streamlit as st
 
@@ -119,14 +126,15 @@ st.write(f"Contador: {st.session_state.contador}")
 
 ## 6. Errores Comunes en PowerBI (.pbip)
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Archivo no abre | Edición externa | Editar en PowerBI Desktop |
-| `localSettings.json` conflictos | No está en .gitignore | Agregar a .gitignore |
-| Encoding incorrecto | BOM en archivos | Guardar UTF-8 sin BOM |
-| No se actualiza | No guardar | Guardar antes de commit |
+| Error                           | Causa                 | Solución                  |
+| ------------------------------- | --------------------- | ------------------------- |
+| Archivo no abre                 | Edición externa       | Editar en PowerBI Desktop |
+| `localSettings.json` conflictos | No está en .gitignore | Agregar a .gitignore      |
+| Encoding incorrecto             | BOM en archivos       | Guardar UTF-8 sin BOM     |
+| No se actualiza                 | No guardar            | Guardar antes de commit   |
 
 **Estructura .pbip:**
+
 ```
 powerbi/
 ├── MiReporte.Report/
@@ -138,9 +146,11 @@ powerbi/
 │       └── cache.abf           ← AGREGAR A .gitignore
 └── MiReporte.pbip
 ```
-> En caso de que no este en el .gitignore 
+
+> En caso de que no este en el .gitignore
 
 **.gitignore para PowerBI:**
+
 ```
 **/.pbi/localSettings.json
 **/.pbi/cache.abf
@@ -164,6 +174,7 @@ No hagas "todo lo que hice hoy" en un solo commit. Cada commit debe representar 
 **Formato:** `[tipo]: Descripción en imperativo`
 
 ✅ **Ejemplos de excelentes commits:**
+
 - `feat: crear tabla DDL inicial para dim_tiempo`
 - `fix: corregir cálculo de media en métricas`
 - `limpieza: imputar valores nulos en cuestionario de hábitos`
@@ -171,12 +182,14 @@ No hagas "todo lo que hice hoy" en un solo commit. Cada commit debe representar 
 - `docs: actualizar diccionario de variables en el README`
 
 ❌ **Prohibidos (serán rechazados en el PR):**
+
 - `subiendo avances`
 - `terminé la tabla`
 - `cambios varios en el eda`
 - `fix`
 
 **Ejemplo:**
+
 ```python
 # ❌ MAL: Hardcodeado
 precio = 100 * 1.16
@@ -192,12 +205,15 @@ precio = 100 * (1 + TASA_IMPUESTO)
 
 ```markdown
 ## Contexto
+
 ¿Qué estabas intentando hacer?
 
 ## Error
 ```
+
 pegar mensaje de error completo
-```
+
+````
 
 ## Lo que intenté
 - Opción 1
@@ -206,11 +222,13 @@ pegar mensaje de error completo
 ## Código relevante
 ```python
 # pegar solo el código que falla
-```
+````
 
 ## Pregunta específica
+
 ¿Qué estoy haciendo mal?
-```
+
+````
 
 ---
 
@@ -271,31 +289,33 @@ git commit -m "feat: agregar filtro de fechas al dashboard"
 
 # 4. Push de tu rama
 git push origin feat/agregar-filtro-fecha
-```
+````
 
 ### 9.2 En VSCode
 
-| Acción | Cómo |
-|--------|------|
-| Ver rama actual | Barra de estado abajo a la izquierda |
-| Cambiar de rama | Click en nombre de rama → seleccionar otra |
-| Crear rama | Click en nombre → "Create new branch" |
-| Fetch/Pull | Command Palette (`Ctrl+Shift+P`) → "Git: Fetch" |
+| Acción          | Cómo                                            |
+| --------------- | ----------------------------------------------- |
+| Ver rama actual | Barra de estado abajo a la izquierda            |
+| Cambiar de rama | Click en nombre de rama → seleccionar otra      |
+| Crear rama      | Click en nombre → "Create new branch"           |
+| Fetch/Pull      | Command Palette (`Ctrl+Shift+P`) → "Git: Fetch" |
 
 **Atajos útiles:**
+
 - `Ctrl+Shift+P` → Command Palette
 - `Ctrl+Shift+G` → Panel Source Control
 - `Ctrl+Enter` → Commit
 
 ### 9.3 Errores Comunes al Cambiar de Ramas
 
-| Error | Solución |
-|-------|----------|
-| `Your local changes would be overwritten` | `git stash` antes de cambiar |
-| `The following untracked files would be overwritten` | `git clean -fd` o mover archivo |
-| `fatal: Invalid reference` | Verificar nombre con `git branch -a` |
+| Error                                                | Solución                             |
+| ---------------------------------------------------- | ------------------------------------ |
+| `Your local changes would be overwritten`            | `git stash` antes de cambiar         |
+| `The following untracked files would be overwritten` | `git clean -fd` o mover archivo      |
+| `fatal: Invalid reference`                           | Verificar nombre con `git branch -a` |
 
 **Flujo seguro:**
+
 ```bash
 git status              # Verificar cambios
 git stash               # Guardar cambios (opcional)
@@ -334,6 +354,7 @@ print(mensaje)  # → "Hola, Ana!"
 ```
 
 **Partes de una función:**
+
 ```
 def  saludar  (nombre):
 │    │        │       │
@@ -376,6 +397,7 @@ crear_perfil(nombre="Ana", edad=25)  # → {"nombre": "Ana", "edad": 25}
 Un módulo es una **caja de herramientas** que agrupa funciones relacionadas.
 
 **Crear módulo (`utils.py`):**
+
 ```python
 def calcular_media(lista):
     return sum(lista) / len(lista)
@@ -389,6 +411,7 @@ def calcular_mediana(lista):
 ```
 
 **Usar el módulo (`main.py`):**
+
 ```python
 import utils
 media = utils.calcular_media([1, 2, 3, 4, 5])
@@ -402,16 +425,19 @@ from utils import calcular_media, calcular_mediana
 El archivo `__init__.py` le dice a Python que una carpeta es un **paquete** (un módulo que contiene otros módulos).
 
 **Sin `__init__.py`:**
+
 ```
 src/
 ├── data/
 │   └── utils.py    ← Python no reconoce "data" como paquete
 ```
+
 ```python
 from src.data import utils  # ❌ Error: No module named 'src'
 ```
 
 **Con `__init__.py`:**
+
 ```
 src/
 ├── __init__.py     ← Hace que "src" sea un paquete
@@ -419,6 +445,7 @@ src/
 │   ├── __init__.py ← Hace que "data" sea un paquete
 │   └── utils.py
 ```
+
 ```python
 from src.data import utils  # ✅ Funciona
 from src.data.utils import calcular_media  # ✅ Funciona
@@ -437,6 +464,7 @@ from .utils import calcular_media, calcular_mediana
 ```
 
 **Ejemplo completo:**
+
 ```
 hotel-analisis/
 ├── src/
@@ -479,6 +507,7 @@ hotel-analisis/
 ```
 
 **Uso en `main.py`:**
+
 ```python
 from src.data.extract import extract_csv
 from src.data.transform import clean_data
@@ -491,16 +520,17 @@ conn = get_sqlite_connection("db/hotel.db")
 
 ### 10.6 Errores Comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| `ModuleNotFoundError` | Falta `__init__.py` o import mal | Verificar estructura |
-| `ImportError: cannot import name` | Nombre incorrecto | Verificar nombre en módulo |
-| `NameError: name 'X' is not defined` | No se importó | Agregar import |
-| `TypeError: takes N arguments` | Número incorrecto de args | Revisar función |
+| Error                                | Causa                            | Solución                   |
+| ------------------------------------ | -------------------------------- | -------------------------- |
+| `ModuleNotFoundError`                | Falta `__init__.py` o import mal | Verificar estructura       |
+| `ImportError: cannot import name`    | Nombre incorrecto                | Verificar nombre en módulo |
+| `NameError: name 'X' is not defined` | No se importó                    | Agregar import             |
+| `TypeError: takes N arguments`       | Número incorrecto de args        | Revisar función            |
 
 ### 10.7 Ejemplo Práctico
 
 **`src/data/utils.py`:**
+
 ```python
 import pandas as pd
 
@@ -522,11 +552,13 @@ def obtener_estadisticas(df, columna):
 ```
 
 **`src/data/__init__.py`:**
+
 ```python
 from .utils import cargar_csv, limpiar_nulos, obtener_estadisticas
 ```
 
 **`main.py`:**
+
 ```python
 from src.data import cargar_csv, limpiar_nulos, obtener_estadisticas
 
@@ -559,16 +591,19 @@ GitHub Desktop
 ### 11.2 Desde VSCode
 
 **Opción A — Panel Source Control:**
+
 1. Abre el panel Source Control (`Ctrl+Shift+G`)
 2. Escribe tu mensaje de commit y haz clic en **"Commit"**
 3. Haz clic en **"Publish Branch"** o sincroniza con el botón de sync
 4. En la barra de estado inferior, haz clic en el nombre de la rama → **"Create Pull Request"**
 
 **Opción B — Command Palette:**
+
 1. `Ctrl+Shift+P` → escribe **"GitHub: Create Pull Request"**
 2. Completa título y descripción
 
 **Opción C — Extensión GitHub Pull Requests:**
+
 1. Instala la extensión **GitHub Pull Requests** desde el marketplace
 2. En el panel lateral verás la sección "Pull Requests"
 3. Haz clic en **"+"** → **"Create Pull Request"**
@@ -579,12 +614,12 @@ GitHub Desktop
 2. Aparecerá un banner amarillo: **"Compare & pull request"** → haz clic
 3. Completa el formulario:
 
-| Campo | Qué poner |
-|-------|-----------|
-| **Title** | `tipo: descripción corta` (ej: `feat: agregar filtro de fechas`) |
-| **Description** | Qué hiciste, por qué, cómo probarlo |
-| **Reviewers** | Selecciona al menos 1 revisor |
-| **Assignees** | Tu nombre |
+| Campo           | Qué poner                                                        |
+| --------------- | ---------------------------------------------------------------- |
+| **Title**       | `tipo: descripción corta` (ej: `feat: agregar filtro de fechas`) |
+| **Description** | Qué hiciste, por qué, cómo probarlo                              |
+| **Reviewers**   | Selecciona al menos 1 revisor                                    |
+| **Assignees**   | Tu nombre                                                        |
 
 4. Haz clic en **"Create pull request"**
 
@@ -593,31 +628,38 @@ GitHub Desktop
 ### 11.4 Qué poner en título y descripción
 
 **Título — formato del proyecto:**
+
 ```
 > Esto es una formalidad o metodologia estandar que se usa si desean usarlo bienvenido sea pero por favor hagan una buena descripcion de lo que hicieron
 tipo: descripción del cambio
 ```
-| Tipo | Cuándo usar |
-|------|-------------|
-| `feat` | Nueva funcionalidad |
-| `fix` | Corrección de error |
-| `data` | Cambios en datos o fuente |
-| `refactor` | Reestructurar código |
-| `chore` | Configuración, dependencias |
+
+| Tipo       | Cuándo usar                 |
+| ---------- | --------------------------- |
+| `feat`     | Nueva funcionalidad         |
+| `fix`      | Corrección de error         |
+| `data`     | Cambios en datos o fuente   |
+| `refactor` | Reestructurar código        |
+| `chore`    | Configuración, dependencias |
 
 **Descripción — template:**
+
 ```markdown
 ## Qué se hizo
+
 Descripción breve del cambio
 
 ## Por qué
+
 Motivo del cambio
 
 ## Cómo probarlo
+
 1. Paso 1
 2. Paso 2
 
 ## Screenshots (si aplica)
+
 pegar imagen
 ```
 
@@ -638,13 +680,14 @@ pegar imagen
 
 ### 11.7 Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Rama desactualizada | `main` tiene cambios nuevos | `git pull --rebase origin main` y vuelve a push |
-| Conflictos de merge | Otro cambió lo mismo | Resolver en el editor, `git add .`, push |
-| No puede hacer push | Rama protegida o sin permisos | Verificar que estás en tu rama |
+| Error               | Causa                         | Solución                                        |
+| ------------------- | ----------------------------- | ----------------------------------------------- |
+| Rama desactualizada | `main` tiene cambios nuevos   | `git pull --rebase origin main` y vuelve a push |
+| Conflictos de merge | Otro cambió lo mismo          | Resolver en el editor, `git add .`, push        |
+| No puede hacer push | Rama protegida o sin permisos | Verificar que estás en tu rama                  |
 
 **Rama desactualizada — paso a paso:**
+
 ```bash
 git checkout mi-rama
 git pull --rebase origin main
@@ -656,13 +699,13 @@ git push origin mi-rama
 
 ## Resumen Rápido
 
-| Sección | Punto Clave |
-|---------|-------------|
-| Python | Leer error, buscar solución, no hardcodear |
-| SQL | Siempre WHERE en UPDATE/DELETE |
-| Git | GitHub Flow, rama `tipo/nombre`, commits atómicos |
-| Streamlit | Usar session_state para estado |
-| PowerBI | Guardar como .pbip, .gitignore para cache |
-| Funciones | Una función = una tarea |
-| Módulos | `__init__.py` = carpeta es paquete |
+| Sección      | Punto Clave                                                                     |
+| ------------ | ------------------------------------------------------------------------------- |
+| Python       | Leer error, buscar solución, no hardcodear                                      |
+| SQL          | Siempre WHERE en UPDATE/DELETE                                                  |
+| Git          | GitHub Flow, rama `tipo/nombre`, commits atómicos                               |
+| Streamlit    | Usar session_state para estado                                                  |
+| PowerBI      | Guardar como .pbip, .gitignore para cache                                       |
+| Funciones    | Una función = una tarea                                                         |
+| Módulos      | `__init__.py` = carpeta es paquete                                              |
 | Pull Request | Checklist: idempotente, .gitignore, Streamlit corre, 1 aprobación, squash merge |
