@@ -2,4 +2,5 @@ pandas
 streamlit
 duckdb
 marimo
-scikit
+gdown
+dotenv
