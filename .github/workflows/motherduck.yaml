@@ -1,0 +1,43 @@
+name: MotherDuck
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      name:
+        description: Load duckdb to motherduck
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python and install dependencies
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run OLAP transform
+        run: python ./src/transform_olap.py
+
+      - name: Install DuckDB CLI
+        run: |
+          install_home="$RUNNER_TEMP/motherduck"
+          mkdir -p "$install_home"
+          curl -s https://install.motherduck.com | env -u motherduck_token HOME="$install_home" sh
+          echo "$install_home/.duckdb/cli/latest" >> "$GITHUB_PATH"
+
+      - name: Upload to MotherDuck
+        env:
+          motherduck_token: ${{ secrets.MOTHERDUCK_TOKEN }}
+        run: |
+          duckdb  -c "LOAD motherduck; ATTACH 'md:'; CREATE OR REPLACE TABLE bookings FROM './data/olap/bookings.duckdb'"
