@@ -123,7 +123,6 @@ erDiagram
                   bigint hotel_id FK
                   bigint user_id FK
                   int date_id FK
-                  date review_date
                   double score_overall
                   double score_cleanliness
                   double score_comfort
