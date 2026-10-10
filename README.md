@@ -113,47 +113,55 @@ Para facilitar el procesamiento analítico, el cálculo eficiente de los Promedi
 Este esquema centraliza las métricas y evaluaciones en una Tabla de hechos (Fact Table) rodeada por Tablas de Dimensiones, permitiendo responder directamente a los objetivos de investigación sin necesidad de realizar combinaciones complejas en tiempo de ejecución.
 
 ### Diagrama de Entidad-Relación (DER) - Modelo en Estrella
+#### Código DBML del Modelo (dbdiagram.io)
+> **Diagrama Interactivo:** Puedes explorar el diseño conceptual y lógico completo directamente en [dbdiagram.io (DER TF Compu2)](https://dbdiagram.io/d/DER-TF-Compu2-6ac9353f27cfb7f1bcc7c525).
 
+#### Diagrama Visual (Mermaid)
 ```mermaid
 erDiagram
-FACT_REVIEWS {int review_id PK
-int hotel_id FK
-int user_id FK
-int date_id FK
-float score_overall
-float score_cleanliness
-float score_comfort
-float score_facilities
-float score_location
-float score_staff
-float score_value_for_money}
+    FACT_REVIEWS {bigint review_id PK
+                  bigint hotel_id FK
+                  bigint user_id FK
+                  int date_id FK
+                  date review_date
+                  double score_overall
+                  double score_cleanliness
+                  double score_comfort
+                  double score_facilities
+                  double score_location
+                  double score_staff
+                  double score_value_for_money}
 
-DIM_HOTEL {int hotel_id PK
-string hotel_name
-int star_rating
-string city
-string country}
+    DIM_HOTELS {bigint hotel_id PK
+                varchar hotel_name
+                varchar city
+                varchar country
+                bigint star_rating
+                double lat
+                double lon}
 
-DIM_USUARIO {int user_id PK
-string traveller_type
-string age_group
-string country
-string user_gender}
+DIM_USERS {bigint user_id PK
+           varchar user_gender
+           varchar country
+           age_group varchar
+           varchar traveller_type
+           date user_join_date}
 
-DIM_TIEMPO {int date_id PK
-date review_date
-int year
-int month
-int day
-string day_of_week
-int quarter}
+    DIM_TIEMPO {int date_id PK
+                date review_date
+                int year
+                int month
+                int day
+                varchar day_of_week
+                int quarter}
 
-DIM_HOTEL ||--o{ FACT_REVIEWS : "recibe"
-DIM_USUARIO ||--o{ FACT_REVIEWS : "publica"
-DIM_TIEMPO ||--o{ FACT_REVIEWS : "ocurre_en"
+    DIM_HOTELS }o--|| FACT_REVIEWS : "recibe"
+    DIM_USERS }o--|| FACT_REVIEWS : "publica"
+    DIM_TIEMPO }o--|| FACT_REVIEWS : "ocurre_en"
 ```
 
 ### Cardinalidad y Relaciones entre Entidades
+
 Las relaciones del esquema en estrella siguen un patrón estricto de Uno a Muchos ($1:N$) desde cada dimensión hacia la tabla de hechos:
 
 **Dim_Hotel $\rightarrow$ Fact_Reviews ($1 : N$)**: Un hotel registrado puede recibir cero o múltiples reseñas, pero cada reseña pertenece a un único hotel.
@@ -184,7 +192,7 @@ Es la tabla central transaccional que contiene las mediciones numéricas cuantit
 
 #### 2. Dimensiones
 
-##### `Dim_Hotel` 
+##### `dim_Hotel` 
 Contiene la información descriptiva del establecimiento. Permite realizar la segmentación por categoría de hotel y agrupar las evaluaciones necesarias para el cálculo del Promedio Bayesiano.
 
 **Atributos Clave:**
@@ -192,9 +200,10 @@ Contiene la información descriptiva del establecimiento. Permite realizar la se
 - `hotel_name`
 - `star_rating` (Crucial para la segmentación de la prueba ANOVA por categoría)
 - `city` / `country` (Ubicación geográfica)
+- `lat` / `lon` (Coordenadas espaciales)
 
-##### `Dim_Usuario`
-Almacena el perfil demográfico del cliente. Sirve de base para segmentar y responder al Objetivo Específico 2 (varianza en la percepción calidad-precio por perfil).
+##### `dim_users`
+Almacena el perfil demográfico del cliente y su fecha de registro. Sirve de base para segmentar y responder al Objetivo Específico 2 (varianza en la percepción calidad-precio por perfil).
 
 **Atributos Clave:**
 - `user_id` (PK)
@@ -202,8 +211,9 @@ Almacena el perfil demográfico del cliente. Sirve de base para segmentar y resp
 - `age_group` (Segmentación por grupo etario)
 - `country` (Permite comparar Turismo Interno vs. Receptivo cruzándolo con la ubicación del hotel)
 - `user_gender`
+- `user_join_date` (Fecha de registro)
 
-##### `Dim_Tiempo` 
+##### `dim_tiempo`
 Permite descomponer la fecha de las evaluaciones para realizar análisis agregados por temporalidad y estacionalidad sin depender del tipo de dato texto de la fecha original.
 
 **Atributos Clave:**
@@ -212,6 +222,8 @@ Permite descomponer la fecha de las evaluaciones para realizar análisis agregad
 - `year` (Año de la reseña)
 - `month` (Mes de la reseña)
 - `day` (Día de la reseña)
+- `day_of_week` (Día de la semana)
+- `quarter` (Trimestre del año)
 
 
 Dataset [en kaggle](https://www.kaggle.com/datasets/alperenmyung/international-hotel-booking-analytics)
