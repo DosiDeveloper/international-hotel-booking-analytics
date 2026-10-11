@@ -38,7 +38,7 @@ SELECT
     review_id,
     hotel_id,
     user_id,
-    CAST(STRFTIME(review_date, '%Y%m%d') AS INT) AS date_id,  -- <-- Corregido
+    CAST(STRFTIME(review_date, '%Y%m%d') AS INT) AS date_id, 
     review_date,
     score_overall,
     score_cleanliness,
