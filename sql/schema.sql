@@ -1,5 +1,3 @@
-PRAGMA foreign_keys = ON;
-
 DROP TABLE IF EXISTS reviews;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS hotels;
@@ -26,14 +24,14 @@ CREATE TABLE users (
 	country TEXT NOT NULL,
 	age_group TEXT NOT NULL CHECK (age_group IN ('18-24', '25-34', '35-44', '45-54', '55+')),
 	traveller_type TEXT NOT NULL CHECK (traveller_type IN ('Solo', 'Couple', 'Family', 'Business')),
-	join_date TEXT NOT NULL CHECK (join_date IS date(join_date))
+	join_date TEXT NOT NULL
 );
 
 CREATE TABLE reviews (
 	review_id INTEGER PRIMARY KEY,
 	user_id INTEGER NOT NULL REFERENCES users(user_id),
-	hotel_id INTEGER NOT NULL REFERENCES hotels(hotel_id) ON DELETE CASCADE,
-	review_date TEXT NOT NULL CHECK (review_date IS date(review_date)),
+	hotel_id INTEGER NOT NULL REFERENCES hotels(hotel_id),
+	review_date DATE NOT NULL,
 	score_overall REAL NOT NULL,
 	score_cleanliness REAL NOT NULL,
 	score_comfort REAL NOT NULL,
