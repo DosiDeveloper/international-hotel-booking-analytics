@@ -4,3 +4,4 @@ duckdb
 marimo
 gdown
 dotenv
+supabase

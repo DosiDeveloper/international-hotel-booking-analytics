@@ -13,7 +13,7 @@ class Setup:
     def __init__(self, data_dir: str = "data") -> None:
         self.root_data_dir = pathlib.Path(data_dir)
         self.raw_data_dir = self.root_data_dir / "raw"
-        self.oltp_data_dir = self.root_data_dir / "oltp"
+        self.clean_data_dir = self.root_data_dir / "clean"
         self.olap_data_dir = self.root_data_dir / "olap"
         self.script_sql_dir = pathlib.Path("sql")
 
@@ -24,7 +24,7 @@ class Setup:
         if not self.root_data_dir.exists():
             self.root_data_dir.mkdir()
             self.raw_data_dir.mkdir()
-            self.oltp_data_dir.mkdir()
+            self.clean_data_dir.mkdir()
             self.olap_data_dir.mkdir()
             print("Directories created successfully")
             return True
@@ -69,5 +69,7 @@ class Setup:
 setup = Setup()
 
 if __name__ == "__main__":
+    import subprocess
     setup.create_dirs()
     setup.download_data_from_drive()
+    subprocess.run(["python", "notebook/limpieza.py"])
