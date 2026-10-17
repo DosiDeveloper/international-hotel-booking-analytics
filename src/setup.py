@@ -72,4 +72,5 @@ if __name__ == "__main__":
     import subprocess
     setup.create_dirs()
     setup.download_data_from_drive()
-    subprocess.run(["python", "notebook/limpieza.py"])
+    subprocess.run(["python", "notebook/limpieza.py"], shell=True)
+    subprocess.run(["python", "-m", "src.load_oltp"], shell=True)
