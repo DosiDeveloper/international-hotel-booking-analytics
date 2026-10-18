@@ -159,7 +159,7 @@ erDiagram
     USERS ||--o{ REVIEWS : "emite"
 ```
 
-### Cardinalidad y Relaciones entre Entidades (Modelo Normalizado)
+### Cardinalidad y Relaciones entre Entidades
 
 Las relaciones de este esquema siguen un patrón de Uno a Muchos ($1:N$) hacia la tabla principal de transacciones:
 
