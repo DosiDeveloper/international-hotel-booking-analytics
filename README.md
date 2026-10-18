@@ -106,5 +106,128 @@ Variable | Descripción | Uso en el Proyecto
 
 - PowerBI: Herramienta de inteligencia de negocios de Microsoft para la realización de dashboards interactivos.
 
+## Bosquejo Modelo de Datos Normalizado
+
+Para garantizar la integridad referencial de los datos, eliminar la redundancia de información y estructurar adecuadamente las entidades origen del sistema, los datos se conciben originalmente bajo un Modelo Normalizado (Modelo Relacional).
+
+Este esquema organiza la información transaccional dividiendo las entidades de entidades operativas (Hoteles y Usuarios) de la tabla central de evaluaciones (Reseñas), asegurando una arquitectura sólida para el almacenamiento transaccional (OLTP) previo a su transformación hacia el esquema analítico.
+
+#### Diagrama Visual (Mermaid)
+```mermaid
+erDiagram
+    HOTELS {
+        bigint hotel_id PK
+        varchar hotel_name
+        varchar city
+        varchar country
+        bigint star_rating
+        double lat
+        double lon
+        double cleanliness_base
+        double comfort_base
+        double facilities_base
+        double location_base
+        double staff_base
+        double value_for_money_base
+    }
+
+    USERS {
+        bigint user_id PK
+        varchar user_gender
+        varchar country
+        varchar age_group
+        varchar traveller_type
+        date join_date
+    }
+
+    REVIEWS {
+        bigint review_id PK
+        bigint hotel_id FK
+        bigint user_id FK
+        date review_date
+        double score_overall
+        double score_cleanliness
+        double score_comfort
+        double score_facilities
+        double score_location
+        double score_staff
+        double score_value_for_money
+        varchar review_text
+    }
+
+    HOTELS ||--o{ REVIEWS : "recibe"
+    USERS ||--o{ REVIEWS : "emite"
+```
+
+### Cardinalidad y Relaciones entre Entidades
+
+Las relaciones de este esquema siguen un patrón de Uno a Muchos ($1:N$) hacia la tabla principal de transacciones:
+
+**Hotels → Reviews ($1:N$):** Un hotel cuenta con un identificador único (hotel_id) y puede recibir múltiples reseñas asociadas en la tabla transaccional reviews.   
+**Users → Reviews ($1:N$):** Cada usuario registrado (user_id) con su respectiva demografía y tipo de viajero (traveller_type) puede emitir una o múltiples evaluaciones en la plataforma.
+
+## Bosquejo del Modelo de Datos Desnormalizado
+
+Para facilitar el procesamiento analítico, el cálculo eficiente de los Promedios Bayesianos y la ejecución de las pruebas de hipótesis, los datos se estructuran conceptualmente bajo un Modelo en Estrella (Star Schema) desnormalizado.
+
+Este esquema centraliza las métricas y evaluaciones en una Tabla de hechos (Fact Table) rodeada por Tablas de Dimensiones, permitiendo responder directamente a los objetivos de investigación sin necesidad de realizar combinaciones complejas en tiempo de ejecución.
+
+### Diagrama de Entidad-Relación (DER) - Modelo en Estrella
+#### Código DBML del Modelo (dbdiagram.io)
+> **Diagrama Interactivo:** Puedes explorar el diseño conceptual y lógico completo directamente en [dbdiagram.io (DER TF Compu2)](https://dbdiagram.io/d/DER-TF-Compu2-6ac9353f27cfb7f1bcc7c525).
+
+#### Diagrama Visual (Mermaid)
+```mermaid
+erDiagram
+    FACT_REVIEWS {bigint review_id PK
+                  bigint hotel_id FK
+                  bigint user_id FK
+                  int date_id FK
+                  double score_overall
+                  double score_cleanliness
+                  double score_comfort
+                  double score_facilities
+                  double score_location
+                  double score_staff
+                  double score_value_for_money}
+
+    DIM_HOTELS {bigint hotel_id PK
+                varchar hotel_name
+                varchar city
+                varchar country
+                bigint star_rating
+                double lat
+                double lon}
+
+DIM_USERS {bigint user_id PK
+           varchar user_gender
+           varchar country
+           age_group varchar
+           varchar traveller_type
+           date user_join_date}
+
+    DIM_TIEMPO {int date_id PK
+                date review_date
+                int year
+                int month
+                int day
+                varchar day_of_week
+                int quarter}
+
+    DIM_HOTELS }o--|| FACT_REVIEWS : "recibe"
+    DIM_USERS }o--|| FACT_REVIEWS : "publica"
+    DIM_TIEMPO }o--|| FACT_REVIEWS : "ocurre_en"
+```
+
+### Cardinalidad y Relaciones entre Entidades
+
+Las relaciones del esquema en estrella siguen un patrón estricto de Uno a Muchos ($1:N$) desde cada dimensión hacia la tabla de hechos:
+
+**Dim_Hotel $\rightarrow$ Fact_Reviews ($1 : N$)**: Un hotel registrado puede recibir cero o múltiples reseñas, pero cada reseña pertenece a un único hotel.
+
+**Dim_Usuario $\rightarrow$ Fact_Reviews ($1 : N$)**: Un usuario registrado puede publicar una o varias reseñas, pero cada reseña es emitida por un único usuario.
+
+**Dim_Tiempo $\rightarrow$ Fact_Reviews ($1 : N$)**: Una fecha/día de la dimensión tiempo puede registrar cero o múltiples reseñas, pero cada reseña ocurre en una única fecha específica.
+
 
 Dataset [en kaggle](https://www.kaggle.com/datasets/alperenmyung/international-hotel-booking-analytics)
