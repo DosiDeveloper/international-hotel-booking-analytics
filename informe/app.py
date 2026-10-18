@@ -7,6 +7,75 @@ st.set_page_config(
     layout="wide"
 )
 
+def render_bloque_principal():
+    hero_html = """
+    <style>
+    .welcome-container {
+        background: linear-gradient(135deg, #383838 0%, #2b2b2b 100%);
+        padding: 60px 20px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        border-left: 5px solid #f39c12; 
+    }
+    
+    .glass-card {
+        background: rgba(40, 40, 40, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 40px 50px;
+        max-width: 850px;
+        text-align: center;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+    
+    .eyebrow {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #f39c12; 
+        margin-bottom: 12px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .main-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        color: #ffffff;
+        line-height: 1.2;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .description {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        color: #d1d5db;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin-bottom: 0;
+    }
+    </style>
+
+    <div class="welcome-container">
+        <div class="glass-card">
+            <div class="eyebrow">Dashboard</div>
+            <div class="main-title">Bienvenidos a el analisis de rankings hoteleros</div>
+            <div class="description">
+                Aqui pondriamos.... (por definir)
+            </div>
+        </div>
+    </div>
+    """
+    
+    st.markdown(hero_html, unsafe_allow_html=True)
+
+render_bloque_principal()
 
 st.markdown("""
     <style>
