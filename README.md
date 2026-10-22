@@ -106,7 +106,67 @@ Variable | Descripción | Uso en el Proyecto
 
 - PowerBI: Herramienta de inteligencia de negocios de Microsoft para la realización de dashboards interactivos.
 
-## Bosquejo del Modelo de Datos Desnormalizado (Modelo Dimensional)
+## Bosquejo Modelo de Datos Normalizado
+
+Para garantizar la integridad referencial de los datos, eliminar la redundancia de información y estructurar adecuadamente las entidades origen del sistema, los datos se conciben originalmente bajo un Modelo Normalizado (Modelo Relacional).
+
+Este esquema organiza la información transaccional dividiendo las entidades de entidades operativas (Hoteles y Usuarios) de la tabla central de evaluaciones (Reseñas), asegurando una arquitectura sólida para el almacenamiento transaccional (OLTP) previo a su transformación hacia el esquema analítico.
+
+#### Diagrama Visual (Mermaid)
+```mermaid
+erDiagram
+    HOTELS {
+        bigint hotel_id PK
+        varchar hotel_name
+        varchar city
+        varchar country
+        bigint star_rating
+        double lat
+        double lon
+        double cleanliness_base
+        double comfort_base
+        double facilities_base
+        double location_base
+        double staff_base
+        double value_for_money_base
+    }
+
+    USERS {
+        bigint user_id PK
+        varchar user_gender
+        varchar country
+        varchar age_group
+        varchar traveller_type
+        date join_date
+    }
+
+    REVIEWS {
+        bigint review_id PK
+        bigint hotel_id FK
+        bigint user_id FK
+        date review_date
+        double score_overall
+        double score_cleanliness
+        double score_comfort
+        double score_facilities
+        double score_location
+        double score_staff
+        double score_value_for_money
+        varchar review_text
+    }
+
+    HOTELS ||--o{ REVIEWS : "recibe"
+    USERS ||--o{ REVIEWS : "emite"
+```
+
+### Cardinalidad y Relaciones entre Entidades
+
+Las relaciones de este esquema siguen un patrón de Uno a Muchos ($1:N$) hacia la tabla principal de transacciones:
+
+**Hotels → Reviews ($1:N$):** Un hotel cuenta con un identificador único (hotel_id) y puede recibir múltiples reseñas asociadas en la tabla transaccional reviews.   
+**Users → Reviews ($1:N$):** Cada usuario registrado (user_id) con su respectiva demografía y tipo de viajero (traveller_type) puede emitir una o múltiples evaluaciones en la plataforma.
+
+## Bosquejo del Modelo de Datos Desnormalizado
 
 Para facilitar el procesamiento analítico, el cálculo eficiente de los Promedios Bayesianos y la ejecución de las pruebas de hipótesis, los datos se estructuran conceptualmente bajo un Modelo en Estrella (Star Schema) desnormalizado.
 
@@ -168,61 +228,6 @@ Las relaciones del esquema en estrella siguen un patrón estricto de Uno a Mucho
 **Dim_Usuario $\rightarrow$ Fact_Reviews ($1 : N$)**: Un usuario registrado puede publicar una o varias reseñas, pero cada reseña es emitida por un único usuario.
 
 **Dim_Tiempo $\rightarrow$ Fact_Reviews ($1 : N$)**: Una fecha/día de la dimensión tiempo puede registrar cero o múltiples reseñas, pero cada reseña ocurre en una única fecha específica.
-
-### Estructura del Modelo
-
-#### 1. Tabla de Hechos: `Fact_Reviews`
-Es la tabla central transaccional que contiene las mediciones numéricas cuantitativas asociadas a cada evaluación realizada.
-
-**Claves de Conexión:**
-- `review_id` (Clave primaria del hecho)
-- `hotel_id` (Conecta con `Dim_Hotel`)
-- `user_id` (Conecta con `Dim_Usuario`)
-- `date_id` (Conecta con `Dim_Tiempo`)
-
-**Métricas Cuantitativas:**
-- `score_overall` (Métrica general)
-- `score_cleanliness`
-- `score_comfort`
-- `score_facilities`
-- `score_location`
-- `score_staff`
-- `score_value_for_money` (Métrica principal para la percepción de valor)
-
-#### 2. Dimensiones
-
-##### `dim_Hotel` 
-Contiene la información descriptiva del establecimiento. Permite realizar la segmentación por categoría de hotel y agrupar las evaluaciones necesarias para el cálculo del Promedio Bayesiano.
-
-**Atributos Clave:**
-- `hotel_id` (PK)
-- `hotel_name`
-- `star_rating` (Crucial para la segmentación de la prueba ANOVA por categoría)
-- `city` / `country` (Ubicación geográfica)
-- `lat` / `lon` (Coordenadas espaciales)
-
-##### `dim_users`
-Almacena el perfil demográfico del cliente y su fecha de registro. Sirve de base para segmentar y responder al Objetivo Específico 2 (varianza en la percepción calidad-precio por perfil).
-
-**Atributos Clave:**
-- `user_id` (PK)
-- `traveller_type` (Segmentación por tipo de viajero: Solo, Pareja, Familia, Negocios)
-- `age_group` (Segmentación por grupo etario)
-- `country` (Permite comparar Turismo Interno vs. Receptivo cruzándolo con la ubicación del hotel)
-- `user_gender`
-- `user_join_date` (Fecha de registro)
-
-##### `dim_tiempo`
-Permite descomponer la fecha de las evaluaciones para realizar análisis agregados por temporalidad y estacionalidad sin depender del tipo de dato texto de la fecha original.
-
-**Atributos Clave:**
-- `date_id` (PK)
-- `review_date` (Fecha en formato DATE)
-- `year` (Año de la reseña)
-- `month` (Mes de la reseña)
-- `day` (Día de la reseña)
-- `day_of_week` (Día de la semana)
-- `quarter` (Trimestre del año)
 
 
 Dataset [en kaggle](https://www.kaggle.com/datasets/alperenmyung/international-hotel-booking-analytics)
