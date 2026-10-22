@@ -37,7 +37,7 @@ def _(df_reviews, mo):
         SELECT * FROM df_reviews
         """
     )
-    return (df,)
+    return
 
 
 @app.cell
@@ -91,12 +91,6 @@ def _(df_users, pd):
 
 
 @app.cell
-def _(df):
-    df_pd = df.to_pandas()
-    return
-
-
-@app.cell
 def _(df_reviews):
     duplicados_usuario_hotel_fecha = df_reviews[
         df_reviews.duplicated(subset=['user_id', 'hotel_id', 'review_date'], keep=False)
@@ -124,23 +118,31 @@ def _(df_reviews, df_users):
 
 
 @app.cell
-def _(df_reviews):
-    df_reviews_limpio = df_reviews.drop_duplicates(subset=['user_id', 'hotel_id', 'review_date'], keep='first').copy()
-    return (df_reviews_limpio,)
+def _(df_reviews, df_users):
+    df_fechas_cruzadas = df_reviews.merge(df_users[['user_id', 'join_date']], on='user_id', how='left')
+    mascara_inconsistentes = df_fechas_cruzadas['review_date'] < df_fechas_cruzadas['join_date']
+    df_fechas_cruzadas.loc[mascara_inconsistentes, 'review_date'] = df_fechas_cruzadas.loc[mascara_inconsistentes, 'join_date']
+
+    df_reviews_consistente = df_reviews.copy()
+    df_reviews_consistente['review_date'] = df_fechas_cruzadas['review_date']
+
+    df_reviews_consistente
+    return (df_reviews_consistente,)
 
 
 @app.cell
-def _(df_hotels, df_users):
+def _(df_hotels, df_reviews_consistente, df_users):
+    df_reviews_limpio = df_reviews_consistente.drop_duplicates(subset=['user_id', 'hotel_id', 'review_date'], keep='first').copy()
     df_hotels_limpio = df_hotels.drop_duplicates().copy()
     df_users_limpio = df_users.drop_duplicates().copy()
-    return df_hotels_limpio, df_users_limpio
+    return df_hotels_limpio, df_reviews_limpio, df_users_limpio
 
 
 @app.cell
 def _(df_hotels_limpio, df_reviews_limpio, df_users_limpio):
-    df_reviews_limpio.to_csv('data/oltp/reviews_limpio.csv', index=False)
-    df_hotels_limpio.to_csv('data/oltp/hotels_limpio.csv', index=False)
-    df_users_limpio.to_csv('data/oltp/users_limpio.csv', index=False)
+    df_reviews_limpio.to_csv('data/clean/reviews_limpio.csv', index=False)
+    df_hotels_limpio.to_csv('data/clean/hotels_limpio.csv', index=False)
+    df_users_limpio.to_csv('data/clean/users_limpio.csv', index=False)
     return
 
 
