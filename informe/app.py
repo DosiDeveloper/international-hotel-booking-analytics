@@ -92,7 +92,6 @@ with tab_dashboard:
     st.caption("Bosquejo visual interactivo para el análisis y recomendación de alojamientos.")
 
     st.markdown("---")
-
     st.subheader(f"Métricas para: {tipo_turismo} | {categoria}")
 
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -137,7 +136,7 @@ with tab_dashboard:
 
     #objetivo 1
     with st.container(border=True):
-        st.markdown("### 📊 Obj. 1: Ranking Bayesiano (Corrección por Volumen)")
+        st.markdown("### Ranking Bayesiano")
         st.caption("Clasificación de hoteles basada en el promedio bayesiano.")
         
         try:
@@ -189,7 +188,6 @@ with tab_dashboard:
                 st.warning("No se encontraron registros en la tabla REVIEWS.")
         except Exception as e:
             st.error(f"Error en Objetivo 1: {e}")
-
 
 
 # pestaña 2 / presentacion del equipo
