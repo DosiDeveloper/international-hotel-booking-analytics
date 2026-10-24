@@ -1,7 +1,7 @@
 pandas
 streamlit
 duckdb
-marimo
+marimo[sql]
 gdown
 dotenv
 supabase
