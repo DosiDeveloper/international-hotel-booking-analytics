@@ -2,6 +2,7 @@ import pathlib
 
 from dotenv import load_dotenv
 
+from load_olap import load_data_to_duckdb
 from load_oltp import load_data_to_supabase
 
 load_dotenv()
@@ -71,9 +72,11 @@ class Setup:
 
         setup.create_dirs()
         # setup.download_data_from_drive()
-        subprocess.run(["python", "notebook/limpieza.py"],
-                       shell=True, check=False)
+        subprocess.run(["python", "notebook/limpieza.py"], shell=True, check=False)
         load_data_to_supabase(self.script_sql_dir, self.clean_data_dir)
+        load_data_to_duckdb(
+            self.olap_data_dir, self.script_sql_dir, self.clean_data_dir
+        )
 
 
 setup = Setup()
