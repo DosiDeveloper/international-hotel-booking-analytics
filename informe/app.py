@@ -1,11 +1,24 @@
 import streamlit as st
+import duckdb
+import pandas as pd
+import plotly.express as px
+import scipy.stats as stats
 
-# barra
 st.set_page_config(
     page_title="Recomendador y Ranking Hotelero",
     page_icon="🏨",
     layout="wide"
 )
+
+MOTHERDUCK_TOKEN = "MOTHERDUCK_TOKEN_REMOVED
+
+@st.cache_resource
+def init_connection():
+    return duckdb.connect(
+        f"md:my_db?motherduck_token={MOTHERDUCK_TOKEN}"
+        )
+
+con = init_connection()
 
 
 st.markdown("""
@@ -118,28 +131,65 @@ with tab_dashboard:
 
     st.markdown("---")
 
-    st.subheader("Análisis")
+    st.subheader("Análisis de Objetivos de Investigación")
 
     col_g1, col_g2 = st.columns(2)
 
-    with col_g1:
-        with st.container(border=True):
-            st.markdown(f"### Ranking ({categoria})")
-            st.caption("Comparativa entre promedio simple y corregido.")
-            st.info("[Gráfico]")
-
-    with col_g2:
-        with st.container(border=True):
-            st.markdown(f"### Percepción ({perfil_viajero})")
-            st.caption("Diferencias según perfil de viajero y tipo de turismo.")
-            st.success("[Gráfico]")
-
-    st.write("")
-
+    #objetivo 1
     with st.container(border=True):
-        st.markdown("### Recomendador por Similitud Vectorial")
-        st.caption("Puntajes ponderados por preferencias de usuario.")
-        st.info("[Gráfico]")
+        st.markdown("### 📊 Obj. 1: Ranking Bayesiano (Corrección por Volumen)")
+        st.caption("Clasificación de hoteles basada en el promedio bayesiano.")
+        
+        try:
+            query_o1 = """
+                SELECT 
+                    h.hotel_name,
+                    COUNT(f.review_id) AS n_reviews,
+                    AVG(f.score_overall) AS simple_avg
+                FROM REVIEWS f
+                JOIN HOTELES h ON f.hotel_id = h.hotel_id
+                GROUP BY h.hotel_name
+            """
+            df_o1 = con.execute(query_o1).fetchdf()
+            
+            if not df_o1.empty:
+                m = df_o1['simple_avg'].mean()
+                C = 5
+                df_o1['bayesian_avg'] = (C * m + df_o1['n_reviews'] * df_o1['simple_avg']) / (C + df_o1['n_reviews'])
+                
+                # Ordenamos para que los mejores hoteles queden arriba
+                df_o1_top = df_o1.sort_values(by='bayesian_avg', ascending=True).tail(8)
+                
+                # Paleta exclusiva de tonos azules, rojos y naranjas
+                paleta_pro = ["#0088BC", "#FF4B4B", "#FFA500", "#29B5E8", "#FF6C6C", "#FFB84D", "#005C8A", "#D32F2F"]
+                
+                fig_o1 = px.bar(
+                    df_o1_top, 
+                    y="hotel_name", 
+                    x="bayesian_avg", 
+                    orientation="h",
+                    labels={"bayesian_avg": "Promedio Bayesiano", "hotel_name": "Hotel"},
+                    color="hotel_name",
+                    color_discrete_sequence=paleta_pro
+                )
+                
+                fig_o1.update_layout(
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='#FAFAFA', size=12),
+                    margin=dict(t=20, b=20, l=20, r=20),
+                    height=400,
+                    xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.08)'),
+                    yaxis=dict(showgrid=False),
+                    showlegend=False
+                )
+                st.plotly_chart(fig_o1, use_container_width=True)
+                st.info("💡 **Hallazgo:** El promedio bayesiano penaliza establecimientos con pocas reseñas, ofreciendo un ranking robusto y con una línea visual coherente.")
+            else:
+                st.warning("No se encontraron registros en la tabla REVIEWS.")
+        except Exception as e:
+            st.error(f"Error en Objetivo 1: {e}")
+
 
 
 # pestaña 2 / presentacion del equipo
