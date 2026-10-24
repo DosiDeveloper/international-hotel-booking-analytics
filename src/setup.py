@@ -2,6 +2,8 @@ import pathlib
 
 from dotenv import load_dotenv
 
+from load_oltp import load_data_to_supabase
+
 load_dotenv()
 
 
@@ -41,8 +43,7 @@ class Setup:
 
         url = os.getenv("DRIVE_FOLDER")
         if not url:
-            print("DRIVE_FOLDER not set")
-            return
+            raise ValueError("DRIVE_FOLDER not set")
         try:
             list_files = gdown.download_folder(
                 url=url, output=str(self.raw_data_dir), quiet=True, skip_download=True
@@ -65,12 +66,17 @@ class Setup:
             print(f"Download cancelled: {e}, url: {url}")
             return
 
+    def init(self):
+        import subprocess
+
+        setup.create_dirs()
+        # setup.download_data_from_drive()
+        subprocess.run(["python", "notebook/limpieza.py"],
+                       shell=True, check=False)
+        load_data_to_supabase(self.script_sql_dir, self.clean_data_dir)
+
 
 setup = Setup()
 
 if __name__ == "__main__":
-    import subprocess
-    setup.create_dirs()
-    setup.download_data_from_drive()
-    subprocess.run(["python", "notebook/limpieza.py"], shell=True)
-    subprocess.run(["python", "-m", "src.load_oltp"], shell=True)
+    setup.init()

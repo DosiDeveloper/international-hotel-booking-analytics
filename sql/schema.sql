@@ -24,7 +24,7 @@ CREATE TABLE users (
 	country TEXT NOT NULL,
 	age_group TEXT NOT NULL CHECK (age_group IN ('18-24', '25-34', '35-44', '45-54', '55+')),
 	traveller_type TEXT NOT NULL CHECK (traveller_type IN ('Solo', 'Couple', 'Family', 'Business')),
-	join_date TEXT NOT NULL
+	join_date DATE NOT NULL
 );
 
 CREATE TABLE reviews (
@@ -39,5 +39,5 @@ CREATE TABLE reviews (
 	score_location REAL NOT NULL,
 	score_staff REAL NOT NULL,
 	score_value_for_money REAL NOT NULL,
-	review_text TEXT
+	review_text DATE
 );
