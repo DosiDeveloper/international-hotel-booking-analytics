@@ -7,7 +7,86 @@
         "x": 0,
         "y": 0
       },
-      "nodes": [],
+      "nodes": [
+        {
+          "location": {
+            "x": 422.16541471165539,
+            "y": 224.20748580348391
+          },
+          "nodeIndex": "analytics dim_hotels",
+          "nodeLineageTag": "ed293c16-6ed5-4512-8397-4e88a0a35d60",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 865.465548958427,
+            "y": 872.60898201864029
+          },
+          "nodeIndex": "analytics dim_tiempo",
+          "nodeLineageTag": "51c66c5d-efcf-4018-8e8b-a30595c19d93",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 781.69507176762147,
+            "y": 248.22687723714773
+          },
+          "nodeIndex": "analytics dim_users",
+          "nodeLineageTag": "4ddeb451-29a3-4e10-a670-022a4e78a459",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 684.0057683226903,
+            "y": 522.3998364289323
+          },
+          "nodeIndex": "analytics fact_reviews",
+          "nodeLineageTag": "3f4d9d5a-63da-4f94-93cb-074aa0c149b7",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 262.15436175240563,
+            "y": -50
+          },
+          "nodeIndex": "analytics_models hotel_bayesian_inputs",
+          "nodeLineageTag": "63cbf645-2e10-435e-8247-2b81c4c3bea1",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 224.13348634994043
+          },
+          "nodeIndex": "analytics_models hotel_traveller_profiles",
+          "nodeLineageTag": "588424aa-dedd-4b63-bdde-ca5a3403fbdf",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
       "name": "All tables",
       "zoomValue": 100,
       "pinKeyFieldsToTop": false,
