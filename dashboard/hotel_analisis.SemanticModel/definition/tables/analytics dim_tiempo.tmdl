@@ -1,0 +1,81 @@
+table 'analytics dim_tiempo'
+	lineageTag: 51c66c5d-efcf-4018-8e8b-a30595c19d93
+
+	column date_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 0dd0a2ce-fe5f-4530-a83e-ef980c89633a
+		summarizeBy: none
+		sourceColumn: date_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 93b76eee-ff13-44c6-ab69-49ef252ed1a1
+		summarizeBy: none
+		sourceColumn: review_date
+
+		variation Variation
+			isDefault
+			relationship: 68637aec-5ff3-4f8a-94ab-4c12595417fc
+			defaultHierarchy: LocalDateTable_f0c4cc90-8f0e-45c2-8ed4-71d39923b3d2.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column year
+		dataType: int64
+		formatString: 0
+		lineageTag: 8ff6bed7-5ab5-4c4f-9a97-535189e7c9dd
+		summarizeBy: sum
+		sourceColumn: year
+
+		annotation SummarizationSetBy = Automatic
+
+	column month
+		dataType: int64
+		formatString: 0
+		lineageTag: c0ce4b33-463c-4b9f-aa8c-8c524119c392
+		summarizeBy: sum
+		sourceColumn: month
+
+		annotation SummarizationSetBy = Automatic
+
+	column day
+		dataType: int64
+		formatString: 0
+		lineageTag: 2507581e-0528-43cc-beb5-985719e4b87a
+		summarizeBy: sum
+		sourceColumn: day
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_of_week
+		dataType: string
+		lineageTag: 73b0c61f-36bc-45de-b722-193a3891c0d4
+		summarizeBy: none
+		sourceColumn: day_of_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: a89b8ad6-c590-4242-8432-5d0f37b3e905
+		summarizeBy: sum
+		sourceColumn: quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'analytics dim_tiempo' = m
+		mode: import
+		source =
+				let
+				  Origen = PostgreSQL.Database("pg.us-east-1-aws.motherduck.com", "my_db"),
+				  #"Navegación 1" = Origen{[Schema = "analytics", Item = "dim_tiempo"]}[Data]
+				in
+				  #"Navegación 1"
+
