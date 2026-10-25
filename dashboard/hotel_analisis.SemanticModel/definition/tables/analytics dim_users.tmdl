@@ -1,0 +1,69 @@
+table 'analytics dim_users'
+	lineageTag: 4ddeb451-29a3-4e10-a670-022a4e78a459
+
+	column user_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 38c4a635-c77d-4d73-ad7d-dff77fbc23aa
+		summarizeBy: sum
+		sourceColumn: user_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column user_gender
+		dataType: string
+		lineageTag: 6966fab8-f47f-4525-8bd6-78cf0a97c435
+		summarizeBy: none
+		sourceColumn: user_gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column country
+		dataType: string
+		lineageTag: da03e834-0dfb-4340-9596-b2bee23ee663
+		summarizeBy: none
+		sourceColumn: country
+
+		annotation SummarizationSetBy = Automatic
+
+	column age_group
+		dataType: string
+		lineageTag: 41208943-a850-4452-bcdd-3eff10fd7045
+		summarizeBy: none
+		sourceColumn: age_group
+
+		annotation SummarizationSetBy = Automatic
+
+	column traveller_type
+		dataType: string
+		lineageTag: 31bbb4a2-cba9-4bac-8cda-3855777c66b5
+		summarizeBy: none
+		sourceColumn: traveller_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column user_join_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 47bdb5e0-deae-4fc8-a2aa-ca1efe8c619e
+		summarizeBy: none
+		sourceColumn: user_join_date
+
+		variation Variation
+			isDefault
+			relationship: 995fbac9-3509-40fc-ab7b-b7783925bfdf
+			defaultHierarchy: LocalDateTable_ed059689-917e-411b-9291-51105678d28c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'analytics dim_users' = m
+		mode: import
+		source =
+				let
+				  Origen = PostgreSQL.Database("pg.us-east-1-aws.motherduck.com", "my_db"),
+				  #"Navegación 1" = Origen{[Schema = "analytics", Item = "dim_users"]}[Data]
+				in
+				  #"Navegación 1"
+

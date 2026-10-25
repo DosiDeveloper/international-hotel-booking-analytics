@@ -1,0 +1,74 @@
+table 'analytics dim_hotels'
+	lineageTag: ed293c16-6ed5-4512-8397-4e88a0a35d60
+
+	column hotel_id
+		dataType: int64
+		formatString: 0
+		lineageTag: a7c8d948-d480-466c-868c-a740e11fcfc4
+		summarizeBy: none
+		sourceColumn: hotel_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hotel_name
+		dataType: string
+		lineageTag: 58c06e5d-6af4-47c5-b520-1a242f270979
+		summarizeBy: none
+		sourceColumn: hotel_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column city
+		dataType: string
+		lineageTag: 47a5a802-ff72-45bd-bea8-6515c5ef4116
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column country
+		dataType: string
+		lineageTag: 9675fa80-b9ad-4bbf-ac44-dafeac85aee6
+		summarizeBy: none
+		sourceColumn: country
+
+		annotation SummarizationSetBy = Automatic
+
+	column star_rating
+		dataType: int64
+		formatString: 0
+		lineageTag: 78016d31-9829-431f-8de5-93ee8aa67210
+		summarizeBy: sum
+		sourceColumn: star_rating
+
+		annotation SummarizationSetBy = Automatic
+
+	column lat
+		dataType: double
+		lineageTag: 4c8124b0-89f3-4658-8571-4e832204f02d
+		summarizeBy: sum
+		sourceColumn: lat
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column lon
+		dataType: double
+		lineageTag: 145b4aa5-f685-4192-9d2f-f43d9d2c865e
+		summarizeBy: sum
+		sourceColumn: lon
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'analytics dim_hotels' = m
+		mode: import
+		source =
+				let
+				  Origen = PostgreSQL.Database("pg.us-east-1-aws.motherduck.com", "my_db"),
+				  #"Navegación 1" = Origen{[Schema = "analytics", Item = "dim_hotels"]}[Data]
+				in
+				  #"Navegación 1"
+
