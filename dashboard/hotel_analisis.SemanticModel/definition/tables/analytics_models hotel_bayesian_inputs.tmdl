@@ -1,0 +1,67 @@
+table 'analytics_models hotel_bayesian_inputs'
+	lineageTag: 63cbf645-2e10-435e-8247-2b81c4c3bea1
+
+	column hotel_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 88817f3b-a0f1-4ea2-8e79-b2e612da779b
+		summarizeBy: none
+		sourceColumn: hotel_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hotel_name
+		dataType: string
+		lineageTag: 6041263f-b782-4914-abf5-e21ca42acc40
+		summarizeBy: none
+		sourceColumn: hotel_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column star_rating
+		dataType: int64
+		formatString: 0
+		lineageTag: a45cd940-9d9f-460f-be8b-5c05a84e2ec7
+		summarizeBy: sum
+		sourceColumn: star_rating
+
+		annotation SummarizationSetBy = Automatic
+
+	column total_reviews
+		dataType: int64
+		formatString: 0
+		lineageTag: 3077fa8b-299c-4468-96ac-d1ade920016b
+		summarizeBy: sum
+		sourceColumn: total_reviews
+
+		annotation SummarizationSetBy = Automatic
+
+	column avg_hotel_score
+		dataType: double
+		lineageTag: c2cd4152-3cc7-4377-af77-cf3baeebaafa
+		summarizeBy: sum
+		sourceColumn: avg_hotel_score
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column global_avg_score
+		dataType: double
+		lineageTag: 47f2b8b7-c347-4423-b388-a7681ddbe32f
+		summarizeBy: sum
+		sourceColumn: global_avg_score
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'analytics_models hotel_bayesian_inputs' = m
+		mode: import
+		source =
+				let
+				  Origen = PostgreSQL.Database("pg.us-east-1-aws.motherduck.com", "my_db"),
+				  #"Navegación 1" = Origen{[Schema = "analytics_models", Item = "hotel_bayesian_inputs"]}[Data]
+				in
+				  #"Navegación 1"
+
