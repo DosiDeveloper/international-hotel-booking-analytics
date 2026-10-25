@@ -4,3 +4,5 @@ duckdb
 marimo
 gdown
 dotenv
+scipy
+plotly
