@@ -1,0 +1,134 @@
+table 'analytics fact_reviews'
+	lineageTag: 3f4d9d5a-63da-4f94-93cb-074aa0c149b7
+
+	column review_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 48288249-cad8-4f38-acde-47813a9c5ac8
+		summarizeBy: sum
+		sourceColumn: review_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hotel_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 1201ca5d-25ff-4f6c-89ec-5b03c1abcee9
+		summarizeBy: none
+		sourceColumn: hotel_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column user_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 2c63923d-3b3b-4a77-aee2-438de2e96959
+		summarizeBy: sum
+		sourceColumn: user_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 84eb2621-ee60-4f32-998f-62aa70e53514
+		summarizeBy: none
+		sourceColumn: date_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: e12152ec-1710-40b4-a4af-311d6141fbc5
+		summarizeBy: none
+		sourceColumn: review_date
+
+		variation Variation
+			isDefault
+			relationship: 1064cb50-18c5-409c-a93b-2df3c73ecf5d
+			defaultHierarchy: LocalDateTable_cbd1e38c-d723-42d0-a297-4fb571590ff2.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column score_overall
+		dataType: double
+		lineageTag: 15a1a8a2-3860-485b-b8bd-0090a4536683
+		summarizeBy: sum
+		sourceColumn: score_overall
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_cleanliness
+		dataType: double
+		lineageTag: 30531724-f789-4a56-a106-d2b0f3f69da4
+		summarizeBy: sum
+		sourceColumn: score_cleanliness
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_comfort
+		dataType: double
+		lineageTag: 779e4e8d-0673-4ba1-9c66-4e7c14ad8571
+		summarizeBy: sum
+		sourceColumn: score_comfort
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_facilities
+		dataType: double
+		lineageTag: afa20f9c-651f-4f09-be29-b4d7a7978c7d
+		summarizeBy: sum
+		sourceColumn: score_facilities
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_location
+		dataType: double
+		lineageTag: 195f0de1-5e76-4c21-9f28-ed623a1c9f87
+		summarizeBy: sum
+		sourceColumn: score_location
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_staff
+		dataType: double
+		lineageTag: b3004be2-511b-4206-b0d5-6d09543d71ed
+		summarizeBy: sum
+		sourceColumn: score_staff
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_value_for_money
+		dataType: double
+		lineageTag: 626438a2-d6d2-4cd9-9edb-6a338ff305b2
+		summarizeBy: sum
+		sourceColumn: score_value_for_money
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'analytics fact_reviews' = m
+		mode: import
+		source =
+				let
+				  Origen = PostgreSQL.Database("pg.us-east-1-aws.motherduck.com", "my_db"),
+				  #"Navegación 1" = Origen{[Schema = "analytics", Item = "fact_reviews"]}[Data]
+				in
+				  #"Navegación 1"
+
