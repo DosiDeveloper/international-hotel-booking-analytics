@@ -1,0 +1,51 @@
+relationship 68637aec-5ff3-4f8a-94ab-4c12595417fc
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'analytics dim_tiempo'.review_date
+	toColumn: LocalDateTable_f0c4cc90-8f0e-45c2-8ed4-71d39923b3d2.Date
+
+relationship 995fbac9-3509-40fc-ab7b-b7783925bfdf
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'analytics dim_users'.user_join_date
+	toColumn: LocalDateTable_ed059689-917e-411b-9291-51105678d28c.Date
+
+relationship 1064cb50-18c5-409c-a93b-2df3c73ecf5d
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'analytics fact_reviews'.review_date
+	toColumn: LocalDateTable_cbd1e38c-d723-42d0-a297-4fb571590ff2.Date
+
+relationship AutoDetected_86f73d48-72b2-4c34-a66d-aa6135ffe9bb
+	fromColumn: 'analytics fact_reviews'.hotel_id
+	toColumn: 'analytics dim_hotels'.hotel_id
+
+relationship AutoDetected_1af2841c-590e-4924-99b6-831790fe2b01
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'analytics_models hotel_bayesian_inputs'.hotel_id
+	toColumn: 'analytics dim_hotels'.hotel_id
+
+relationship AutoDetected_1e5cd6fd-8f2c-4796-86bd-30adba5fac08
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'analytics_models hotel_traveller_profiles'.hotel_id
+	toColumn: 'analytics dim_hotels'.hotel_id
+
+relationship AutoDetected_03936efd-b84f-465e-85d9-74b4733c3e29
+	isActive: false
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'analytics_models hotel_traveller_profiles'.hotel_name
+	toColumn: 'analytics_models hotel_bayesian_inputs'.hotel_name
+
+relationship AutoDetected_80542c3c-6dda-4f34-8075-bd1a71955a20
+	fromColumn: 'analytics dim_users'.country
+	toColumn: 'analytics dim_hotels'.country
+
+relationship AutoDetected_cc4c984d-f3aa-433c-815f-9ca678d87d83
+	fromColumn: 'analytics fact_reviews'.date_id
+	toColumn: 'analytics dim_tiempo'.date_id
+
+relationship AutoDetected_b4f07404-2543-40a2-a384-37712ca145ef
+	isActive: false
+	fromColumn: 'analytics fact_reviews'.user_id
+	toColumn: 'analytics dim_users'.user_id
+
