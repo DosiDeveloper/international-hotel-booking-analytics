@@ -11,5 +11,18 @@ annotation __PBI_TimeIntelligenceEnabled = 1
 
 annotation PBI_ProTooling = ["DevMode"]
 
+annotation PBI_QueryOrder = ["analytics dim_hotels","analytics dim_tiempo","analytics dim_users","analytics fact_reviews","analytics_models hotel_bayesian_inputs","analytics_models hotel_traveller_profiles"]
+
+ref table 'analytics dim_hotels'
+ref table 'analytics dim_tiempo'
+ref table DateTableTemplate_788d2147-bc08-4df4-8ba9-036f4010cb5b
+ref table LocalDateTable_f0c4cc90-8f0e-45c2-8ed4-71d39923b3d2
+ref table 'analytics dim_users'
+ref table LocalDateTable_ed059689-917e-411b-9291-51105678d28c
+ref table 'analytics fact_reviews'
+ref table LocalDateTable_cbd1e38c-d723-42d0-a297-4fb571590ff2
+ref table 'analytics_models hotel_bayesian_inputs'
+ref table 'analytics_models hotel_traveller_profiles'
+
 ref cultureInfo en-US
 
