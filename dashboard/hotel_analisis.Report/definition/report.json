@@ -24,6 +24,19 @@
           }
         }
       }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          }
+        }
+      }
     ]
   },
   "resourcePackages": [
@@ -35,6 +48,32 @@
           "name": "Fluent2-CY26SU08",
           "path": "BaseThemes/Fluent2-CY26SU08.json",
           "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "14752482763267861.png",
+          "path": "14752482763267861.png",
+          "type": "Image"
+        },
+        {
+          "name": "344741683608843086.png",
+          "path": "344741683608843086.png",
+          "type": "Image"
+        },
+        {
+          "name": "37588456306960588.png",
+          "path": "37588456306960588.png",
+          "type": "Image"
+        },
+        {
+          "name": "El_texto_del_p_rrafo_(1)9678534187044949.png",
+          "path": "El_texto_del_p_rrafo_(1)9678534187044949.png",
+          "type": "Image"
         }
       ]
     }
