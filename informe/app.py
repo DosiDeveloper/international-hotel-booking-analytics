@@ -266,38 +266,40 @@ with tab_dashboard:
         else:
             st.warning("No se encontraron registros para la combinación de filtros seleccionada.")
 
-    except Exception as e:
-        st.error(f"Error en el procesamiento de datos: {e}")
 
 
 #para el objetivo 2 (percecpcion calidad'precio)
         st.markdown("---")
         st.subheader("Objetivo 2: Percepción de Calidad-Precio")
 
-        ranking_dinero = """
+        usuarios_percepcion = """
             SELECT u.traveller_type, r.score_value_for_money 
             FROM 'data/clean/reviews_limpio.csv' r
             JOIN 'data/clean/users_limpio.csv' u ON r.user_id = u.user_id
             WHERE r.score_value_for_money IS NOT NULL
         """
-        df_obj2 = con.sql(ranking_dinero).df()
-
-        tipos = df_obj2['traveller_type'].unique()
-        grupos = [df_obj2[df_obj2['traveller_type'] == t]['score_value_for_money'] for t in tipos]
-
-        h_stat, p_val = stats.kruskal(*grupos)
-
-        st.write("### Resultados de la Prueba Kruskal-Wallis")
-        st.write(f"**Valor P (p-value):** {p_val:.5f}")
+        df_obj2 = con.sql(usuarios_percepcion).df()
         
-        if p_val < 0.05:
-            st.success("Conclusión: Sí hay diferencias significativas en cómo califican la calidad-precio los distintos viajeros.")
-        else:
-            st.info("Conclusión: No hay diferencias significativas entre los viajeros.")
+        if df_obj2 is not None and not df_obj2.empty:
+            fig2 = px.box(df_obj2, x="traveller_type", y="score_value_for_money", color="traveller_type")
+            st.plotly_chart(fig2, use_container_width=True)
 
-        st.write("### Gráfico de Cajas por Tipo de Viajero")
-        fig2 = px.box(df_obj2, x="traveller_type", y="score_value_for_money", color="traveller_type")
-        st.plotly_chart(fig2, use_container_width=True)
+            tipos = df_obj2['traveller_type'].unique()
+            grupos = [df_obj2[df_obj2['traveller_type'] == t]['score_value_for_money'] for t in tipos]
+
+            h_stat, p_val = stats.kruskal(*grupos)
+
+            st.write(f"**Valor P (Kruskal-Wallis):** {p_val:.5f}")
+            
+            if p_val < 0.05:
+                st.success("Conclusión: Sí hay diferencias significativas en cómo califican la calidad-precio los distintos viajeros.")
+            else:
+                st.info("Conclusión: No hay diferencias significativas entre los viajeros.")
+        else:
+            st.warning("No se encontraron datos de calidad-precio para realizar la prueba.")
+
+    except Exception as e:
+        st.error(f"Error en el procesamiento de datos: {e}")
   
 # pestaña 2 / presentacion del equipo
 with tab_equipo:
