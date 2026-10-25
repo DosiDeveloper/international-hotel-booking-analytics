@@ -138,6 +138,7 @@ def _(df_hotels, df_users):
 
 @app.cell
 def _(df_hotels_limpio, df_reviews_limpio, df_users_limpio):
+
     df_reviews_limpio.to_csv('data/clean/reviews_limpio.csv', index=False)
     df_hotels_limpio.to_csv('data/clean/hotels_limpio.csv', index=False)
     df_users_limpio.to_csv('data/clean/users_limpio.csv', index=False)
@@ -146,3 +147,4 @@ def _(df_hotels_limpio, df_reviews_limpio, df_users_limpio):
 
 if __name__ == "__main__":
     app.run()
+
