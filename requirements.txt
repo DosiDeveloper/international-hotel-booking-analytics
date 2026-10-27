@@ -1,6 +1,9 @@
 pandas
 streamlit
 duckdb
-marimo
+marimo[sql]
 gdown
 dotenv
+scipy
+plotly
+supabase

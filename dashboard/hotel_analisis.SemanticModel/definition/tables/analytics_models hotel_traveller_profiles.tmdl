@@ -1,0 +1,88 @@
+table 'analytics_models hotel_traveller_profiles'
+	lineageTag: 588424aa-dedd-4b63-bdde-ca5a3403fbdf
+
+	column hotel_id
+		dataType: int64
+		formatString: 0
+		lineageTag: e5eea114-d40b-4401-b1d5-1f8e7ab55280
+		summarizeBy: none
+		sourceColumn: hotel_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hotel_name
+		dataType: string
+		lineageTag: 8df4b6a2-3a6d-454b-9e06-2db3add1e57d
+		summarizeBy: none
+		sourceColumn: hotel_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column star_rating
+		dataType: int64
+		formatString: 0
+		lineageTag: 0b718b54-854b-4902-9943-84a52e071cd8
+		summarizeBy: sum
+		sourceColumn: star_rating
+
+		annotation SummarizationSetBy = Automatic
+
+	column score_solo
+		dataType: double
+		lineageTag: e7fd8430-96a6-49f5-9be0-c8e413102ccb
+		summarizeBy: sum
+		sourceColumn: score_solo
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_family
+		dataType: double
+		lineageTag: b539627b-8af8-44f6-b3d8-bfd92d6b4598
+		summarizeBy: sum
+		sourceColumn: score_family
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_couple
+		dataType: double
+		lineageTag: bc39006a-6aaf-472d-896c-900ef060a05a
+		summarizeBy: sum
+		sourceColumn: score_couple
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_business
+		dataType: double
+		lineageTag: c68f77d9-92cb-487c-8a36-dc9751381c64
+		summarizeBy: sum
+		sourceColumn: score_business
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_general
+		dataType: double
+		lineageTag: 854a3876-7e57-44e6-b5c0-3b151b307fdb
+		summarizeBy: sum
+		sourceColumn: score_general
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'analytics_models hotel_traveller_profiles' = m
+		mode: import
+		source =
+				let
+				  Origen = PostgreSQL.Database("pg.us-east-1-aws.motherduck.com", "my_db"),
+				  #"Navegación 1" = Origen{[Schema = "analytics_models", Item = "hotel_traveller_profiles"]}[Data]
+				in
+				  #"Navegación 1"
+
