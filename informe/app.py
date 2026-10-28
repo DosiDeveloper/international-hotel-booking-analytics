@@ -177,9 +177,9 @@ with tab_dashboard:
                 u.traveller_type AS user_type,
                 u.country AS user_country,
                 r.score_overall
-            FROM 'data/clean/reviews_limpio.csv' r
-            JOIN 'data/clean/hotels_limpio.csv' h ON r.hotel_id = h.hotel_id
-            JOIN 'data/clean/users_limpio.csv' u ON r.user_id = u.user_id
+            FROM analytics.fact_reviews r
+            JOIN analytics.dim_hotels h ON r.hotel_id = h.hotel_id
+            JOIN analytics.dim_users u ON r.user_id = u.user_id
         """
         df_raw = con.sql(query).df()
 
@@ -311,9 +311,8 @@ with tab_dashboard:
 
         usuarios_percepcion = """
             SELECT u.traveller_type, r.score_value_for_money
-            FROM 'data/clean/reviews_limpio.csv' r
-            JOIN 'data/clean/users_limpio.csv' u ON r.user_id = u.user_id
-            WHERE r.score_value_for_money IS NOT NULL
+            FROM analytics.fact_reviews r
+            JOIN analytics.dim_users u ON r.user_id = u.user_id
         """
         df_obj2 = con.sql(usuarios_percepcion).df()
 
