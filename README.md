@@ -1,7 +1,9 @@
 <p align="center">
-  <img src="assets/banner-hotel.jpg" alt="Banner Análisis y Rankings Hoteleros" width="100%">
+  <img src="assets/banner_andres.jpg" alt="Banner Análisis y Rankings Hoteleros" width="100%">
 </p>
-# Optimización de rankings hoteleros mediante inferencia bayesiana y regresión lineal simple por perfil de usuario.
+
+
+# Optimización de rankings hoteleros mediante inferencia bayesiana y regresión lineal simple por perfil de usuario. 🏨
 
 ## Introducción
 En la actualidad, las opiniones y calificaciones de los usuarios en plataformas digitales son el factor determinante al elegir un hotel. Sin embargo, las métricas que utilizan la mayoría de los sitios web presentan fallas importantes. Al calcular promedios aritméticos simples, se trata por igual a un hotel con cientos de evaluaciones que a uno con solo dos o tres opiniones perfectas. Esto genera rankings distorsionados e injustos, un problema que puede corregirse mediante promedios bayesianos, los cuales aplican una corrección probabilística para ajustar la puntuación según el volumen de reseñas.
