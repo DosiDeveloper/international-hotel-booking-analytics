@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner_andres.jpg" alt="Banner Análisis y Rankings Hoteleros" width="100%">
+  <img src="assets/banner_hotel.jpg" alt="Banner Análisis y Rankings Hoteleros" width="100%">
 </p>
 
 
