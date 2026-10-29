@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner_andres.jpg" alt="Banner Análisis y Rankings Hoteleros" width="100%">
+</p>
+
 # Optimización de rankings hoteleros mediante inferencia bayesiana y regresión lineal simple por perfil de usuario.
 
 ## Introducción
