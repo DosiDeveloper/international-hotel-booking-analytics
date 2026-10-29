@@ -66,7 +66,7 @@ def render_bloque_principal():
     <div class="welcome-container">
         <div class="glass-card">
             <div class="eyebrow">Dashboard</div>
-            <div class="main-title">Bienvenidos a el analisis de rankings hoteleros</div>
+            <div class="main-title">Bienvenidos a...</div>
             <div class="description">
                 Aqui pondriamos.... (por definir)
             </div>
