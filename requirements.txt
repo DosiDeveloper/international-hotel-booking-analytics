@@ -4,4 +4,6 @@ duckdb
 marimo[sql]
 gdown
 dotenv
+scipy
+plotly
 supabase
