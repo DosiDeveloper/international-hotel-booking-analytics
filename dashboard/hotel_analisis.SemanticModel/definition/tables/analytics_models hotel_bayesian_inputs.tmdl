@@ -56,6 +56,21 @@ table 'analytics_models hotel_bayesian_inputs'
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	column Promedio_Bayesiano = ```
+			
+			DIVIDE(
+			    (50 * 'analytics_models hotel_bayesian_inputs'[global_avg_score]) + 
+			    ('analytics_models hotel_bayesian_inputs'[total_reviews] * 'analytics_models hotel_bayesian_inputs'[avg_hotel_score]),
+			    50 + 'analytics_models hotel_bayesian_inputs'[total_reviews]
+			)
+			```
+		lineageTag: 48db7bcf-ba51-4a3d-9d34-6ce4bedfcfcf
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	partition 'analytics_models hotel_bayesian_inputs' = m
 		mode: import
 		source =
