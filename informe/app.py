@@ -218,7 +218,7 @@ with tab_dashboard:
 
             col1, col2, col3, col4, col5 = st.columns(5)
             col1.metric(
-                label="Total Eval. ({perfil_viajero})",
+                label=f"Total Eval. ({perfil_viajero})",
                 value=f"{total_evaluaciones:,.0f}",
             )
             col2.metric(label="Prom. Simple", value=f"{promedio_simple_global:.2f}")
@@ -305,51 +305,105 @@ with tab_dashboard:
                 "No se encontraron registros para la combinación de filtros seleccionada."
             )
 
-        # para el objetivo 2 (percecpcion calidad'precio)
-        st.markdown("---")
-        st.subheader("Objetivo 2: Percepción de Calidad-Precio")
-
-        usuarios_percepcion = """
-            SELECT u.traveller_type, r.score_value_for_money
-            FROM analytics.fact_reviews r
-            JOIN analytics.dim_users u ON r.user_id = u.user_id
-        """
-        df_obj2 = con.sql(usuarios_percepcion).df()
-
-        if df_obj2 is not None and not df_obj2.empty:
-            fig2 = px.box(
-                df_obj2,
-                x="traveller_type",
-                y="score_value_for_money",
-                color="traveller_type",
-            )
-            st.plotly_chart(fig2, width="stretch")
-
-            tipos = df_obj2["traveller_type"].unique()
-            grupos = [
-                df_obj2[df_obj2["traveller_type"] == t]["score_value_for_money"]
-                for t in tipos
-            ]
-
-            h_stat, p_val = stats.kruskal(*grupos)
-
-            st.write(f"**Valor P (Kruskal-Wallis):** {p_val:.5f}")
-
-            if p_val < 0.05:
-                st.success(
-                    "Conclusión: Sí hay diferencias significativas en cómo califican la calidad-precio los distintos viajeros."
-                )
-            else:
-                st.info(
-                    "Conclusión: No hay diferencias significativas entre los viajeros."
-                )
-        else:
-            st.warning(
-                "No se encontraron datos de calidad-precio para realizar la prueba."
-            )
-
     except Exception as e:
-        st.error(f"Error en el procesamiento de datos: {e}")
+        st.error(f"Ocurrió un error en el procesamiento: {e}") 
+
+# para el objetivo 2 (percecpcion calidad-precio)
+st.markdown("---")
+st.subheader("Objetivo 2: Percepción de Calidad-Precio")
+
+usuarios_percepcion = """
+    SELECT u.traveller_type, r.score_value_for_money
+    FROM analytics.fact_reviews r
+    JOIN analytics.dim_users u ON r.user_id = u.user_id
+"""
+df_obj2 = con.sql(usuarios_percepcion).df()
+
+traduccion = {'Solo': 'Solo', 'Couple': 'Pareja', 'Business': 'Negocios', 'Family': 'Familia'}
+df_obj2['traveller_type'] = df_obj2['traveller_type'].map(traduccion).fillna(df_obj2['traveller_type'])
+
+if df_obj2 is not None and not df_obj2.empty:
+ # grafico
+    fig2 = px.box(
+            df_obj2,
+            x="traveller_type",
+            y="score_value_for_money",
+            color="traveller_type",
+            color_discrete_sequence=["#256fbe", "#ec6f0f", "#d10909", "#2A812A"],
+            labels={
+                "traveller_type": "Perfil de Viajero",
+                "score_value_for_money": "Calidad-Precio (Puntuación)"
+            }
+        )
+    fig2.update_layout(
+            xaxis_title="Perfil de Viajero",
+            yaxis_title="Calidad-Precio (Puntuación)"
+        )
+    st.plotly_chart(fig2, use_container_width=True)
+    
+    tipos = df_obj2["traveller_type"].unique()
+    grupos = [
+        df_obj2[df_obj2["traveller_type"] == t]["score_value_for_money"].dropna()
+        for t in tipos
+    ]
+
+    #validacion de supuestos
+    with st.expander("🔍 Verificación de Supuestos Estadísticos"):
+        st.markdown("Para determinar si se debe aplicar una prueba parametrica o no paramétrica, evaluamos los supuestos clave:")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**1. Supuesto de Normalidad**")
+            st.caption("Prueba de Shapiro-Wilk por grupo ($p > 0.05$ indica normalidad)")
+            
+            normalidad_global = True
+            for t, g in zip(tipos, grupos):
+                if len(g) >= 3:
+                    g_muestra = g.sample(min(len(g), 4000), random_state=42)
+                    _, p_shap = stats.shapiro(g_muestra)
+                    st.text(f"• {t}: p = {p_shap:.5f}")
+                    if p_shap < 0.05:
+                        normalidad_global = False
+            
+            if normalidad_global:
+                st.success("✅ Los grupos muestran normalidad.")
+            else:
+                st.warning("⚠️ No se cumple la normalidad en los grupos ($p \\le 0.05$). Esto justifica el uso de Kruskal-Wallis.")
+
+        with col2:
+            st.markdown("**2. Homogeneidad de Varianzas**")
+            st.caption("Prueba de Levene para homocedasticidad")
+            
+            stat_lev, p_lev = stats.levene(*grupos)
+            st.metric(label="Estadístico de Levene", value=f"{stat_lev:.4f}")
+            st.metric(label="p-valor (Levene)", value=f"{p_lev:.5f}")
+            
+            if p_lev > 0.05:
+                st.success("✅ Se cumple la homocedasticidad (varianzas iguales).")
+            else:
+                st.warning("⚠️ Las varianzas son heterogéneas ($p \\le 0.05$).")
+
+#prueba de hipotesis
+    st.markdown("### Resultado de la Prueba No Paramétrica")
+    h_stat, p_val = stats.kruskal(*grupos)
+
+    col_res1, col_res2 = st.columns(2)
+    with col_res1:
+        st.metric(label="Estadístico H (Kruskal-Wallis)", value=f"{h_stat:.4f}")
+    with col_res2:
+        st.metric(label="Valor P", value=f"{p_val:.5f}")
+
+    if p_val < 0.05:
+        st.success(
+            "**Conclusión:** Sí existen diferencias estadísticamente significativas en cómo evalúan la relación calidad-precio los distintos tipos de viajeros ($p < 0.05$). Rechazamos la hipótesis nula."
+        )
+    else:
+        st.info(
+            "**Conclusión:** No se encuentran diferencias estadísticamente significativas entre los grupos de viajeros analizados ($p \\ge 0.05$)."
+        )
+else:
+    st.warning("No se encontraron datos de calidad-precio para realizar la prueba.")                        
 
 # pestaña 2 / presentacion del equipo
 with tab_equipo:
