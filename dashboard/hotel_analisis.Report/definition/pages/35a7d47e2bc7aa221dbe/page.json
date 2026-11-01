@@ -14,7 +14,7 @@
               "name": {
                 "expr": {
                   "Literal": {
-                    "Value": "'El texto del párrafo (3).png'"
+                    "Value": "'1.png'"
                   }
                 }
               },
@@ -23,7 +23,7 @@
                   "ResourcePackageItem": {
                     "PackageName": "RegisteredResources",
                     "PackageType": 1,
-                    "ItemName": "El_texto_del_p_rrafo_(3)9645901159974725.png"
+                    "ItemName": "14752482763267861.png"
                   }
                 }
               },
