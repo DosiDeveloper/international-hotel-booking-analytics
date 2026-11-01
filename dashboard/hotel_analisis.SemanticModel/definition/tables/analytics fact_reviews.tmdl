@@ -1,6 +1,27 @@
 table 'analytics fact_reviews'
 	lineageTag: 3f4d9d5a-63da-4f94-93cb-074aa0c149b7
 
+	measure Total_Reseñas_Año = COUNT('analytics fact_reviews'[review_id])
+		formatString: 0
+		lineageTag: 58375ba1-19c8-4b59-bcff-702372fb2265
+
+	measure Promedio_Simple_Año = AVERAGE('analytics fact_reviews'[score_overall])
+		lineageTag: cb8839d1-9a92-4a20-a595-43f1eacb717b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Promedio_Bayesiano_Año =
+			
+			VAR M = 50
+			VAR GlobalAvg = 8.94345999999999
+			VAR R = [Total_Reseñas_Año]
+			VAR C = [Promedio_Simple_Año]
+			RETURN
+			DIVIDE((M * GlobalAvg) + (R * C), M + R)
+		lineageTag: 378ecc18-33a1-4953-bf8e-635009b0d5c2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column review_id
 		dataType: int64
 		formatString: 0
@@ -118,6 +139,14 @@ table 'analytics fact_reviews'
 		lineageTag: 626438a2-d6d2-4cd9-9edb-6a338ff305b2
 		summarizeBy: sum
 		sourceColumn: score_value_for_money
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Año = TRUNC('analytics fact_reviews'[date_id] / 10000)
+		lineageTag: d16a9835-f66c-40b3-8d13-b41101d885d6
+		summarizeBy: sum
 
 		annotation SummarizationSetBy = Automatic
 
