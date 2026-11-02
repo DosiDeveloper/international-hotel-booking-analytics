@@ -63,6 +63,17 @@
                   "Value": "0D"
                 }
               }
+            },
+            "fillColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1C64B8'"
+                    }
+                  }
+                }
+              }
             }
           },
           "selector": {
