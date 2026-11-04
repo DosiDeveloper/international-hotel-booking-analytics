@@ -1,6 +1,10 @@
 table 'analytics dim_hotels'
 	lineageTag: ed293c16-6ed5-4512-8397-4e88a0a35d60
 
+	measure Total_Hoteles = DISTINCTCOUNT('analytics dim_hotels'[hotel_id])
+		formatString: 0
+		lineageTag: c5385f00-b0e3-43a4-b820-c232b9244de5
+
 	column hotel_id
 		dataType: int64
 		formatString: 0
