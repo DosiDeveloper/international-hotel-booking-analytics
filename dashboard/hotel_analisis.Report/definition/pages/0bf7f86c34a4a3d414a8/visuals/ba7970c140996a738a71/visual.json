@@ -2,8 +2,13 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "ba7970c140996a738a71",
   "position": {
+<<<<<<< HEAD
     "x": 577.91718812408476,
     "y": 213.49806949806953,
+=======
+    "x": 580.447913700397,
+    "y": 232.59083066718034,
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
     "z": 2000,
     "height": 732.76403289837344,
     "width": 636.02271394830734,
@@ -1168,7 +1173,11 @@
         }
       },
       {
+<<<<<<< HEAD
         "name": "914ab039ba68d456955d",
+=======
+        "name": "4ea3955b770006cb8217",
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
         "field": {
           "Column": {
             "Expression": {
@@ -1182,7 +1191,11 @@
         "type": "Categorical"
       },
       {
+<<<<<<< HEAD
         "name": "20cf6f3c20be833ac156",
+=======
+        "name": "61ddb1e6ad05cac10605",
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
         "field": {
           "Measure": {
             "Expression": {

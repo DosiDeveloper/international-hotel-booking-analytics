@@ -2,12 +2,21 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "14172b2fcd964b0e8a9c",
   "position": {
+<<<<<<< HEAD
     "x": 290.79909466116368,
     "y": 539.26667554253766,
     "z": 25000,
     "height": 82.333037404311625,
     "width": 189.36598602991674,
     "tabOrder": 25000
+=======
+    "x": 1179.4207608167642,
+    "y": 61.749778053233719,
+    "z": 23002,
+    "height": 82.333037404311625,
+    "width": 189.36598602991674,
+    "tabOrder": 23002
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
   },
   "visual": {
     "visualType": "cardVisual",
@@ -23,11 +32,19 @@
                       "Entity": "analytics fact_reviews"
                     }
                   },
+<<<<<<< HEAD
                   "Property": "Promedio_Bayesiano_Año"
                 }
               },
               "queryRef": "analytics fact_reviews.Promedio_Bayesiano_Año",
               "nativeQueryRef": "Promedio_Bayesiano_Año"
+=======
+                  "Property": "Promedio_Simple_Año"
+                }
+              },
+              "queryRef": "analytics fact_reviews.Promedio_Simple_Año",
+              "nativeQueryRef": "Promedio_Simple_Año"
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
             }
           ]
         }
@@ -42,7 +59,11 @@
                     "Entity": "analytics fact_reviews"
                   }
                 },
+<<<<<<< HEAD
                 "Property": "Promedio_Bayesiano_Año"
+=======
+                "Property": "Promedio_Simple_Año"
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
               }
             },
             "direction": "Descending"
@@ -158,5 +179,26 @@
       ]
     },
     "drillFilterOtherVisuals": true
+<<<<<<< HEAD
+=======
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "4eda27d377b3c6261dc3",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics fact_reviews"
+              }
+            },
+            "Property": "Promedio_Simple_Año"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
   }
 }

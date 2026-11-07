@@ -77,7 +77,11 @@
                 "color": {
                   "expr": {
                     "Literal": {
+<<<<<<< HEAD
                       "Value": "'#0d6abf'"
+=======
+                      "Value": "'#118DFF'"
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
                     }
                   }
                 }
