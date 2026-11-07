@@ -1,4 +1,5 @@
 import duckdb
+import numpy as np
 import plotly.express as px
 import streamlit as st
 from scipy import stats
@@ -406,8 +407,188 @@ with tab_obj2:
             st.warning("No se encontraron datos de calidad-precio para realizar la prueba.")
 
 with tab_obj3:
+    # para el objetivo 3 (regresion lineal y proyeccion calidad-precio)
     st.title("Regresion lineal")
-    st.subheader("analisis de regresion lineal simple (por construir)")
+    st.markdown("---")
+    st.subheader("Regresion lineal simple: calificacion general vs percepcion calidad-precio")
+
+    st.caption(
+        "Modelo que proyecta la percepcion de calidad-precio esperada de un hotel "
+        "a partir de su calificacion general."
+    )
+
+    try:
+        query_obj3 = """
+            SELECT
+                h.star_rating AS hotel_category,
+                h.country AS hotel_country,
+                u.traveller_type AS user_type,
+                u.country AS user_country,
+                r.score_overall,
+                r.score_value_for_money
+            FROM analytics.fact_reviews r
+            JOIN analytics.dim_hotels h ON r.hotel_id = h.hotel_id
+            JOIN analytics.dim_users u ON r.user_id = u.user_id
+        """
+        df_obj3 = con.sql(query_obj3).df()
+
+        # mismos filtros de la vista, para coherencia con los objetivos 1 y 2
+        if perfil_viajero != "Todos los perfiles":
+            df_obj3 = df_obj3[df_obj3["user_type"] == perfil_viajero]
+
+        if categoria != "Todas las categorías":
+            estrellas = int(categoria.split()[0])
+            df_obj3 = df_obj3[df_obj3["hotel_category"] == estrellas]
+
+        if tipo_turismo == "Turismo Interno":
+            df_obj3 = df_obj3[df_obj3["user_country"] == df_obj3["hotel_country"]]
+        elif tipo_turismo == "Turismo Receptivo":
+            df_obj3 = df_obj3[df_obj3["user_country"] != df_obj3["hotel_country"]]
+
+        df_obj3 = df_obj3.dropna(subset=["score_overall", "score_value_for_money"])
+
+        if df_obj3 is not None and not df_obj3.empty:
+            x = df_obj3["score_overall"]
+            y = df_obj3["score_value_for_money"]
+
+            # modelo de regresion lineal simple
+            regresion = stats.linregress(x, y)
+            r2 = regresion.rvalue ** 2
+
+            col_r1, col_r2, col_r3, col_r4 = st.columns(4)
+            col_r1.metric(
+                label="Pendiente",
+                value=f"{regresion.slope:,.4f}".replace(".", ","),
+            )
+            col_r2.metric(
+                label="Intercepto",
+                value=f"{regresion.intercept:,.4f}".replace(".", ","),
+            )
+            col_r3.metric(
+                label="R cuadrado",
+                value=f"{r2:,.4f}".replace(".", ","),
+            )
+            col_r4.metric(
+                label="Valor P (pendiente)",
+                value=f"{regresion.pvalue:.2e}",
+            )
+
+            st.info(
+                f"**Modelo:** Percepcion calidad-precio es aproximada con "
+                f"{regresion.slope:,.4f} x Calificacion general + {regresion.intercept:,.4f}"
+            )
+
+            # grafico de dispersion con la recta de regresion
+            if len(df_obj3) > 5000:
+                df_plot = df_obj3.sample(5000, random_state=42)
+            else:
+                df_plot = df_obj3
+
+            fig3 = px.scatter(
+                df_plot,
+                x="score_overall",
+                y="score_value_for_money",
+                opacity=0.4,
+                labels={
+                    "score_overall": "Calificacion General",
+                    "score_value_for_money": "Calidad-Precio (Puntuacion)",
+                },
+                color_discrete_sequence=["#256fbe"],
+            )
+
+            x_line = np.linspace(
+                df_obj3["score_overall"].min(), df_obj3["score_overall"].max(), 100
+            )
+            y_line = regresion.intercept + regresion.slope * x_line
+            fig3.add_scatter(
+                x=x_line,
+                y=y_line,
+                mode="lines",
+                name="Regresion lineal",
+                line=dict(color="#ec6f0f", width=3),
+            )
+
+            fig3.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#FAFAFA", size=12),
+                margin=dict(t=20, b=20, l=20, r=20),
+                height=450,
+                xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.08)"),
+                yaxis=dict(showgrid=False),
+            )
+            st.plotly_chart(fig3, use_container_width=True)
+
+            # verificacion de supuestos de la regresion
+            with st.expander("🔍 Verificación de Supuestos de la Regresion"):
+                st.markdown(
+                    "Para confiar en la proyeccion evaluamos los supuestos clave del modelo:"
+                )
+                col_s1, col_s2 = st.columns(2)
+
+                with col_s1:
+                    st.markdown("**1. Normalidad de los residuos**")
+                    st.caption("Prueba de Shapiro-Wilk ($p > 0.05$ indica normalidad)")
+                    residuos = y - (regresion.intercept + regresion.slope * x)
+                    if len(residuos) >= 3:
+                        residuos_muestra = residuos.sample(
+                            min(len(residuos), 4000), random_state=42
+                        )
+                        _, p_res = stats.shapiro(residuos_muestra)
+                        st.metric(label="p-valor (Shapiro)", value=f"{p_res:.5f}")
+                        if p_res > 0.05:
+                            st.success("✅ Los residuos muestran normalidad.")
+                        else:
+                            st.warning(
+                                "⚠️ Los residuos no siguen una distribucion normal ($p \\le 0.05$). "
+                                "La proyeccion debe interpretarse con cautela."
+                            )
+
+                with col_s2:
+                    st.markdown("**2. Significancia de la relacion**")
+                    st.caption("Test de significancia de la pendiente del modelo")
+                    if regresion.pvalue < 0.05:
+                        st.success(
+                            "✅ La relacion es estadisticamente significativa ($p < 0.05$)."
+                        )
+                    else:
+                        st.warning(
+                            "⚠️ No hay evidencia de relacion lineal significativa ($p \\ge 0.05$)."
+                        )
+
+            st.markdown("---")
+            st.markdown("### Proyeccion de Calidad-Precio")
+            st.caption(
+                "Ingresa una calificacion general esperada y el modelo proyecta la "
+                "percepcion de calidad-precio asociada."
+            )
+            calificacion_proyectada = st.slider(
+                "Calificacion general esperada del hotel:",
+                min_value=1.0,
+                max_value=10.0,
+                value=8.0,
+                step=0.1,
+            )
+            prediccion = regresion.intercept + regresion.slope * calificacion_proyectada
+            st.metric(
+                label="Percepcion calidad-precio proyectada",
+                value=f"{prediccion:,.2f}".replace(".", ","),
+            )
+            if not (
+                df_obj3["score_overall"].min()
+                <= calificacion_proyectada
+                <= df_obj3["score_overall"].max()
+            ):
+                st.warning(
+                    "⚠️ La calificacion proyectada esta fuera del rango observado en los datos; "
+                    "la estimacion es una extrapolacion."
+                )
+
+        else:
+            st.warning("No se encontraron datos para construir la regresion lineal.")
+
+    except Exception as e:
+        st.error(f"Ocurrió un error en la regresion: {e}")
 
 # pestaña 3  presentacion de nuestro equipo
 with tab_equipo:
