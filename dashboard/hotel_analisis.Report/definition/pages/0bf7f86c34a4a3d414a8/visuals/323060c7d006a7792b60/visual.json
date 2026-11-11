@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "analytics dim_hotels"
+                      "Entity": "analytics dim_users"
                     }
                   },
-                  "Property": "city"
+                  "Property": "age_group"
                 }
               },
-              "queryRef": "analytics dim_hotels.city",
-              "nativeQueryRef": "city",
+              "queryRef": "analytics dim_users.age_group",
+              "nativeQueryRef": "age_group",
               "active": true
             }
           ]
@@ -246,6 +246,11 @@
           }
         }
       ]
+    },
+    "syncGroup": {
+      "groupName": "city",
+      "fieldChanges": true,
+      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   }

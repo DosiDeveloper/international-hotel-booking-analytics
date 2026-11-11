@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "eabb46c87eb0a098053b",
+  "position": {
+    "x": 74.099733663880471,
+    "y": 500.17320223119316,
+    "z": 10000,
+    "height": 99.3870323525496,
+    "width": 193.25256290773532,
+    "tabOrder": 10000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "analytics fact_reviews"
+                    }
+                  },
+                  "Property": "Perfil_Mas_Comun"
+                }
+              },
+              "queryRef": "analytics fact_reviews.Perfil_Mas_Comun",
+              "nativeQueryRef": "Perfil_Mas_Comun"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
