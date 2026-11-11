@@ -1,0 +1,154 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "05c1276096799153959e",
+  "position": {
+    "x": 563.98130621953464,
+    "y": 226.415852861857,
+    "z": 28000,
+    "height": 452.831705723714,
+    "width": 475.47329100989964,
+    "tabOrder": 28000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "analytics dim_users"
+                    }
+                  },
+                  "Property": "traveller_type"
+                }
+              },
+              "queryRef": "analytics dim_users.traveller_type",
+              "nativeQueryRef": "traveller_type",
+              "active": true
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "analytics fact_reviews"
+                    }
+                  },
+                  "Property": "Tipo_Turismo"
+                }
+              },
+              "queryRef": "analytics fact_reviews.Tipo_Turismo",
+              "nativeQueryRef": "Tipo_Turismo"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "analytics fact_reviews"
+                        }
+                      },
+                      "Property": "score_value_for_money"
+                    }
+                  },
+                  "Function": 1
+                }
+              },
+              "queryRef": "Avg(analytics fact_reviews.score_value_for_money)",
+              "nativeQueryRef": "Promedio de score_value_for_money"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "analytics fact_reviews"
+                      }
+                    },
+                    "Property": "score_value_for_money"
+                  }
+                },
+                "Function": 1
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "6cc46edf75c1921ee43e",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics dim_users"
+              }
+            },
+            "Property": "traveller_type"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "c8261bb0047b461eb939",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "analytics fact_reviews"
+                  }
+                },
+                "Property": "score_value_for_money"
+              }
+            },
+            "Function": 1
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "35472303437db5ca4b70",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics fact_reviews"
+              }
+            },
+            "Property": "Tipo_Turismo"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

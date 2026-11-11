@@ -1,0 +1,90 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "813ffe4b06689e1ac310",
+  "position": {
+    "x": 63.808103988341514,
+    "y": 629.847736142984,
+    "z": 27000,
+    "height": 393.14025360558804,
+    "width": 430.19012043752826,
+    "tabOrder": 27000
+  },
+  "visual": {
+    "visualType": "donutChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "analytics dim_users"
+                    }
+                  },
+                  "Property": "traveller_type"
+                }
+              },
+              "queryRef": "analytics dim_users.traveller_type",
+              "nativeQueryRef": "traveller_type",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "analytics fact_reviews"
+                    }
+                  },
+                  "Property": "Total_Usuarios"
+                }
+              },
+              "queryRef": "analytics fact_reviews.Total_Usuarios",
+              "nativeQueryRef": "Total_Usuarios"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "analytics fact_reviews"
+                  }
+                },
+                "Property": "Total_Usuarios"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "labelStyle": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Category, data value, percent of total'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

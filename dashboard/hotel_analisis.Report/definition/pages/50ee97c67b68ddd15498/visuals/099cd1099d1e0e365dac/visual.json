@@ -1,0 +1,56 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "099cd1099d1e0e365dac",
+  "position": {
+    "x": 74.099733663880471,
+    "y": 386.96527580026464,
+    "z": 12000,
+    "height": 99.3870323525496,
+    "width": 193.25256290773532,
+    "tabOrder": 12000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "analytics fact_reviews"
+                    }
+                  },
+                  "Property": "Promedio_Value"
+                }
+              },
+              "queryRef": "analytics fact_reviews.Promedio_Value",
+              "nativeQueryRef": "Promedio_Value"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "analytics fact_reviews"
+                  }
+                },
+                "Property": "Promedio_Value"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
