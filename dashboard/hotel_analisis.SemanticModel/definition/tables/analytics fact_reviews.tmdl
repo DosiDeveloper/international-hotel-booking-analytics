@@ -179,6 +179,16 @@ table 'analytics fact_reviews'
 
 		annotation SummarizationSetBy = Automatic
 
+	column Categoria_Nota =
+			
+			IF('analytics fact_reviews'[score_value_for_money] >= 9, "1. Excelente (9-10)",
+			IF('analytics fact_reviews'[score_value_for_money] >= 7, "2. Bueno (7-8.9)",
+			IF('analytics fact_reviews'[score_value_for_money] >= 5, "3. Regular (5-6.9)", "4. Malo (<5)")))
+		lineageTag: 22eabe53-4d25-43e1-8d1f-81e88938b408
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'analytics fact_reviews' = m
 		mode: import
 		source =

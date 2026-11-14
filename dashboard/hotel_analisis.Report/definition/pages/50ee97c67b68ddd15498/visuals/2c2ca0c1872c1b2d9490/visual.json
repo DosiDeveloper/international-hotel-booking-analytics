@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "2c2ca0c1872c1b2d9490",
   "position": {
-    "x": 1434.6531767701301,
-    "y": 63.808103988341514,
+    "x": 985.93812291663176,
+    "y": 78.216385534096048,
     "z": 26000,
     "height": 78.216385534096048,
     "width": 380.79029799494128,
@@ -143,7 +143,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#A82B3D'"
+                      "Value": "'#1C64B8'"
                     }
                   }
                 }
@@ -160,7 +160,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#A82B3D'"
+                      "Value": "'#FF9C18'"
                     }
                   }
                 }
@@ -171,7 +171,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#A82B3D'"
+                      "Value": "'#1C64B8'"
                     }
                   }
                 }
@@ -241,5 +241,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "2e2c79dab7e5a4059d05",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics dim_users"
+              }
+            },
+            "Property": "user_gender"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }
