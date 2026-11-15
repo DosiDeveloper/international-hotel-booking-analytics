@@ -9,6 +9,60 @@ st.set_page_config(
 )
 
 
+def z_asimetria_curtosis(serie):
+    # z estandarizados: |z| <= 2 se considera desviacion trivial de la normalidad
+    n = len(serie)
+    asimetria = serie.skew()
+    curtosis = serie.kurt()
+    se_asimetria = np.sqrt(6 * n * (n - 1) / ((n - 2) * (n + 1) * (n + 3)))
+    se_curtosis = 2 * se_asimetria * np.sqrt((n**2 - 1) / ((n - 3) * (n + 5)))
+    return asimetria, curtosis, asimetria / se_asimetria, curtosis / se_curtosis
+
+
+def fig_qq(datos, titulo):
+    osm, osr = stats.probplot(datos, dist="norm")[0]
+    fig = px.scatter(
+        x=osm,
+        y=osr,
+        opacity=0.5,
+        labels={"x": "Cuantiles teoricos", "y": "Cuantiles observados"},
+        color_discrete_sequence=["#256fbe"],
+    )
+    extremos = np.polyfit(osm, osr, 1)
+    fig.add_scatter(
+        x=[osm.min(), osm.max()],
+        y=np.polyval(extremos, [osm.min(), osm.max()]),
+        mode="lines",
+        name="Referencia normal",
+        line=dict(color="#ec6f0f", width=2),
+    )
+    fig.update_layout(
+        title=dict(text=titulo, font=dict(size=13)),
+        showlegend=False,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#FAFAFA", size=11),
+        margin=dict(t=35, b=10, l=10, r=10),
+        height=280,
+        xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.08)"),
+        yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.08)"),
+    )
+    return fig
+
+
+def breusch_pagan(x, residuos):
+    # auxiliar: residuos al cuadrado sobre X; LM = n * R2_aux ~ chi2(1)
+    x = np.asarray(x, dtype=float)
+    residuos2 = np.asarray(residuos, dtype=float) ** 2
+    ajuste = np.polyval(np.polyfit(x, residuos2, 1), x)
+    ss_res = np.sum((residuos2 - ajuste) ** 2)
+    ss_tot = np.sum((residuos2 - residuos2.mean()) ** 2)
+    r2_aux = 1 - ss_res / ss_tot
+    lm = len(x) * r2_aux
+    p_valor = stats.chi2.sf(lm, df=1)
+    return lm, p_valor
+
+
 def render_bloque_principal():
     hero_html = """
     <style>
@@ -358,22 +412,36 @@ with tab_obj2:
                 col1, col2 = st.columns(2)
 
                 with col1:
-                    st.markdown("**1. Supuesto de Normalidad**")
-                    st.caption("Prueba de Shapiro-Wilk por grupo ($p > 0.05$ indica normalidad)")
+                    st.markdown("**1. Normalidad práctica de los grupos**")
+                    st.caption(
+                        "Asimetría y curtosis estandarizadas ($|z| \\le 2$ indica desviación "
+                        "trivial). Con n grande, los p-valores de normalidad detectan "
+                        "desviaciones sin relevancia práctica."
+                    )
 
-                    normalidad_global = True
+                    desviaciones_relevantes = []
                     for t, g in zip(tipos, grupos):
-                        if len(g) >= 3:
-                            g_muestra = g.sample(min(len(g), 4000), random_state=42)
-                            _, p_shap = stats.shapiro(g_muestra)
-                            st.text(f"• {t}: p = {p_shap:.5f}")
-                            if p_shap < 0.05:
-                                normalidad_global = False
+                        if len(g) >= 8:
+                            asim, curt, z_asim, z_curt = z_asimetria_curtosis(g)
+                            st.text(
+                                f"• {t}: asimetría z = {z_asim:+.2f} | "
+                                f"curtosis z = {z_curt:+.2f}"
+                            )
+                            if abs(z_asim) > 2 or abs(z_curt) > 2:
+                                desviaciones_relevantes.append(t)
 
-                    if normalidad_global:
-                        st.success("✅ Los grupos muestran normalidad.")
+                    if not desviaciones_relevantes:
+                        st.success(
+                            "✅ Asimetría y curtosis compatibles con normalidad práctica "
+                            "en todos los grupos."
+                        )
                     else:
-                        st.warning("⚠️ No se cumple la normalidad en los grupos ($p \\le 0.05$). Esto justifica el uso de Kruskal-Wallis.")
+                        st.warning(
+                            "⚠️ Desviación no trivial en: "
+                            + ", ".join(desviaciones_relevantes)
+                            + ". Junto con la escala ordinal y acotada de los datos, "
+                            "esto respalda el uso de Kruskal-Wallis."
+                        )
 
                 with col2:
                     st.markdown("**2. Homogeneidad de Varianzas**")
@@ -387,6 +455,12 @@ with tab_obj2:
                         st.success("✅ Se cumple la homocedasticidad (varianzas iguales).")
                     else:
                         st.warning("⚠️ Las varianzas son heterogéneas ($p \\le 0.05$).")
+
+                st.caption(
+                    "Kruskal-Wallis se justifica por diseño: la variable es una escala "
+                    "ordinal, discreta y acotada entre 1 y 10, más allá del resultado de "
+                    "las pruebas de normalidad."
+                )
 
             #prueba de hipotesis
             st.markdown("### Resultado de la Prueba No Paramétrica")
@@ -526,34 +600,76 @@ with tab_obj3:
                 )
                 col_s1, col_s2 = st.columns(2)
 
+                residuos = y - (regresion.intercept + regresion.slope * x)
+
                 with col_s1:
-                    st.markdown("**1. Normalidad de los residuos**")
-                    st.caption("Prueba de Shapiro-Wilk ($p > 0.05$ indica normalidad)")
-                    residuos = y - (regresion.intercept + regresion.slope * x)
-                    if len(residuos) >= 3:
-                        residuos_muestra = residuos.sample(
-                            min(len(residuos), 4000), random_state=42
+                    st.markdown("**1. Normalidad práctica de los residuos**")
+                    st.caption(
+                        "Asimetría y curtosis estandarizadas ($|z| \\le 2$ = desviación "
+                        "trivial); QQ-plot y Shapiro-Wilk como apoyo."
+                    )
+                    if len(residuos) >= 8:
+                        asim, curt, z_asim, z_curt = z_asimetria_curtosis(residuos)
+                        st.text(
+                            f"Asimetría z = {z_asim:+.2f} | Curtosis z = {z_curt:+.2f}"
                         )
-                        _, p_res = stats.shapiro(residuos_muestra)
-                        st.metric(label="p-valor (Shapiro)", value=f"{p_res:.5f}")
-                        if p_res > 0.05:
-                            st.success("✅ Los residuos muestran normalidad.")
+                        _, p_res = stats.shapiro(
+                            residuos.sample(
+                                min(len(residuos), 4000), random_state=42
+                            )
+                        )
+                        st.metric(
+                            label="p-valor (Shapiro, n = 4,000)", value=f"{p_res:.2e}"
+                        )
+                        if abs(z_asim) <= 2 and abs(z_curt) <= 2:
+                            st.success(
+                                "✅ Desviación trivial de la normalidad: la proyección "
+                                "puntual es razonable."
+                            )
                         else:
                             st.warning(
-                                "⚠️ Los residuos no siguen una distribucion normal ($p \\le 0.05$). "
-                                "La proyeccion debe interpretarse con cautela."
+                                "⚠️ Desviación no trivial (asimetría o colas): usar la "
+                                "proyección como ordenamiento relativo."
                             )
+                        st.plotly_chart(
+                            fig_qq(
+                                residuos.sample(
+                                    min(len(residuos), 5000), random_state=42
+                                ),
+                                "QQ-plot de los residuos",
+                            ),
+                            use_container_width=True,
+                        )
 
                 with col_s2:
-                    st.markdown("**2. Significancia de la relacion**")
+                    st.markdown("**2. Homocedasticidad (Breusch-Pagan)**")
+                    st.caption(
+                        "Regresión auxiliar de los residuos al cuadrado sobre X; "
+                        "$p > 0.05$ indica varianza constante."
+                    )
+                    lm_bp, p_bp = breusch_pagan(x, residuos)
+                    st.metric(
+                        label="Estadístico LM",
+                        value=f"{lm_bp:,.2f}".replace(".", ","),
+                    )
+                    st.metric(label="p-valor (Breusch-Pagan)", value=f"{p_bp:.2e}")
+                    if p_bp > 0.05:
+                        st.success("✅ No se detecta heterocedasticidad.")
+                    else:
+                        st.warning(
+                            "⚠️ Heterocedasticidad detectada: los errores estándar y "
+                            "los valores p del modelo no son exactos."
+                        )
+
+                    st.markdown("**3. Significancia de la relación**")
                     st.caption("Test de significancia de la pendiente del modelo")
                     if regresion.pvalue < 0.05:
                         st.success(
-                            "✅ La relacion es estadisticamente significativa ($p < 0.05$)."
+                            "✅ La relación es estadísticamente significativa ($p < 0.05$)."
                         )
                     else:
                         st.warning(
-                            "⚠️ No hay evidencia de relacion lineal significativa ($p \\ge 0.05$)."
+                            "⚠️ No hay evidencia de relación lineal significativa ($p \\ge 0.05$)."
                         )
 
             st.markdown("---")
