@@ -1,5 +1,6 @@
 import duckdb
 import numpy as np
+import pandas as pd
 import plotly.express as px
 import streamlit as st
 from scipy import stats
@@ -766,6 +767,60 @@ with tab_obj3:
                         st.warning(
                             "⚠️ No hay evidencia de relación lineal significativa ($p \\ge 0.05$)."
                         )
+
+            # comparacion de rectas por perfil de viajero (objetivo 3)
+            with st.expander("📊 Comparación de rectas por perfil de viajero"):
+                st.caption(
+                    "El mismo modelo ajustado por separado en cada perfil: la pendiente "
+                    "indica cuánto se amplifica la percepción de calidad-precio por cada "
+                    "punto de calificación general."
+                )
+                filas_perfil = []
+                for perfil, grupo in df_obj3.groupby("user_type"):
+                    if len(grupo) >= 3 and grupo["score_overall"].nunique() >= 2:
+                        ajuste = stats.linregress(
+                            grupo["score_overall"], grupo["score_value_for_money"]
+                        )
+                        filas_perfil.append(
+                            {
+                                "Perfil": traduccion.get(perfil, perfil),
+                                "Reseñas": len(grupo),
+                                "Pendiente": ajuste.slope,
+                                "Intercepto": ajuste.intercept,
+                                "R²": ajuste.rvalue**2,
+                                "p-valor": ajuste.pvalue,
+                            }
+                        )
+
+                if filas_perfil:
+                    df_perfiles = pd.DataFrame(filas_perfil).sort_values(
+                        "Pendiente", ascending=False
+                    )
+                    st.dataframe(
+                        df_perfiles,
+                        hide_index=True,
+                        width="stretch",
+                        column_config={
+                            "Pendiente": st.column_config.NumberColumn(format="%.3f"),
+                            "Intercepto": st.column_config.NumberColumn(format="%.3f"),
+                            "R²": st.column_config.NumberColumn(format="%.3f"),
+                            "p-valor": st.column_config.NumberColumn(format="%.2e"),
+                        },
+                    )
+                    if len(df_perfiles) >= 2:
+                        mayor = df_perfiles.iloc[0]
+                        menor = df_perfiles.iloc[-1]
+                        st.caption(
+                            f"**{mayor['Perfil']}** es el perfil que más amplifica la "
+                            f"relación (pendiente {mayor['Pendiente']:.3f}) y "
+                            f"**{menor['Perfil']}** el que más la suaviza "
+                            f"({menor['Pendiente']:.3f})."
+                        )
+                else:
+                    st.info(
+                        "No hay perfiles con reseñas suficientes para ajustar una recta "
+                        "con los filtros seleccionados."
+                    )
 
             st.markdown("---")
             st.markdown("### Proyeccion de Calidad-Precio")
