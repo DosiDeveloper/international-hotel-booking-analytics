@@ -9,6 +9,14 @@ st.set_page_config(
     page_title="Recomendador y Ranking Hotelero", page_icon="🏨", layout="wide"
 )
 
+# el filtro lateral muestra las etiquetas en espanol; la DB guarda el valor en ingles
+PERFILES_DB = {
+    "Solo": "Solo",
+    "Pareja": "Couple",
+    "Familia": "Family",
+    "Negocios": "Business",
+}
+
 
 def z_asimetria_curtosis(serie):
     # z estandarizados: |z| <= 2 se considera desviacion trivial de la normalidad
@@ -240,7 +248,7 @@ with tab_obj1:
         df_raw = con.sql(query).df()
 
         if perfil_viajero != "Todos los perfiles":
-            df_raw = df_raw[df_raw["user_type"] == perfil_viajero]
+            df_raw = df_raw[df_raw["user_type"] == PERFILES_DB[perfil_viajero]]
 
         if categoria != "Todas las categorías":
             estrellas = int(categoria.split()[0])
@@ -604,7 +612,7 @@ with tab_obj3:
 
         # mismos filtros de la vista, para coherencia con los objetivos 1 y 2
         if perfil_viajero != "Todos los perfiles":
-            df_obj3 = df_obj3[df_obj3["user_type"] == perfil_viajero]
+            df_obj3 = df_obj3[df_obj3["user_type"] == PERFILES_DB[perfil_viajero]]
 
         if categoria != "Todas las categorías":
             estrellas = int(categoria.split()[0])
