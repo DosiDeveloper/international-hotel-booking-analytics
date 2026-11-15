@@ -266,10 +266,22 @@ with tab_obj1:
                 df_stats["v"] + C
             )
 
+            # puesto 1 = mejor; el desplazamiento positivo indica que el hotel sube
+            # al penalizar el bajo volumen de resenas (objetivo 1 del README)
+            df_stats["puesto_simple"] = (
+                df_stats["R"].rank(ascending=False, method="min").astype(int)
+            )
+            df_stats["puesto_bayesiano"] = (
+                df_stats["bayesian_avg"].rank(ascending=False, method="min").astype(int)
+            )
+            df_stats["desplazamiento"] = (
+                df_stats["puesto_simple"] - df_stats["puesto_bayesiano"]
+            )
+
             total_evaluaciones = df_stats["v"].sum()
             promedio_simple_global = m
             promedio_bayesiano_global = df_stats["bayesian_avg"].mean()
-            desviacion_ranking = (df_stats["R"] - df_stats["bayesian_avg"]).abs().mean()
+            puestos_alterados = int((df_stats["desplazamiento"] != 0).sum())
 
             col1, col2, col3, col4, col5 = st.columns(5)
             col1.metric(label=f"Total Eval. ({perfil_viajero})",value=f"{total_evaluaciones:,.0f}".replace(',', '.'),)
@@ -280,7 +292,7 @@ with tab_obj1:
 
             col4.metric(label="Factor (C)",value=f"{C:,.1f}".replace('.', ','))
 
-            col5.metric(label="Desviación Ránking",value=f"{desviacion_ranking:,.2f}".replace('.', ','))
+            col5.metric(label="Puestos alterados",value=f"{puestos_alterados} de {len(df_stats)}")
             
 
             st.markdown("---")
@@ -294,6 +306,11 @@ with tab_obj1:
                 st.markdown("### Ranking Bayesiano Interactivo")
                 st.caption(
                     "Clasificación de hoteles penalizando el bajo volumen de evaluaciones frente al promedio simple."
+                )
+                st.caption(
+                    "**Ranking de destinos:** no se calcula porque cada ciudad y cada país "
+                    "del conjunto tienen un único hotel; ordenar por destino daría "
+                    "exactamente el mismo resultado que ordenar por hotel."
                 )
 
                 col_filtros1, col_filtros2 = st.columns(2)
@@ -345,14 +362,29 @@ with tab_obj1:
 
                 if mostrar_tabla:
                     st.markdown("#### Desglose Estadístico")
+                    st.caption(
+                        "Desplazamiento positivo = el hotel gana puestos al comparar el "
+                        "promedio bayesiano contra el promedio simple."
+                    )
                     df_tabla = df_top.sort_values(by="bayesian_avg", ascending=False)[
-                        ["hotel_name", "v", "R", "bayesian_avg"]
+                        [
+                            "hotel_name",
+                            "v",
+                            "R",
+                            "puesto_simple",
+                            "bayesian_avg",
+                            "puesto_bayesiano",
+                            "desplazamiento",
+                        ]
                     ]
                     df_tabla.columns = [
                         "Nombre del Hotel",
                         "Volumen de Reseñas",
                         "Promedio Simple",
+                        "Puesto Simple",
                         "Promedio Bayesiano",
+                        "Puesto Bayesiano",
+                        "Desplazamiento",
                     ]
                     st.dataframe(df_tabla, width="stretch", hide_index=True)
 
