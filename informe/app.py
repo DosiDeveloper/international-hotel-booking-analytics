@@ -371,14 +371,28 @@ with tab_obj2:
         st.subheader("Percepción de Calidad-Precio")
 
         usuarios_percepcion = """
-            SELECT u.traveller_type, r.score_value_for_money
+            SELECT
+                u.traveller_type,
+                u.age_group,
+                h.star_rating AS hotel_category,
+                u.country AS user_country,
+                h.country AS hotel_country,
+                r.score_value_for_money
             FROM analytics.fact_reviews r
+            JOIN analytics.dim_hotels h ON r.hotel_id = h.hotel_id
             JOIN analytics.dim_users u ON r.user_id = u.user_id
         """
         df_obj2 = con.sql(usuarios_percepcion).df()
 
         traduccion = {'Solo': 'Solo', 'Couple': 'Pareja', 'Business': 'Negocios', 'Family': 'Familia'}
         df_obj2['traveller_type'] = df_obj2['traveller_type'].map(traduccion).fillna(df_obj2['traveller_type'])
+
+        # variable derivada para el contraste interno vs. receptivo del objetivo 2
+        df_obj2["turismo"] = np.where(
+            df_obj2["user_country"] == df_obj2["hotel_country"],
+            "Turismo Interno",
+            "Turismo Receptivo",
+        )
 
         if df_obj2 is not None and not df_obj2.empty:
             # grafico
@@ -399,83 +413,132 @@ with tab_obj2:
             )
             st.plotly_chart(fig2, use_container_width=True)
 
-            tipos = df_obj2["traveller_type"].unique()
+            segmentaciones = {
+                "Tipo de viajero": "traveller_type",
+                "Grupo etario": "age_group",
+                "Turismo interno vs. receptivo": "turismo",
+                "Categoría del hotel": "hotel_category",
+            }
+            sele_segmentacion = st.selectbox(
+                "Segmentar la prueba de hipótesis por:",
+                list(segmentaciones.keys()),
+            )
+            columna_seg = segmentaciones[sele_segmentacion]
+
+            if columna_seg == "hotel_category":
+                etiquetas = df_obj2[columna_seg].map(lambda v: f"{int(v)} Estrellas")
+            else:
+                etiquetas = df_obj2[columna_seg].astype(str)
+
+            tipos = etiquetas.dropna().unique()
             grupos = [
-                df_obj2[df_obj2["traveller_type"] == t]["score_value_for_money"].dropna()
+                df_obj2.loc[etiquetas == t, "score_value_for_money"].dropna()
                 for t in tipos
             ]
 
-            #validacion de supuestos
-            with st.expander("🔍 Verificación de Supuestos Estadísticos"):
-                st.markdown("Para determinar si se debe aplicar una prueba parametrica o no paramétrica, evaluamos los supuestos clave:")
+            if len(tipos) < 2:
+                st.info(
+                    f"La segmentación por **{sele_segmentacion.lower()}** no es "
+                    "aplicable con los datos actuales: la variable es constante "
+                    f"({', '.join(tipos)}), por lo que no existen grupos que comparar."
+                )
+            else:
+                #validacion de supuestos
+                with st.expander("🔍 Verificación de Supuestos Estadísticos"):
+                    st.markdown("Para determinar si se debe aplicar una prueba parametrica o no paramétrica, evaluamos los supuestos clave:")
 
-                col1, col2 = st.columns(2)
+                    col1, col2 = st.columns(2)
 
-                with col1:
-                    st.markdown("**1. Normalidad práctica de los grupos**")
+                    with col1:
+                        st.markdown("**1. Normalidad práctica de los grupos**")
+                        st.caption(
+                            "Asimetría y curtosis estandarizadas ($|z| \\le 2$ indica desviación "
+                            "trivial). Con n grande, los p-valores de normalidad detectan "
+                            "desviaciones sin relevancia práctica."
+                        )
+
+                        desviaciones_relevantes = []
+                        for t, g in zip(tipos, grupos):
+                            if len(g) >= 8:
+                                asim, curt, z_asim, z_curt = z_asimetria_curtosis(g)
+                                st.text(
+                                    f"• {t}: asimetría z = {z_asim:+.2f} | "
+                                    f"curtosis z = {z_curt:+.2f}"
+                                )
+                                if abs(z_asim) > 2 or abs(z_curt) > 2:
+                                    desviaciones_relevantes.append(t)
+
+                        if not desviaciones_relevantes:
+                            st.success(
+                                "✅ Asimetría y curtosis compatibles con normalidad práctica "
+                                "en todos los grupos."
+                            )
+                        else:
+                            st.warning(
+                                "⚠️ Desviación no trivial en: "
+                                + ", ".join(desviaciones_relevantes)
+                                + ". Junto con la escala ordinal y acotada de los datos, "
+                                "esto respalda el uso de Kruskal-Wallis."
+                            )
+
+                    with col2:
+                        st.markdown("**2. Homogeneidad de Varianzas**")
+                        st.caption("Prueba de Levene para homocedasticidad")
+
+                        stat_lev, p_lev = stats.levene(*grupos)
+                        st.metric(label="Estadístico de Levene", value=f"{stat_lev:.4f}")
+                        st.metric(label="p-valor (Levene)", value=f"{p_lev:.5f}")
+
+                        if p_lev > 0.05:
+                            st.success("✅ Se cumple la homocedasticidad (varianzas iguales).")
+                        else:
+                            st.warning("⚠️ Las varianzas son heterogéneas ($p \\le 0.05$).")
+
                     st.caption(
-                        "Asimetría y curtosis estandarizadas ($|z| \\le 2$ indica desviación "
-                        "trivial). Con n grande, los p-valores de normalidad detectan "
-                        "desviaciones sin relevancia práctica."
+                        "Kruskal-Wallis se justifica por diseño: la variable es una escala "
+                        "ordinal, discreta y acotada entre 1 y 10, más allá del resultado de "
+                        "las pruebas de normalidad."
                     )
 
-                    desviaciones_relevantes = []
-                    for t, g in zip(tipos, grupos):
-                        if len(g) >= 8:
-                            asim, curt, z_asim, z_curt = z_asimetria_curtosis(g)
-                            st.text(
-                                f"• {t}: asimetría z = {z_asim:+.2f} | "
-                                f"curtosis z = {z_curt:+.2f}"
-                            )
-                            if abs(z_asim) > 2 or abs(z_curt) > 2:
-                                desviaciones_relevantes.append(t)
+                #prueba de hipotesis
+                st.markdown(f"### Resultado: {sele_segmentacion}")
+                h_stat, p_val = stats.kruskal(*grupos)
 
-                    if not desviaciones_relevantes:
-                        st.success(
-                            "✅ Asimetría y curtosis compatibles con normalidad práctica "
-                            "en todos los grupos."
-                        )
-                    else:
-                        st.warning(
-                            "⚠️ Desviación no trivial en: "
-                            + ", ".join(desviaciones_relevantes)
-                            + ". Junto con la escala ordinal y acotada de los datos, "
-                            "esto respalda el uso de Kruskal-Wallis."
-                        )
+                # tamano de efecto epsilon cuadrado (Tomczak y Tomczak, 2014)
+                n_total = sum(len(g) for g in grupos)
+                epsilon2 = h_stat / ((n_total**2 - 1) / (n_total + 1))
+                if epsilon2 >= 0.14:
+                    magnitud = "grande"
+                elif epsilon2 >= 0.06:
+                    magnitud = "mediano"
+                elif epsilon2 >= 0.01:
+                    magnitud = "pequeño"
+                else:
+                    magnitud = "despreciable"
 
-                with col2:
-                    st.markdown("**2. Homogeneidad de Varianzas**")
-                    st.caption("Prueba de Levene para homocedasticidad")
+                col_res1, col_res2, col_res3 = st.columns(3)
+                with col_res1:
+                    st.metric(label="Estadístico H (Kruskal-Wallis)", value=f"{h_stat:.4f}")
+                with col_res2:
+                    st.metric(label="Valor P", value=f"{p_val:.5f}")
+                with col_res3:
+                    st.metric(label="Tamaño del efecto (ε²)", value=f"{epsilon2:.4f}")
 
-                    stat_lev, p_lev = stats.levene(*grupos)
-                    st.metric(label="Estadístico de Levene", value=f"{stat_lev:.4f}")
-                    st.metric(label="p-valor (Levene)", value=f"{p_lev:.5f}")
-
-                    if p_lev > 0.05:
-                        st.success("✅ Se cumple la homocedasticidad (varianzas iguales).")
-                    else:
-                        st.warning("⚠️ Las varianzas son heterogéneas ($p \\le 0.05$).")
-
-                st.caption(
-                    "Kruskal-Wallis se justifica por diseño: la variable es una escala "
-                    "ordinal, discreta y acotada entre 1 y 10, más allá del resultado de "
-                    "las pruebas de normalidad."
-                )
-
-            #prueba de hipotesis
-            st.markdown("### Resultado de la Prueba No Paramétrica")
-            h_stat, p_val = stats.kruskal(*grupos)
-
-            col_res1, col_res2 = st.columns(2)
-            with col_res1:
-                st.metric(label="Estadístico H (Kruskal-Wallis)", value=f"{h_stat:.4f}")
-            with col_res2:
-                st.metric(label="Valor P", value=f"{p_val:.5f}")
-
-            if p_val < 0.05:
-                st.success("**Conclusión:** Sí existen diferencias estadísticamente significativas en cómo evalúan la relación calidad-precio los distintos tipos de viajeros ($p < 0.05$). Rechazamos la hipótesis nula.")
-            else:
-                st.info("**Conclusión:** No se encuentran diferencias estadísticamente significativas entre los grupos de viajeros analizados ($p \\ge 0.05$).")
+                if p_val < 0.05:
+                    st.success(
+                        "**Conclusión:** Sí existen diferencias estadísticamente "
+                        f"significativas en la percepción de calidad-precio según "
+                        f"{sele_segmentacion.lower()} ($p < 0.05$). Rechazamos la "
+                        f"hipótesis nula; el tamaño del efecto es **{magnitud}** "
+                        f"(ε² = {epsilon2:.4f})."
+                    )
+                else:
+                    st.info(
+                        "**Conclusión:** No se encuentran diferencias estadísticamente "
+                        f"significativas en la percepción de calidad-precio según "
+                        f"{sele_segmentacion.lower()} ($p \\ge 0.05$); el tamaño del "
+                        f"efecto es {magnitud} (ε² = {epsilon2:.4f})."
+                    )
 
         else:
             st.warning("No se encontraron datos de calidad-precio para realizar la prueba.")
