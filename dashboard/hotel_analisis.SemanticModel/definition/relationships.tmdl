@@ -37,6 +37,7 @@ relationship AutoDetected_03936efd-b84f-465e-85d9-74b4733c3e29
 	toColumn: 'analytics_models hotel_bayesian_inputs'.hotel_name
 
 relationship AutoDetected_80542c3c-6dda-4f34-8075-bd1a71955a20
+	isActive: false
 	fromColumn: 'analytics dim_users'.country
 	toColumn: 'analytics dim_hotels'.country
 
@@ -45,7 +46,6 @@ relationship AutoDetected_cc4c984d-f3aa-433c-815f-9ca678d87d83
 	toColumn: 'analytics dim_tiempo'.date_id
 
 relationship AutoDetected_b4f07404-2543-40a2-a384-37712ca145ef
-	isActive: false
 	fromColumn: 'analytics fact_reviews'.user_id
 	toColumn: 'analytics dim_users'.user_id
 
