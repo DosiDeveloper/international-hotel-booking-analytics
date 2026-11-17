@@ -10,7 +10,7 @@
     "tabOrder": 27000
   },
   "visual": {
-    "visualType": "donutChart",
+    "visualType": "funnel",
     "query": {
       "queryState": {
         "Category": {
@@ -71,63 +71,6 @@
       }
     },
     "objects": {
-      "legend": [
-        {
-          "properties": {
-            "fontFamily": {
-              "expr": {
-                "Literal": {
-                  "Value": "'''Arial Black'''"
-                }
-              }
-            },
-            "labelColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0
-                    }
-                  }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "13D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "value": [
-        {
-          "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0
-                    }
-                  }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "23D"
-                }
-              }
-            }
-          }
-        }
-      ],
       "labels": [
         {
           "properties": {
@@ -407,7 +350,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "0fa0dc1c0bbd3e9b8d32",
+        "name": "6a7f4aca48c20dc35cd6",
         "field": {
           "Column": {
             "Expression": {
@@ -421,7 +364,7 @@
         "type": "Categorical"
       },
       {
-        "name": "a2e378554e0b7a43db92",
+        "name": "298f8c88d08780b001bb",
         "field": {
           "Measure": {
             "Expression": {
