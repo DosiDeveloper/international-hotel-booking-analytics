@@ -155,14 +155,14 @@ with st.sidebar:
     )
 
 # pestañas principales
-tab_dashboard, tab_equipo = st.tabs(
-    ["📊 Dashboard Interactivo", "👥 Presentación del Equipo y Créditos"]
+tab_obj1, tab_obj2, tab_obj3, tab_equipo = st.tabs(
+    ["📊 Ranking Bayesiano", "Percepcion calidad-precio", "Regresion lineal", "👥 Presentación del Equipo y Créditos"]
 )
 
 
 # pestaña 1
-with tab_dashboard:
-    st.title("Dashboard: Recomendador y Ranking Hotelero")
+with tab_obj1:
+    st.title("Ranking bayesiano")
     st.caption(
         "Bosquejo visual interactivo para el análisis y recomendación de alojamientos."
     )
@@ -217,16 +217,16 @@ with tab_dashboard:
             desviacion_ranking = (df_stats["R"] - df_stats["bayesian_avg"]).abs().mean()
 
             col1, col2, col3, col4, col5 = st.columns(5)
-            col1.metric(
-                label=f"Total Eval. ({perfil_viajero})",
-                value=f"{total_evaluaciones:,.0f}",
-            )
-            col2.metric(label="Prom. Simple", value=f"{promedio_simple_global:.2f}")
-            col3.metric(
-                label="Prom. Bayesiano", value=f"{promedio_bayesiano_global:.2f}"
-            )
-            col4.metric(label="Factor (C)", value=f"{C:.1f}")
-            col5.metric(label="Desviación Ránking", value=f"{desviacion_ranking:.2f}")
+            col1.metric(label=f"Total Eval. ({perfil_viajero})",value=f"{total_evaluaciones:,.0f}".replace(',', '.'),)
+
+            col2.metric(label="Prom. Simple",value=f"{promedio_simple_global:,.2f}".replace('.', ','))
+        
+            col3.metric(label="Prom. Bayesiano", value=f"{promedio_bayesiano_global:,.2f}".replace('.', ','))
+
+            col4.metric(label="Factor (C)",value=f"{C:,.1f}".replace('.', ','))
+
+            col5.metric(label="Desviación Ránking",value=f"{desviacion_ranking:,.2f}".replace('.', ','))
+            
 
             st.markdown("---")
             st.warning(
@@ -285,6 +285,7 @@ with tab_dashboard:
                     coloraxis_showscale=False,
                 )
 
+                fig_o1.update_xaxes(range=[8.5, 9.05])
                 st.plotly_chart(fig_o1, width="stretch")
 
                 if mostrar_tabla:
@@ -306,106 +307,109 @@ with tab_dashboard:
             )
 
     except Exception as e:
-        st.error(f"Ocurrió un error en el procesamiento: {e}") 
-
-# para el objetivo 2 (percecpcion calidad-precio)
-st.markdown("---")
-st.subheader("Objetivo 2: Percepción de Calidad-Precio")
-
-usuarios_percepcion = """
-    SELECT u.traveller_type, r.score_value_for_money
-    FROM analytics.fact_reviews r
-    JOIN analytics.dim_users u ON r.user_id = u.user_id
-"""
-df_obj2 = con.sql(usuarios_percepcion).df()
-
-traduccion = {'Solo': 'Solo', 'Couple': 'Pareja', 'Business': 'Negocios', 'Family': 'Familia'}
-df_obj2['traveller_type'] = df_obj2['traveller_type'].map(traduccion).fillna(df_obj2['traveller_type'])
-
-if df_obj2 is not None and not df_obj2.empty:
- # grafico
-    fig2 = px.box(
-            df_obj2,
-            x="traveller_type",
-            y="score_value_for_money",
-            color="traveller_type",
-            color_discrete_sequence=["#256fbe", "#ec6f0f", "#d10909", "#2A812A"],
-            labels={
-                "traveller_type": "Perfil de Viajero",
-                "score_value_for_money": "Calidad-Precio (Puntuación)"
-            }
-        )
-    fig2.update_layout(
-            xaxis_title="Perfil de Viajero",
-            yaxis_title="Calidad-Precio (Puntuación)"
-        )
-    st.plotly_chart(fig2, use_container_width=True)
-    
-    tipos = df_obj2["traveller_type"].unique()
-    grupos = [
-        df_obj2[df_obj2["traveller_type"] == t]["score_value_for_money"].dropna()
-        for t in tipos
-    ]
-
-    #validacion de supuestos
-    with st.expander("🔍 Verificación de Supuestos Estadísticos"):
-        st.markdown("Para determinar si se debe aplicar una prueba parametrica o no paramétrica, evaluamos los supuestos clave:")
+        st.error(f"Ocurrió un error en el procesamiento: {e}")
         
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("**1. Supuesto de Normalidad**")
-            st.caption("Prueba de Shapiro-Wilk por grupo ($p > 0.05$ indica normalidad)")
-            
-            normalidad_global = True
-            for t, g in zip(tipos, grupos):
-                if len(g) >= 3:
-                    g_muestra = g.sample(min(len(g), 4000), random_state=42)
-                    _, p_shap = stats.shapiro(g_muestra)
-                    st.text(f"• {t}: p = {p_shap:.5f}")
-                    if p_shap < 0.05:
-                        normalidad_global = False
-            
-            if normalidad_global:
-                st.success("✅ Los grupos muestran normalidad.")
+with tab_obj2:
+        # para el objetivo 2 (percecpcion calidad-precio)
+        st.title("Percepcion calidad-precio")
+        st.markdown("---")
+        st.subheader("Percepción de Calidad-Precio")
+
+        usuarios_percepcion = """
+            SELECT u.traveller_type, r.score_value_for_money
+            FROM analytics.fact_reviews r
+            JOIN analytics.dim_users u ON r.user_id = u.user_id
+        """
+        df_obj2 = con.sql(usuarios_percepcion).df()
+
+        traduccion = {'Solo': 'Solo', 'Couple': 'Pareja', 'Business': 'Negocios', 'Family': 'Familia'}
+        df_obj2['traveller_type'] = df_obj2['traveller_type'].map(traduccion).fillna(df_obj2['traveller_type'])
+
+        if df_obj2 is not None and not df_obj2.empty:
+            # grafico
+            fig2 = px.box(
+                df_obj2,
+                x="traveller_type",
+                y="score_value_for_money",
+                color="traveller_type",
+                color_discrete_sequence=["#256fbe", "#ec6f0f", "#d10909", "#2A812A"],
+                labels={
+                    "traveller_type": "Perfil de Viajero",
+                    "score_value_for_money": "Calidad-Precio (Puntuación)"
+                }
+            )
+            fig2.update_layout(
+                xaxis_title="Perfil de Viajero",
+                yaxis_title="Calidad-Precio (Puntuación)"
+            )
+            st.plotly_chart(fig2, use_container_width=True)
+
+            tipos = df_obj2["traveller_type"].unique()
+            grupos = [
+                df_obj2[df_obj2["traveller_type"] == t]["score_value_for_money"].dropna()
+                for t in tipos
+            ]
+
+            #validacion de supuestos
+            with st.expander("🔍 Verificación de Supuestos Estadísticos"):
+                st.markdown("Para determinar si se debe aplicar una prueba parametrica o no paramétrica, evaluamos los supuestos clave:")
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.markdown("**1. Supuesto de Normalidad**")
+                    st.caption("Prueba de Shapiro-Wilk por grupo ($p > 0.05$ indica normalidad)")
+
+                    normalidad_global = True
+                    for t, g in zip(tipos, grupos):
+                        if len(g) >= 3:
+                            g_muestra = g.sample(min(len(g), 4000), random_state=42)
+                            _, p_shap = stats.shapiro(g_muestra)
+                            st.text(f"• {t}: p = {p_shap:.5f}")
+                            if p_shap < 0.05:
+                                normalidad_global = False
+
+                    if normalidad_global:
+                        st.success("✅ Los grupos muestran normalidad.")
+                    else:
+                        st.warning("⚠️ No se cumple la normalidad en los grupos ($p \\le 0.05$). Esto justifica el uso de Kruskal-Wallis.")
+
+                with col2:
+                    st.markdown("**2. Homogeneidad de Varianzas**")
+                    st.caption("Prueba de Levene para homocedasticidad")
+
+                    stat_lev, p_lev = stats.levene(*grupos)
+                    st.metric(label="Estadístico de Levene", value=f"{stat_lev:.4f}")
+                    st.metric(label="p-valor (Levene)", value=f"{p_lev:.5f}")
+
+                    if p_lev > 0.05:
+                        st.success("✅ Se cumple la homocedasticidad (varianzas iguales).")
+                    else:
+                        st.warning("⚠️ Las varianzas son heterogéneas ($p \\le 0.05$).")
+
+            #prueba de hipotesis
+            st.markdown("### Resultado de la Prueba No Paramétrica")
+            h_stat, p_val = stats.kruskal(*grupos)
+
+            col_res1, col_res2 = st.columns(2)
+            with col_res1:
+                st.metric(label="Estadístico H (Kruskal-Wallis)", value=f"{h_stat:.4f}")
+            with col_res2:
+                st.metric(label="Valor P", value=f"{p_val:.5f}")
+
+            if p_val < 0.05:
+                st.success("**Conclusión:** Sí existen diferencias estadísticamente significativas en cómo evalúan la relación calidad-precio los distintos tipos de viajeros ($p < 0.05$). Rechazamos la hipótesis nula.")
             else:
-                st.warning("⚠️ No se cumple la normalidad en los grupos ($p \\le 0.05$). Esto justifica el uso de Kruskal-Wallis.")
+                st.info("**Conclusión:** No se encuentran diferencias estadísticamente significativas entre los grupos de viajeros analizados ($p \\ge 0.05$).")
 
-        with col2:
-            st.markdown("**2. Homogeneidad de Varianzas**")
-            st.caption("Prueba de Levene para homocedasticidad")
-            
-            stat_lev, p_lev = stats.levene(*grupos)
-            st.metric(label="Estadístico de Levene", value=f"{stat_lev:.4f}")
-            st.metric(label="p-valor (Levene)", value=f"{p_lev:.5f}")
-            
-            if p_lev > 0.05:
-                st.success("✅ Se cumple la homocedasticidad (varianzas iguales).")
-            else:
-                st.warning("⚠️ Las varianzas son heterogéneas ($p \\le 0.05$).")
+        else:
+            st.warning("No se encontraron datos de calidad-precio para realizar la prueba.")
 
-#prueba de hipotesis
-    st.markdown("### Resultado de la Prueba No Paramétrica")
-    h_stat, p_val = stats.kruskal(*grupos)
+with tab_obj3:
+    st.title("Regresion lineal")
+    st.subheader("analisis de regresion lineal simple (por construir)")
 
-    col_res1, col_res2 = st.columns(2)
-    with col_res1:
-        st.metric(label="Estadístico H (Kruskal-Wallis)", value=f"{h_stat:.4f}")
-    with col_res2:
-        st.metric(label="Valor P", value=f"{p_val:.5f}")
-
-    if p_val < 0.05:
-        st.success(
-            "**Conclusión:** Sí existen diferencias estadísticamente significativas en cómo evalúan la relación calidad-precio los distintos tipos de viajeros ($p < 0.05$). Rechazamos la hipótesis nula."
-        )
-    else:
-        st.info(
-            "**Conclusión:** No se encuentran diferencias estadísticamente significativas entre los grupos de viajeros analizados ($p \\ge 0.05$)."
-        )
-else:
-    st.warning("No se encontraron datos de calidad-precio para realizar la prueba.")                        
-
-# pestaña 2 / presentacion del equipo
+# pestaña 3  presentacion de nuestro equipo
 with tab_equipo:
     st.title("Equipo de investigación y recomendación hotelera")
     st.subheader("Comité de desarrollo y algoritmos de recomendación")
