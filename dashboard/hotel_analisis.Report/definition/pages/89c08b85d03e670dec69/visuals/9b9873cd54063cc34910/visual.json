@@ -3,7 +3,7 @@
   "name": "9b9873cd54063cc34910",
   "position": {
     "x": 84.391363339419414,
-    "y": 399.31523141091139,
+    "y": 376.67364612472568,
     "z": 19000,
     "height": 63.808103988341514,
     "width": 386.96527580026464,
@@ -151,5 +151,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "60c8d044e8c100b4e783",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics fact_reviews"
+              }
+            },
+            "Property": "Correlacion_Pearson"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

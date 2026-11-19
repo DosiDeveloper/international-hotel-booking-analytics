@@ -241,5 +241,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "c70b76b4d9b0d3ae719b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics fact_reviews"
+              }
+            },
+            "Property": "Tipo_Turismo"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

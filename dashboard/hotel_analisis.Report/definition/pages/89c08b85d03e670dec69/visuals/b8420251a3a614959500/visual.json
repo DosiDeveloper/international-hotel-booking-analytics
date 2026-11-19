@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "b8420251a3a614959500",
   "position": {
-    "x": 930.36332266872137,
-    "y": 699.83081793664883,
-    "z": 23002,
-    "height": 366.25961922513648,
-    "width": 646.01571029157242,
-    "tabOrder": 23002
+    "x": 80.274711469203837,
+    "y": 619.556106467445,
+    "z": 24000,
+    "height": 386.96527580026464,
+    "width": 407.54853515134255,
+    "tabOrder": 24000
   },
   "visual": {
     "visualType": "tableEx",
@@ -42,31 +42,88 @@
               },
               "queryRef": "analytics dim_hotels.city",
               "nativeQueryRef": "city"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "analytics fact_reviews"
-                    }
-                  },
-                  "Property": "Predicción Calidad-Precio"
-                }
-              },
-              "queryRef": "analytics fact_reviews.Predicción Calidad-Precio",
-              "nativeQueryRef": "Predicción Calidad-Precio"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "analytics dim_hotels"
+                  }
+                },
+                "Property": "hotel_name"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
       }
+    },
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "14D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'''Arial Black'''"
+                }
+              }
+            },
+            "fontColorPrimary": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'''Arial Black'''"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "15D"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [
       {
-        "name": "31449e31c4a6c7ebb00e",
+        "name": "e2c06752c531dce53210",
         "field": {
           "Column": {
             "Expression": {
@@ -77,10 +134,97 @@
             "Property": "hotel_name"
           }
         },
-        "type": "Categorical"
+        "type": "TopN",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "subquery",
+              "Expression": {
+                "Subquery": {
+                  "Query": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "a",
+                        "Entity": "analytics dim_hotels",
+                        "Type": 0
+                      },
+                      {
+                        "Name": "a1",
+                        "Entity": "analytics fact_reviews",
+                        "Type": 0
+                      }
+                    ],
+                    "Select": [
+                      {
+                        "Column": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Source": "a"
+                            }
+                          },
+                          "Property": "hotel_name"
+                        },
+                        "Name": "field"
+                      }
+                    ],
+                    "OrderBy": [
+                      {
+                        "Direction": 2,
+                        "Expression": {
+                          "Measure": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "a1"
+                              }
+                            },
+                            "Property": "Predicción Calidad-Precio"
+                          }
+                        }
+                      }
+                    ],
+                    "Top": 10
+                  }
+                }
+              },
+              "Type": 2
+            },
+            {
+              "Name": "a",
+              "Entity": "analytics dim_hotels",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "a"
+                          }
+                        },
+                        "Property": "hotel_name"
+                      }
+                    }
+                  ],
+                  "Table": {
+                    "SourceRef": {
+                      "Source": "subquery"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
       },
       {
-        "name": "01328a87776793982173",
+        "name": "f1fa39bdeb0db777608a",
         "field": {
           "Column": {
             "Expression": {
@@ -92,20 +236,6 @@
           }
         },
         "type": "Categorical"
-      },
-      {
-        "name": "e2706a9214ee60ca5d1d",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Predicción Calidad-Precio"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

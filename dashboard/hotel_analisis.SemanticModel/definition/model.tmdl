@@ -23,6 +23,7 @@ ref table 'analytics fact_reviews'
 ref table LocalDateTable_cbd1e38c-d723-42d0-a297-4fb571590ff2
 ref table 'analytics_models hotel_bayesian_inputs'
 ref table 'analytics_models hotel_traveller_profiles'
+ref table 'Simulador Satisfaccion'
 
 ref cultureInfo en-US
 

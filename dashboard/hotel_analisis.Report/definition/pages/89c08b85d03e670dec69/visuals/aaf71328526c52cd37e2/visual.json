@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "aaf71328526c52cd37e2",
   "position": {
-    "x": 84.391363339419414,
-    "y": 477.53161694500744,
-    "z": 22000,
+    "x": 86.449689274527216,
+    "y": 461.06500946414513,
+    "z": 21000,
     "height": 63.808103988341514,
     "width": 386.96527580026464,
-    "tabOrder": 22000
+    "tabOrder": 21000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -151,5 +151,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "8c1ebc706dc080049e9c",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics fact_reviews"
+              }
+            },
+            "Property": "R²(R_Cuadrado)"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }
