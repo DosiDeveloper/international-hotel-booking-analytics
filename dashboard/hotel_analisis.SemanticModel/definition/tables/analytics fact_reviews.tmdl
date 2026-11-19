@@ -1,6 +1,43 @@
 table 'analytics fact_reviews'
 	lineageTag: 3f4d9d5a-63da-4f94-93cb-074aa0c149b7
 
+	measure Total_Reseñas_Año = COUNT('analytics fact_reviews'[review_id])
+		formatString: 0
+		lineageTag: 58375ba1-19c8-4b59-bcff-702372fb2265
+
+	measure Promedio_Simple_Año = AVERAGE('analytics fact_reviews'[score_overall])
+		lineageTag: cb8839d1-9a92-4a20-a595-43f1eacb717b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Promedio_Bayesiano_Año =
+			
+			VAR M = 50
+			VAR GlobalAvg = 8.94345999999999
+			VAR R = [Total_Reseñas_Año]
+			VAR C = [Promedio_Simple_Año]
+			RETURN
+			DIVIDE((M * GlobalAvg) + (R * C), M + R)
+		lineageTag: 378ecc18-33a1-4953-bf8e-635009b0d5c2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Promedio_Value = AVERAGE('analytics fact_reviews'[score_value_for_money])
+		lineageTag: ff214b08-99f0-4be7-b235-cd9f2021e622
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Total_Usuarios = DISTINCTCOUNT('analytics dim_users'[user_id])
+		formatString: 0
+		lineageTag: ae2e172e-8468-4ea5-b221-e0a6611377ae
+
+	measure Perfil_Mas_Comun =
+			
+			VAR TablaConteo = SUMMARIZE('analytics dim_users', 'analytics dim_users'[traveller_type], "Cantidad", COUNT('analytics dim_users'[user_id]))
+			VAR TopPerfil = TOPN(1, TablaConteo, [Cantidad], DESC)
+			RETURN MAXX(TopPerfil, 'analytics dim_users'[traveller_type])
+		lineageTag: 59acfbfd-29b2-4925-b62d-1bb83c7c4943
+
 	column review_id
 		dataType: int64
 		formatString: 0
@@ -23,7 +60,7 @@ table 'analytics fact_reviews'
 		dataType: int64
 		formatString: 0
 		lineageTag: 2c63923d-3b3b-4a77-aee2-438de2e96959
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: user_id
 
 		annotation SummarizationSetBy = Automatic
@@ -122,6 +159,35 @@ table 'analytics fact_reviews'
 		annotation SummarizationSetBy = Automatic
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Año = TRUNC('analytics fact_reviews'[date_id] / 10000)
+		lineageTag: d16a9835-f66c-40b3-8d13-b41101d885d6
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Tipo_Turismo =
+			
+			VAR Pais_Usuario = RELATED('analytics dim_users'[country])
+			VAR Pais_Hotel = RELATED('analytics dim_hotels'[country])
+			RETURN
+			IF(Pais_Usuario = Pais_Hotel, "Interno", "Receptivo")
+		lineageTag: 679ff766-afb4-4466-bc09-4d2596520660
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Categoria_Nota =
+			
+			IF('analytics fact_reviews'[score_value_for_money] >= 9, "1. Excelente (9-10)",
+			IF('analytics fact_reviews'[score_value_for_money] >= 7, "2. Bueno (7-8.9)",
+			IF('analytics fact_reviews'[score_value_for_money] >= 5, "3. Regular (5-6.9)", "4. Malo (<5)")))
+		lineageTag: 22eabe53-4d25-43e1-8d1f-81e88938b408
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
 
 	partition 'analytics fact_reviews' = m
 		mode: import

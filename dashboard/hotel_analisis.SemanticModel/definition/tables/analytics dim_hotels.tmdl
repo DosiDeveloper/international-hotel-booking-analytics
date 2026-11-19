@@ -1,6 +1,10 @@
 table 'analytics dim_hotels'
 	lineageTag: ed293c16-6ed5-4512-8397-4e88a0a35d60
 
+	measure Total_Hoteles = DISTINCTCOUNT('analytics dim_hotels'[hotel_id])
+		formatString: 0
+		lineageTag: c5385f00-b0e3-43a4-b820-c232b9244de5
+
 	column hotel_id
 		dataType: int64
 		formatString: 0
@@ -38,7 +42,7 @@ table 'analytics dim_hotels'
 		dataType: int64
 		formatString: 0
 		lineageTag: 78016d31-9829-431f-8de5-93ee8aa67210
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: star_rating
 
 		annotation SummarizationSetBy = Automatic
@@ -46,7 +50,7 @@ table 'analytics dim_hotels'
 	column lat
 		dataType: double
 		lineageTag: 4c8124b0-89f3-4658-8571-4e832204f02d
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: lat
 
 		annotation SummarizationSetBy = Automatic
@@ -56,7 +60,7 @@ table 'analytics dim_hotels'
 	column lon
 		dataType: double
 		lineageTag: 145b4aa5-f685-4192-9d2f-f43d9d2c865e
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: lon
 
 		annotation SummarizationSetBy = Automatic
