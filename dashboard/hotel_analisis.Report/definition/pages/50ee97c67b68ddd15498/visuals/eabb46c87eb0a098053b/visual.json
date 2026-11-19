@@ -140,23 +140,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "ed0fb5434c7645cb2ac1",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Perfil_Mas_Comun"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

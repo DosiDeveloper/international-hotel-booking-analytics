@@ -241,23 +241,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "2e2c79dab7e5a4059d05",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics dim_users"
-              }
-            },
-            "Property": "user_gender"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

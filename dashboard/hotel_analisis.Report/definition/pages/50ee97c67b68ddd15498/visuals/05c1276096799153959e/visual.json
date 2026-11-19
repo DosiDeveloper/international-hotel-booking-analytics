@@ -540,56 +540,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "6cc46edf75c1921ee43e",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics dim_users"
-              }
-            },
-            "Property": "traveller_type"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "c8261bb0047b461eb939",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "analytics fact_reviews"
-                  }
-                },
-                "Property": "score_value_for_money"
-              }
-            },
-            "Function": 1
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "35472303437db5ca4b70",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Tipo_Turismo"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

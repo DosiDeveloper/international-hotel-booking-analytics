@@ -1166,34 +1166,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "914ab039ba68d456955d",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics_models hotel_bayesian_inputs"
-              }
-            },
-            "Property": "hotel_name"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "20cf6f3c20be833ac156",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Promedio_Simple_Año"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

@@ -346,37 +346,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "6a7f4aca48c20dc35cd6",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics dim_users"
-              }
-            },
-            "Property": "traveller_type"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "298f8c88d08780b001bb",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Total_Usuarios"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

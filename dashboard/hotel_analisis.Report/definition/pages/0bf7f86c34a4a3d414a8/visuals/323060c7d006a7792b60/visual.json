@@ -253,23 +253,5 @@
       "filterChanges": true
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "945480e9600975108b7e",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics dim_hotels"
-              }
-            },
-            "Property": "country"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

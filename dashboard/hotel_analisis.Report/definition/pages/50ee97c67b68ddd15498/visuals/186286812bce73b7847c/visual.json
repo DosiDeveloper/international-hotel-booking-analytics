@@ -4,10 +4,10 @@
   "position": {
     "x": 1257.6371463508601,
     "y": 212.00757131610246,
-    "z": 28001,
+    "z": 29000,
     "height": 393.14025360558804,
     "width": 644.25601768873844,
-    "tabOrder": 28001
+    "tabOrder": 29000
   },
   "visual": {
     "visualType": "hundredPercentStackedBarChart",
@@ -257,6 +257,19 @@
               }
             ]
           }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "roles": [
+                  "Series"
+                ]
+              }
+            ],
+            "hierarchyMatching": 1
+          }
         }
       ],
       "valueAxis": [
@@ -330,6 +343,38 @@
               "expr": {
                 "Literal": {
                   "Value": "13D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "labels": [
+        {
+          "properties": {
+            "detailFontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "14D"
+                }
+              }
+            },
+            "detailColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 0,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "detailFontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'''Arial Black'''"
                 }
               }
             }
@@ -433,56 +478,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "8361d19a904c202d2635",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics dim_users"
-              }
-            },
-            "Property": "traveller_type"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "2babf72e657c3b02a631",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "analytics fact_reviews"
-                  }
-                },
-                "Property": "review_id"
-              }
-            },
-            "Function": 0
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "c29d3eeb53c058610311",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Categoria_Nota"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

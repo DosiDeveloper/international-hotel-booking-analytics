@@ -302,23 +302,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "c98cb59ab77483d6995d",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Total_Reseñas_Año"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

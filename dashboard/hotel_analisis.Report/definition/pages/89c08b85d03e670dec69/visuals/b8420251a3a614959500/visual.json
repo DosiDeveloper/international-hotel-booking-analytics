@@ -1,0 +1,112 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "b8420251a3a614959500",
+  "position": {
+    "x": 930.36332266872137,
+    "y": 699.83081793664883,
+    "z": 23002,
+    "height": 366.25961922513648,
+    "width": 646.01571029157242,
+    "tabOrder": 23002
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "analytics dim_hotels"
+                    }
+                  },
+                  "Property": "hotel_name"
+                }
+              },
+              "queryRef": "analytics dim_hotels.hotel_name",
+              "nativeQueryRef": "hotel_name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "analytics dim_hotels"
+                    }
+                  },
+                  "Property": "city"
+                }
+              },
+              "queryRef": "analytics dim_hotels.city",
+              "nativeQueryRef": "city"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "analytics fact_reviews"
+                    }
+                  },
+                  "Property": "Predicción Calidad-Precio"
+                }
+              },
+              "queryRef": "analytics fact_reviews.Predicción Calidad-Precio",
+              "nativeQueryRef": "Predicción Calidad-Precio"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "31449e31c4a6c7ebb00e",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics dim_hotels"
+              }
+            },
+            "Property": "hotel_name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "01328a87776793982173",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics dim_hotels"
+              }
+            },
+            "Property": "city"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "e2706a9214ee60ca5d1d",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics fact_reviews"
+              }
+            },
+            "Property": "Predicción Calidad-Precio"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}
