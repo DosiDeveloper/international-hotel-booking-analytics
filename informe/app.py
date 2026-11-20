@@ -220,13 +220,13 @@ with tab_obj1:
             col1.metric(label=f"Total Eval. ({perfil_viajero})",value=f"{total_evaluaciones:,.0f}".replace(',', '.'),)
 
             col2.metric(label="Prom. Simple",value=f"{promedio_simple_global:,.2f}".replace('.', ','))
-        
+
             col3.metric(label="Prom. Bayesiano", value=f"{promedio_bayesiano_global:,.2f}".replace('.', ','))
 
             col4.metric(label="Factor (C)",value=f"{C:,.1f}".replace('.', ','))
 
             col5.metric(label="Desviación Ránking",value=f"{desviacion_ranking:,.2f}".replace('.', ','))
-            
+
 
             st.markdown("---")
             st.warning(
@@ -308,7 +308,7 @@ with tab_obj1:
 
     except Exception as e:
         st.error(f"Ocurrió un error en el procesamiento: {e}")
-        
+
 with tab_obj2:
         # para el objetivo 2 (percecpcion calidad-precio)
         st.title("Percepcion calidad-precio")
@@ -426,12 +426,11 @@ with tab_equipo:
             st.image("imagenes/douglas.jpg", use_container_width=True)
         with c_txt:
             st.markdown("### Douglas Barreto")
-            st.caption("**Rol:** ...")
+            st.caption("**Rol:** Ingeniero de datos SQL y consultas analíticas")
             st.markdown("""
             **Encargado de:**
-            * ..
-            * ..
-            * ..
+            * Ejecuto la normalización de las tablas para optimizar el procesamiento.
+            * Construyo el cuestionario de consultas SQL.
             """)
 
     st.write("")
@@ -443,12 +442,11 @@ with tab_equipo:
             st.image("imagenes/eymi2.jpg", use_container_width=True)
         with c_txt:
             st.markdown("### Eymi Borjas")
-            st.caption("**Rol:** ...")
+            st.caption("**Rol:** Arquitectura visual de la aplicación de Streamlit")
             st.markdown("""
             **Encargado de:**
-            * ..
-            * ..
-            * ..
+            * Diseño modulos de reporte en Streamlit
+            * Colaboracion con la estetica del Power BI y app de Streamlit
             """)
 
     st.write("")
@@ -457,15 +455,14 @@ with tab_equipo:
     with st.container(border=True):
         c_img, c_txt = st.columns([1, 3])
         with c_img:
-            st.image("https://via.placeholder.com/300", width="stretch")
+            st.image("imagenes/angel.jpg", width="stretch")
         with c_txt:
             st.markdown("### Angel Reina")
-            st.caption("**Rol:** ...")
+            st.caption("**Rol:** Arquitectura y modelado de datos")
             st.markdown("""
             **Encargado de:**
-            * ..
-            * ..
-            * ..
+            * Diseño el modelo relacional/esquema de datos.
+            * Apoyo en objetivos y parte teórica del estudio.
             """)
 
     st.write("")
@@ -474,15 +471,14 @@ with tab_equipo:
     with st.container(border=True):
         c_img, c_txt = st.columns([1, 3])
         with c_img:
-            st.image("https://via.placeholder.com/300", width="stretch")
+            st.image("imagenes/andres.jpg", width="stretch")
         with c_txt:
             st.markdown("### Andres Ortega")
-            st.caption("**Rol:** ...")
+            st.caption("**Rol:** Arquitectura visual de aplicacion de Streamlit")
             st.markdown("""
                 **Encargado de:**
-                * ..
-                * ..
-                * ..
+                * Diseño de la interfaz interactiva en streamlit para la visualizacion de resultados.
+                * Formulación de objetivos analíticos.
                 """)
 
     st.write("")
@@ -491,15 +487,14 @@ with tab_equipo:
     with st.container(border=True):
         c_img, c_txt = st.columns([1, 3])
         with c_img:
-            st.image("https://via.placeholder.com/300", width="stretch")
+            st.image("imagenes/gabriel.jpg", width="stretch")
         with c_txt:
             st.markdown("### Gabriel Guevara")
-            st.caption("**Rol:** ...")
+            st.caption("**Rol:** Visualización analítica en Power BI")
             st.markdown("""
                 **Encargado de:**
-                * ..
-                * ..
-                * ..
+                * Desarrollo de dashboard analítico en Power BI para la exploración de métricas.
+                * estructura de Marco Metodológico
                 """)
 
     st.markdown("---")
