@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "b8420251a3a614959500",
   "position": {
-    "x": 80.274711469203837,
+    "x": 63.808103988341514,
     "y": 619.556106467445,
     "z": 24000,
-    "height": 386.96527580026464,
-    "width": 407.54853515134255,
+    "height": 405.49020921623475,
+    "width": 428.13179450242046,
     "tabOrder": 24000
   },
   "visual": {
@@ -42,6 +42,20 @@
               },
               "queryRef": "analytics dim_hotels.city",
               "nativeQueryRef": "city"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "analytics fact_reviews"
+                    }
+                  },
+                  "Property": "Predicción Calidad-Precio"
+                }
+              },
+              "queryRef": "analytics fact_reviews.Predicción Calidad-Precio",
+              "nativeQueryRef": "Predicción Calidad-Precio"
             }
           ]
         }
@@ -50,13 +64,13 @@
         "sort": [
           {
             "field": {
-              "Column": {
+              "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "analytics dim_hotels"
+                    "Entity": "analytics fact_reviews"
                   }
                 },
-                "Property": "hotel_name"
+                "Property": "Predicción Calidad-Precio"
               }
             },
             "direction": "Ascending"
@@ -111,6 +125,63 @@
               "expr": {
                 "Literal": {
                   "Value": "15D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "102.24176316933941D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "analytics dim_hotels.city"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "135.49517792594253D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "analytics fact_reviews.Predicción Calidad-Precio"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "142.95860454914344D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "analytics dim_hotels.hotel_name"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
@@ -236,6 +307,20 @@
           }
         },
         "type": "Categorical"
+      },
+      {
+        "name": "16efadc7d52684b14e19",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics fact_reviews"
+              }
+            },
+            "Property": "Predicción Calidad-Precio"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }

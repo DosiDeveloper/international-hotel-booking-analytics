@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "44a05b470a73757c5e16",
   "position": {
-    "x": 75.460524563972839,
-    "y": 47.853015577153514,
+    "x": 76.15805959898826,
+    "y": 76.15805959898826,
     "z": 3000,
-    "height": 353.3761150312875,
-    "width": 408.59113300492612,
+    "height": 325.21549774703095,
+    "width": 407.54853515134255,
     "tabOrder": 3000
   },
   "visual": {
@@ -183,5 +183,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b461ef5dc25a45a0d133",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics dim_tiempo"
+              }
+            },
+            "Property": "year"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }
