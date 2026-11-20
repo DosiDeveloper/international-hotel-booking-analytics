@@ -25,7 +25,7 @@ DIMENSIONES = {
 def init_connection():
     token = st.secrets["MOTHERDUCK_TOKEN"]
 
-    return duckdb.connect(f"md:my_db?motherduck_token={token}")
+    return duckdb.connect(f"md:international_hotel_booking?motherduck_token={token}")
 
 
 @st.cache_data(ttl=3600)
@@ -184,18 +184,6 @@ with col_c2:
 columna_criterio = criterios[etiqueta_criterio]
 ranking = resumen.sort_values(columna_criterio, ascending=False).reset_index(drop=True)
 
-st.subheader(f"Ranking por {etiqueta_criterio.lower()}")
-for posicion, fila in ranking.head(top_n).iterrows():
-    col_nombre, col_datos, col_puntaje = st.columns([3, 2, 1])
-    col_nombre.markdown(f"**{posicion + 1}. {fila['hotel_name']}**")
-    col_nombre.caption(f"{fila['city']}, {fila['hotel_country']}")
-    col_datos.caption(
-        f"{fila['v']:,.0f} reseñas | promedio simple {fila['R']:.2f} | "
-        f"bayesiano {fila['bayesiano']:.2f}".replace(",", ".")
-    )
-    col_puntaje.markdown(f"**{fila[columna_criterio]:.2f}**")
-    st.progress(min(int(round(fila[columna_criterio] * 10)), 100))
-
 # --- ficha del hotel ---
 st.subheader("Ficha del hotel")
 hotel = st.selectbox(
@@ -216,6 +204,19 @@ with col_ficha2:
     for columna, etiqueta in DIMENSIONES.items():
         st.caption(f"{etiqueta}: {fila[columna]:.2f}")
         st.progress(min(int(round(fila[columna] * 10)), 100))
+
+# --- ranking ---
+st.subheader(f"Ranking por {etiqueta_criterio.lower()}")
+for posicion, fila in ranking.head(top_n).iterrows():
+    col_nombre, col_datos, col_puntaje = st.columns([3, 2, 1])
+    col_nombre.markdown(f"**{posicion + 1}. {fila['hotel_name']}**")
+    col_nombre.caption(f"{fila['city']}, {fila['hotel_country']}")
+    col_datos.caption(
+        f"{fila['v']:,.0f} reseñas | promedio simple {fila['R']:.2f} | "
+        f"bayesiano {fila['bayesiano']:.2f}".replace(",", ".")
+    )
+    col_puntaje.markdown(f"**{fila[columna_criterio]:.2f}**")
+    st.progress(min(int(round(fila[columna_criterio] * 10)), 100))
 
 with st.expander("📖 Cómo se construye la recomendación"):
     st.markdown(
