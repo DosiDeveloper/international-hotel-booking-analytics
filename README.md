@@ -2,6 +2,7 @@
   <img src="assets/banner_hotel.jpg" alt="Banner Análisis y Rankings Hoteleros" width="100%">
 </p>
 
+
 # Optimización de rankings hoteleros mediante inferencia bayesiana y regresión lineal simple por perfil de usuario. 🏨
 
 ## Introducción
@@ -246,3 +247,8 @@ El análisis por segmento añade un nuevo detalle importante. Las pendientes dif
 Por último, el motor de recomendación se construyó sobre las estimaciones de la regresión por perfil, de modo que las sugerencias de alojamiento no dependen de un promedio general, sino de la pendiente específica del segmento al que pertenece el usuario. Para un viajero de "Negocios", por ejemplo, la calificación general tiene un peso menor en la predicción de calidad-precio que para alguien que viaja "Solo"; el motor recoge esa diferencia y ajusta la recomendación como consecuencia. El producto final traduce estos resultados en una herramienta que permite explorar los rankings corregidos comparar el efecto de los distintos perfiles sin necesidad de un conocimiento técnico avanzado. Para el problema que motivó el trabajo, las conclusiones se traducen en tres recomendaciones concretas: ponderar por tamaño efectivo de muestra, separar la variación intra-hotel de la entre hoteles y evitar modelos con supresión que inflan el "r-cuadrado" sin aportar interpolación. Como limitaciones, la fiabilidad del ítem individual no es estimable al no haber ítems repetidos, el análisis se apoya en 25 hoteles y 2.000 usuarios, y futuras extensiones podrían incorporar el texto de las reseñas y ampliar la muestra de establecimientos para evaluar la estabilidad del patrón.
 
 Dataset [en kaggle](https://www.kaggle.com/datasets/alperenmyung/international-hotel-booking-analytics)
+
+## Enlaces de nuestro proyecto
+
+- [Dashboard en Power BI](https://app.powerbi.com/view?r=eyJrIjoiMmNmMTAyNzUtMjRmZC00Yjg5LTg2Y2YtOGY5ZDg1YmNjODYzIiwidCI6IjRjODE4Zjc5LWFiODQtNDU1Mi05YjdjLTJmZTcxNWIwZDBkNSIsImMiOjR9&embedImagePlaceholder=true&pageName=35a7d47e2bc7aa221dbe)
+- [App interactiva en Streamlit](https://international-hotel-booking-analytics.streamlit.app/)
