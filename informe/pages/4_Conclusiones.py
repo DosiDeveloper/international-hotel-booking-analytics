@@ -30,5 +30,29 @@ st.write(
   "Dicho de otro modo, hay una diferencia clara entre los dos extremos, pero no una jerarquía rígida entre todos los segmentos. Reconocerlo es más honesto que"
   "presentar un orden estable el cual no se ve respaldado por los datos."
 )
-  
-  
+
+st.subheader("Relación funcional mediante regresión lineal simple")
+st.write(
+  "El modelo de regresión lineal simple por segmento confirmó una asociación positiva entre la calificación general y la calidad-precio, pero también dejó al"
+  "descubierto una limitación inferencial que conviene especificar. La estimación global arroja B = 1,3776 (IC95% [1,3549;1,4002]) con errores típicos que sobreestiman"
+  "la precisión, porque las reseñas no son observaciones independientes, un mismo hotel recibe decenas o cientos de ellas y comparten características no controladas."
+  "Al tratar al hotel como una unidad de análisis, el error típico sube de 0,0115 a 0,1296 y la t baja de 119,28 a 10,63 con 24 grados de libertad."
+
+  "El análisis por segmento añade un nuevo detalle importante. Las pendientes difieren entre perfiles (0,9342 en Solo frente a 0,6353 en Negocios), lo que respalda"
+  "la idea de que la relación calidad-precio no opera igual para todos los viajeros. Sin embargo, el r-cuadrado del modelo global es de 0,2216: la calificación general"
+  "explica alrededor del 22% de la variabilidad en calidad-precio. El resto responde a las dimensiones específicas (limpieza, comfort, instalaciones, etc) y a factores"
+  "contextuales que el modelo simple no captura. Lejos de ser un fracaso, este resultado es informativo; confirma que la calidad-precio es un constructo multidimensional y"
+  "que reducirla a una sola variable empobrece el análisis."
+)
+
+st.subheader("Motor de recomendación y producto analítico")
+st.write(
+  "Por último, el motor de recomendación se construyó sobre las estimaciones de la regresión por perfil, de modo que las sugerencias de alojamiento no dependen de un promedio"
+  "general, sino de la pendiente específica del segmento al que pertenece el usuario. Para un viajero de Negocios, por ejemplo, la calificación general tiene un peso menor en"
+  "la predicción de calidad-precio que para alguien que viaja Solo; el motor recoge esa diferencia y ajusta la recomendación como consecuencia. El producto final traduce estos"
+  "resultados en una herramienta que permite explorar los rankings corregidos y comparar el efecto de los distintos perfiles sin necesidad de un conocimiento técnico avanzado."
+  "Para el problema que motivó el trabajo, las conclusiones se traducen en tres recomendaciones concretas: ponderar por tamaño efectivo de muestra, separar la variación"
+  "intra-hotel de la entre hoteles y evitar modelos con supresión que inflan el r-cuadrado sin aportar interpolación. Como limitaciones, la fiabilidad del ítem individual"
+  "no es estimable al no haber ítems repetidos, el análisis se apoya en 25 hoteles y 2.000 usuarios, y futuras extensiones podrían incorporar el texto de las reseñas y ampliar"
+  "la muestra de establecimientos para evaluar la estabilidad del patrón."
+)

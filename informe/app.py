@@ -225,10 +225,6 @@ with tab_obj1:
         if perfil_viajero != "Todos los perfiles":
             df_raw = df_raw[df_raw["user_type"] == perfil_viajero]
 
-        if categoria != "Todas las categorías":
-            estrellas = int(categoria.split()[0])
-            df_raw = df_raw[df_raw["hotel_category"] == estrellas]
-
         if tipo_turismo == "Turismo Interno":
             df_raw = df_raw[df_raw["user_country"] == df_raw["hotel_country"]]
         elif tipo_turismo == "Turismo Receptivo":
