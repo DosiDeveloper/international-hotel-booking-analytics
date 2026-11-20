@@ -10,7 +10,7 @@
     "tabOrder": 27000
   },
   "visual": {
-    "visualType": "donutChart",
+    "visualType": "funnel",
     "query": {
       "queryState": {
         "Category": {
@@ -71,63 +71,6 @@
       }
     },
     "objects": {
-      "legend": [
-        {
-          "properties": {
-            "fontFamily": {
-              "expr": {
-                "Literal": {
-                  "Value": "'''Arial Black'''"
-                }
-              }
-            },
-            "labelColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0
-                    }
-                  }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "13D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "value": [
-        {
-          "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0
-                    }
-                  }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "23D"
-                }
-              }
-            }
-          }
-        }
-      ],
       "labels": [
         {
           "properties": {
@@ -148,10 +91,35 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "13D"
                 }
               }
             }
+          }
+        },
+        {
+          "properties": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 0,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ]
           }
         }
       ],
@@ -325,6 +293,70 @@
             ]
           }
         }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "14D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'''Arial Black'''"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "percentBarLabel": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "13D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'''Arial Black'''"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -407,7 +439,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "0fa0dc1c0bbd3e9b8d32",
+        "name": "bdd6f7e33555a4b92534",
         "field": {
           "Column": {
             "Expression": {
@@ -421,7 +453,7 @@
         "type": "Categorical"
       },
       {
-        "name": "a2e378554e0b7a43db92",
+        "name": "e407982e0cb8697c714d",
         "field": {
           "Measure": {
             "Expression": {

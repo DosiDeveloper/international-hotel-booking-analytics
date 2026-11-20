@@ -151,23 +151,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "a60808660999c36a3be8",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Promedio_Value"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

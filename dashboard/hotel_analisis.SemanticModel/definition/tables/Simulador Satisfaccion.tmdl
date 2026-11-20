@@ -1,0 +1,28 @@
+table 'Simulador Satisfaccion'
+	lineageTag: 6225fe5a-d892-4065-8695-cae1d1861eac
+
+	measure 'Valor de Simulador Satisfaccion' = SELECTEDVALUE('Simulador Satisfaccion'[Simulador Satisfaccion])
+		lineageTag: 43342320-818d-4029-b999-21eb4fe90d7d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Simulador Satisfaccion'
+		lineageTag: 1e7d9835-9fdb-4d33-8e3a-83e0e072f5d5
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Simulador Satisfaccion' = calculated
+		mode: import
+		source = GENERATESERIES(1, 10, 0.1)
+
+	annotation PBI_Id = c3fdd31d72e8486e9bc4ffef2265cbd0
+

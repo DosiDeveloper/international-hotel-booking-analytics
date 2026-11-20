@@ -544,7 +544,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "6cc46edf75c1921ee43e",
+        "name": "899c4c611600c0d54888",
         "field": {
           "Column": {
             "Expression": {
@@ -558,7 +558,21 @@
         "type": "Categorical"
       },
       {
-        "name": "c8261bb0047b461eb939",
+        "name": "bb30be304ad012a08700",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics fact_reviews"
+              }
+            },
+            "Property": "Tipo_Turismo"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "aa61d51c3855e79c075c",
         "field": {
           "Aggregation": {
             "Expression": {
@@ -575,20 +589,6 @@
           }
         },
         "type": "Advanced"
-      },
-      {
-        "name": "35472303437db5ca4b70",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Tipo_Turismo"
-          }
-        },
-        "type": "Categorical"
       }
     ]
   }

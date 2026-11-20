@@ -38,6 +38,80 @@ table 'analytics fact_reviews'
 			RETURN MAXX(TopPerfil, 'analytics dim_users'[traveller_type])
 		lineageTag: 59acfbfd-29b2-4925-b62d-1bb83c7c4943
 
+	measure R²(R_Cuadrado) = 0.2216
+		formatString: #,0.00
+		lineageTag: 38fff94e-59a8-494a-842d-cec08b47d47b
+
+	measure Correlacion_Pearson = 0.471
+		formatString: #,0.00
+		lineageTag: 54a2d2f8-74fe-4d62-aefe-6d5a81c2aa49
+
+	measure Pendiente_Global = 1.3776
+		lineageTag: f6e58067-5345-48a2-8ec2-ae4cd60518a0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Total_Reseñas_Modelo = COUNTROWS('analytics fact_reviews')
+		lineageTag: 4027861a-d2b5-4c8f-bfd7-3c7df2610eb2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Pendiente B1' =
+			
+			SWITCH(
+			    SELECTEDVALUE('analytics dim_users'[traveller_type]),
+			    "Solo", 0.9342,
+			    "Family", 0.8035,
+			    "Couple", 0.7551,
+			    "Business", 0.6353,
+			    1.3776 // Pendiente Global por defecto
+			)
+		lineageTag: 547fbfec-1d69-40cc-97da-720c1133d6ff
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Predicción Calidad-Precio' = ```
+			
+			VAR X_Score = AVERAGE('analytics fact_reviews'[score_overall])
+			VAR Perfil = SELECTEDVALUE('analytics dim_users'[traveller_type])
+			VAR B0 = 
+			    SWITCH(Perfil, "Solo", 0.5930, "Family", 1.3950, "Couple", 1.6083, "Business", 2.1647, -3.8857)
+			VAR B1 = 
+			    SWITCH(Perfil, "Solo", 0.9342, "Family", 0.8035, "Couple", 0.7551, "Business", 0.6353, 1.3776)
+			RETURN 
+			    B0 + (B1 * X_Score)
+			```
+		lineageTag: 9db7cb34-00ec-4e3c-859a-37ce15b94257
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'R Cuadrado por Perfil' =
+			
+			SWITCH(
+			    SELECTEDVALUE('analytics dim_users'[traveller_type]),
+			    "Solo", 0.1997,
+			    "Family", 0.1513,
+			    "Couple", 0.1317,
+			    "Business", 0.0930,
+			    0.2216 // Global
+			)
+		lineageTag: 17110d31-5dec-4b66-9c07-bbc8aa0ff2c8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Simulacion Calidad-Precio' = ```
+			
+			VAR X = 'Simulador Satisfaccion'[Valor de Simulador Satisfaccion]
+			VAR Perfil = SELECTEDVALUE('analytics dim_users'[traveller_type])
+			VAR B0 = SWITCH(Perfil, "Solo", 0.5930, "Family", 1.3950, "Couple", 1.6083, "Business", 2.1647, -3.8857)
+			VAR B1 = SWITCH(Perfil, "Solo", 0.9342, "Family", 0.8035, "Couple", 0.7551, "Business", 0.6353, 1.3776)
+			RETURN 
+			    B0 + (B1 * X)
+			```
+		lineageTag: 81d376e1-657f-46df-9c7d-4426e94cdd1a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column review_id
 		dataType: int64
 		formatString: 0

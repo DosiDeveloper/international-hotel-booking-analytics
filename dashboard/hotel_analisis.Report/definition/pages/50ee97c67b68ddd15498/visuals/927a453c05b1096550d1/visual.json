@@ -4,10 +4,10 @@
   "position": {
     "x": 570.156284024858,
     "y": 638.08103988341509,
-    "z": 28002,
+    "z": 30000,
     "height": 337.56545335767765,
     "width": 1333.7952059498484,
-    "tabOrder": 28002
+    "tabOrder": 30000
   },
   "visual": {
     "visualType": "scatterChart",
@@ -561,7 +561,54 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "c6e38a58b68024eb4c8a",
+        "name": "f20dddce38b030a0b031",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics dim_hotels"
+              }
+            },
+            "Property": "hotel_name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "a12abb068d8556b61b1a",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics dim_users"
+              }
+            },
+            "Property": "traveller_type"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "a5a032438e72a0e716d9",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "analytics fact_reviews"
+                  }
+                },
+                "Property": "review_id"
+              }
+            },
+            "Function": 2
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "fc566dfea559dc5102c3",
         "field": {
           "Aggregation": {
             "Expression": {
@@ -580,7 +627,7 @@
         "type": "Advanced"
       },
       {
-        "name": "8373c616d20259c40c2d",
+        "name": "008884f5c17403a061e0",
         "field": {
           "Aggregation": {
             "Expression": {
@@ -594,53 +641,6 @@
               }
             },
             "Function": 1
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "5bbbc4d72283040c8296",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics dim_hotels"
-              }
-            },
-            "Property": "hotel_name"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "9b846dbe97a2e61eca00",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics dim_users"
-              }
-            },
-            "Property": "traveller_type"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "c37796d027966583e623",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "analytics fact_reviews"
-                  }
-                },
-                "Property": "review_id"
-              }
-            },
-            "Function": 2
           }
         },
         "type": "Advanced"

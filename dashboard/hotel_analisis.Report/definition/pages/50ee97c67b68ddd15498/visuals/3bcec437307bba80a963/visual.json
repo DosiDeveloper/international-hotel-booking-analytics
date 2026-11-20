@@ -126,23 +126,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "ef97c8b0279b0d256770",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics dim_users"
-              }
-            },
-            "Property": "traveller_type"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }
