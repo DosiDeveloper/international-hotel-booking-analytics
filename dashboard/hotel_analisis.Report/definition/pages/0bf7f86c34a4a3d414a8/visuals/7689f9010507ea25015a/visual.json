@@ -4,10 +4,17 @@
   "position": {
     "x": 541.339720933349,
     "y": 987.9964488517395,
+<<<<<<< HEAD
+    "z": 26000,
+    "height": 69.98308179366488,
+    "width": 444.59840198328277,
+    "tabOrder": 26000
+=======
     "z": 23003,
     "height": 69.98308179366488,
     "width": 444.59840198328277,
     "tabOrder": 23003
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
   },
   "visual": {
     "visualType": "actionButton",

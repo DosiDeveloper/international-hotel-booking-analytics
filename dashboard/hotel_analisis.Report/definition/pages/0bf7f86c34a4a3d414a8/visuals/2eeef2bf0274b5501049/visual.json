@@ -3,7 +3,11 @@
   "name": "2eeef2bf0274b5501049",
   "position": {
     "x": 496.05655036097755,
+<<<<<<< HEAD
+    "y": 167,
+=======
     "y": 166.72440074373105,
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
     "z": 18000,
     "height": 14.408281545754535,
     "width": 1360.5534431062497,

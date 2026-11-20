@@ -2,11 +2,19 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "a9ca643797305dbb5e85",
   "position": {
+<<<<<<< HEAD
+    "x": 530,
+    "y": 200.61456530422049,
+    "z": 19000,
+    "height": 12.883504193849022,
+    "width": 1371.1729463453603,
+=======
     "x": 533.10641719291777,
     "y": 201.7159416405635,
     "z": 19000,
     "height": 12.349955610646745,
     "width": 1366.728420911573,
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
     "tabOrder": 19000
   },
   "visual": {
@@ -46,7 +54,11 @@
                 "color": {
                   "expr": {
                     "Literal": {
+<<<<<<< HEAD
+                      "Value": "'#0d6abf'"
+=======
                       "Value": "'#118DFF'"
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
                     }
                   }
                 }

@@ -2,6 +2,7 @@
   <img src="assets/banner_hotel.jpg" alt="Banner Análisis y Rankings Hoteleros" width="100%">
 </p>
 
+
 # Optimización de rankings hoteleros mediante inferencia bayesiana y regresión lineal simple por perfil de usuario. 🏨
 
 ## Introducción
@@ -233,5 +234,21 @@ Las relaciones del esquema en estrella siguen un patrón estricto de Uno a Mucho
 
 **Dim_Tiempo $\rightarrow$ Fact_Reviews ($1 : N$)**: Una fecha/día de la dimensión tiempo puede registrar cero o múltiples reseñas, pero cada reseña ocurre en una única fecha específica.
 
+## Conclusión
+
+El trabajo confirmó que los promedios aritméticos simples tratan por igual a un hotel con cientos de reseñas que a otro con apenas dos o tres opiniones totalmente positivas, y que esa discrepancia no pasa desapercibida: afecta la visibilidad de de establecimientos con un desempeño consistente y confunde a los viajeros que buscan referencias confiables. La implementación de promedios bayesianos permitió penalizar estadísticamente a los hoteles con bajo volumen de evaluaciones, de modo que el ranking resultante refleja la evidencia disponible y no solo el azar de unas pocas calificaciones altas. El contraste entre el ranking simple y el corregido muestra que el orden cambia de forma notable, sobre todo en la parte alta de la tabla, donde los hoteles con pocas reseñas suelen sobrerrepresentarse. Esta corrección no elimina la subjetividad de la calidad-precio, pero si logra acotar el margen de error con el que se construyen las comparaciones entre establecimientos.
+
+Las pruebas de hipótesis aplicadas a los segmentos de viajeros arrojaron diferencias estadísticamente significativas en la percepción de valor. La regresión por perfil es consistente con ese hallazgo: las pendientes van de "0,9342" en el perfil "Solo" a "0,6353" en el perfil "Negocios", ya la interacción "perfil por calificación general" resultó significativa [F(3;49.985) = 43,26; p < 0,001]. No obstante, la robustez de esas diferencias merece matizarse, Solamente el contraste entre el perfil "Solo" y el de "Negocios" se mantuvo estable en las réplicas bootstrap (con una diferencia de 0,145; IC95% [0,056;0,238]), mientras que el orden completo de los cuatro perfiles se reprodujo en apenas el 48,4% de las réplicas. Dicho de otro modo, hay una diferencia clara entre los dos extremos, pero no una jerarquía rígida entre todos los segmentos. Reconocerlo es más honesto que presentar un orden estable el cual no se ve respaldado por los datos.
+
+El modelo de regresión lineal simple por segmento confirmó una asociación positiva entre la calificación general y la calidad-precio, pero también dejó al descubierto una limitación inferencial que conviene especificar. La estimación global arroja B = 1,3776 (IC95% [1,3549;1,4002]) con errores típicos que sobreestiman la precisión, porque las reseñas no son observaciones independientes, un mismo hotel recibe decenas o cientos de ellas y comparten características no controladas. Al tratar al hotel como una unidad de análisis, el erro típico sube de "0,0115" a "0,1296" y la "t" baja de "119,28" a "10,63" con 24 grados de libertad.
+
+El análisis por segmento añade un nuevo detalle importante. Las pendientes difieren entre perfiles ("0,9342" en "Solo" frente a "0,6353" en "Negocios"), lo que respalda la idea de que la relación calidad-precio no opera igual para todos los viajeros. Sin embargo, el "r-cuadrado" del modelo global es de "0,2216": la calificación general explica alrededor del 22% de la variabilidad en calidad-precio. El resto responde a las dimensiones específicas (limpieza, comfort, instalaciones, etc) y a factores contextuales que el modelo simple no captura. Lejos de ser un fracaso, este resultado es informativo; confirma que la calidad-precio es un constructo multidimensional y que reducirla a una sola variable empobrece el análisis.
+
+Por último, el motor de recomendación se construyó sobre las estimaciones de la regresión por perfil, de modo que las sugerencias de alojamiento no dependen de un promedio general, sino de la pendiente específica del segmento al que pertenece el usuario. Para un viajero de "Negocios", por ejemplo, la calificación general tiene un peso menor en la predicción de calidad-precio que para alguien que viaja "Solo"; el motor recoge esa diferencia y ajusta la recomendación como consecuencia. El producto final traduce estos resultados en una herramienta que permite explorar los rankings corregidos comparar el efecto de los distintos perfiles sin necesidad de un conocimiento técnico avanzado. Para el problema que motivó el trabajo, las conclusiones se traducen en tres recomendaciones concretas: ponderar por tamaño efectivo de muestra, separar la variación intra-hotel de la entre hoteles y evitar modelos con supresión que inflan el "r-cuadrado" sin aportar interpolación. Como limitaciones, la fiabilidad del ítem individual no es estimable al no haber ítems repetidos, el análisis se apoya en 25 hoteles y 2.000 usuarios, y futuras extensiones podrían incorporar el texto de las reseñas y ampliar la muestra de establecimientos para evaluar la estabilidad del patrón.
 
 Dataset [en kaggle](https://www.kaggle.com/datasets/alperenmyung/international-hotel-booking-analytics)
+
+## Enlaces de nuestro proyecto
+
+- [Dashboard en Power BI](https://app.powerbi.com/view?r=eyJrIjoiMmNmMTAyNzUtMjRmZC00Yjg5LTg2Y2YtOGY5ZDg1YmNjODYzIiwidCI6IjRjODE4Zjc5LWFiODQtNDU1Mi05YjdjLTJmZTcxNWIwZDBkNSIsImMiOjR9&embedImagePlaceholder=true&pageName=35a7d47e2bc7aa221dbe)
+- [App interactiva en Streamlit](https://international-hotel-booking-analytics.streamlit.app/)
