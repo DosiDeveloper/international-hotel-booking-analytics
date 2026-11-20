@@ -148,11 +148,6 @@ with st.sidebar:
     st.subheader("Modalidad de Turismo:")
     tipo_turismo = st.radio("Tipo:", ["Todos", "Turismo Interno", "Turismo Receptivo"])
 
-    st.subheader("Categoría:")
-    categoria = st.selectbox(
-        "Estrellas:",
-        ["Todas las categorías", "3 Estrellas", "4 Estrellas", "5 Estrellas"],
-    )
 
 # pestañas principales
 tab_obj1, tab_obj2, tab_obj3, tab_equipo = st.tabs(
@@ -186,16 +181,17 @@ with tab_obj1:
         if perfil_viajero != "Todos los perfiles":
             df_raw = df_raw[df_raw["user_type"] == perfil_viajero]
 
-        if categoria != "Todas las categorías":
-            estrellas = int(categoria.split()[0])
-            df_raw = df_raw[df_raw["hotel_category"] == estrellas]
+
+        if perfil_viajero != "Todos los perfiles":
+            df_raw = df_raw[df_raw["user_type"] == perfil_viajero]
 
         if tipo_turismo == "Turismo Interno":
             df_raw = df_raw[df_raw["user_country"] == df_raw["hotel_country"]]
         elif tipo_turismo == "Turismo Receptivo":
             df_raw = df_raw[df_raw["user_country"] != df_raw["hotel_country"]]
 
-        st.subheader(f"Métricas para: {tipo_turismo} | {categoria}")
+        st.subheader(f"Métricas para: {tipo_turismo}")
+
 
         if df_raw is not None and not df_raw.empty:
             df_stats = (
@@ -229,11 +225,11 @@ with tab_obj1:
             
 
             st.markdown("---")
-            st.warning(
-                f" **Vista Seleccionada:** Perfil **{perfil_viajero}** | Modalidad **{tipo_turismo}** | Categoría **{categoria}**."
-            )
+           
             st.markdown("---")
-
+            st.warning(
+                f" **Vista Seleccionada:** Perfil **{perfil_viajero}** | Modalidad **{tipo_turismo}**."
+            )
             st.subheader("Análisis de Objetivos de Investigación")
             with st.container(border=True):
                 st.markdown("### Ranking Bayesiano Interactivo")
@@ -426,11 +422,12 @@ with tab_equipo:
             st.image("imagenes/douglas.jpg", use_container_width=True)
         with c_txt:
             st.markdown("### Douglas Barreto")
-            st.caption("**Rol:** Ingeniero de datos SQL y consultas analíticas")
+            st.caption("**Rol:** ...")
             st.markdown("""
             **Encargado de:**
-            * Ejecuto la normalización de las tablas para oprtimizar el procesamiento.
-            * Construyo el cuestionario de consultas SQL.
+            * ..
+            * ..
+            * ..
             """)
 
     st.write("")
@@ -442,11 +439,12 @@ with tab_equipo:
             st.image("imagenes/eymi2.jpg", use_container_width=True)
         with c_txt:
             st.markdown("### Eymi Borjas")
-            st.caption("**Rol:** Arquitectura visual de la aplicación de Streamlit")
+            st.caption("**Rol:** ...")
             st.markdown("""
             **Encargado de:**
-            * Diseño modulos de reporte en Streamlit
-            * Colaboracion con la estetica del Power BI y app de Streamlit
+            * ..
+            * ..
+            * ..
             """)
 
     st.write("")
@@ -455,14 +453,15 @@ with tab_equipo:
     with st.container(border=True):
         c_img, c_txt = st.columns([1, 3])
         with c_img:
-            st.image("imagenes/angel.jpg", width="stretch")
+            st.image("https://via.placeholder.com/300", width="stretch")
         with c_txt:
             st.markdown("### Angel Reina")
-            st.caption("**Rol:** Arquitectura y modelado de datos")
+            st.caption("**Rol:** ...")
             st.markdown("""
             **Encargado de:**
-            * Diseño el modelo relacional/esquema de datos.
-            * Apoyo en objetivos y parte teórica del estudio.
+            * ..
+            * ..
+            * ..
             """)
 
     st.write("")
@@ -471,14 +470,15 @@ with tab_equipo:
     with st.container(border=True):
         c_img, c_txt = st.columns([1, 3])
         with c_img:
-            st.image("imagenes/andres.jpg", width="stretch")
+            st.image("https://via.placeholder.com/300", width="stretch")
         with c_txt:
             st.markdown("### Andres Ortega")
-            st.caption("**Rol:** Arquitectura visual de aplicacion de Streamlit")
+            st.caption("**Rol:** ...")
             st.markdown("""
                 **Encargado de:**
-                * Diseño de la interfaz interactiva en streamlit para la visualizacion de resultados.
-                * Formulación de objetivos analíticos.
+                * ..
+                * ..
+                * ..
                 """)
 
     st.write("")
@@ -487,14 +487,15 @@ with tab_equipo:
     with st.container(border=True):
         c_img, c_txt = st.columns([1, 3])
         with c_img:
-            st.image("imagenes/gabriel.jpg", width="stretch")
+            st.image("https://via.placeholder.com/300", width="stretch")
         with c_txt:
             st.markdown("### Gabriel Guevara")
-            st.caption("**Rol:** Visualización analítica en Power BI")
+            st.caption("**Rol:** ...")
             st.markdown("""
                 **Encargado de:**
-                * Desarrollo de dashboard analítico en Power BI para la exploración de métricas.
-                * estructura de Marco Metodológico
+                * ..
+                * ..
+                * ..
                 """)
 
     st.markdown("---")
