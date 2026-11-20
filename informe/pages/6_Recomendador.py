@@ -1,4 +1,5 @@
 import duckdb
+import pandas as pd
 import streamlit as st
 from scipy import stats
 
@@ -76,15 +77,16 @@ with col_f3:
 with col_f4:
     pais = st.selectbox("País del hotel", ["Todos"] + sorted(df["hotel_country"].unique()))
 
-df_f = df
-if perfil != "Todos":
-    df_f = df_f[df_f["perfil"] == perfil]
+base = df
 if turismo != "Todas":
-    df_f = df_f[df_f["turismo"] == turismo]
+    base = base[base["turismo"] == turismo]
 if categoria != "Todas":
-    df_f = df_f[df_f["star_rating"] == int(categoria.split()[0])]
+    base = base[base["star_rating"] == int(categoria.split()[0])]
 if pais != "Todos":
-    df_f = df_f[df_f["hotel_country"] == pais]
+    base = base[base["hotel_country"] == pais]
+
+# el filtro de perfil solo aplica al ranking, no a la tabla por segmento
+df_f = base if perfil == "Todos" else base[base["perfil"] == perfil]
 
 if len(df_f) < 3:
     st.warning("No hay reseñas suficientes para los filtros seleccionados.")
@@ -93,22 +95,68 @@ if len(df_f) < 3:
 # --- modelo: percepcion de calidad-precio a partir de la calificacion general ---
 modelo = stats.linregress(df_f["score_overall"], df_f["score_value_for_money"])
 
-st.subheader("Modelo del perfil seleccionado")
-col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-col_m1.metric("Pendiente", f"{modelo.slope:,.3f}".replace(".", ","))
-col_m2.metric("Intercepto", f"{modelo.intercept:,.3f}".replace(".", ","))
-col_m3.metric("R cuadrado", f"{modelo.rvalue**2:,.3f}".replace(".", ","))
-col_m4.metric("Valor P (pendiente)", f"{modelo.pvalue:.2e}")
+st.subheader("Modelo de regresión")
+tab_perfil, tab_segmentos = st.tabs(["Perfil seleccionado", "Por segmento"])
 
-calificacion_objetivo = st.slider(
-    "Calificación general esperada del hotel:", 1.0, 10.0, 8.0, 0.1
-)
-proyeccion_objetivo = modelo.intercept + modelo.slope * calificacion_objetivo
-st.info(
-    f"Con una calificación general de **{calificacion_objetivo:.1f}**, el modelo "
-    f"proyecta una percepción de calidad-precio de **{proyeccion_objetivo:.2f}** "
-    f"para {perfil.lower() if perfil != 'Todos' else 'el conjunto filtrado'}."
-)
+with tab_perfil:
+    col_m1, col_m2, col_m3, col_m4 = st.columns(4)
+    col_m1.metric("Pendiente", f"{modelo.slope:,.3f}".replace(".", ","))
+    col_m2.metric("Intercepto", f"{modelo.intercept:,.3f}".replace(".", ","))
+    col_m3.metric("R cuadrado", f"{modelo.rvalue**2:,.3f}".replace(".", ","))
+    col_m4.metric("Valor P (pendiente)", f"{modelo.pvalue:.2e}")
+
+    calificacion_objetivo = st.slider(
+        "Calificación general esperada del hotel:", 1.0, 10.0, 8.0, 0.1
+    )
+    proyeccion_objetivo = modelo.intercept + modelo.slope * calificacion_objetivo
+    st.info(
+        f"Con una calificación general de **{calificacion_objetivo:.1f}**, el modelo "
+        f"proyecta una percepción de calidad-precio de **{proyeccion_objetivo:.2f}** "
+        f"para {perfil.lower() if perfil != 'Todos' else 'el conjunto filtrado'}."
+    )
+
+with tab_segmentos:
+    st.caption(
+        "El mismo modelo ajustado por separado en cada perfil, con los filtros de "
+        "modalidad, categoría y país; el filtro de perfil no se aplica."
+    )
+    filas = []
+    for nombre, grupo in base.groupby("perfil"):
+        if len(grupo) >= 3 and grupo["score_overall"].nunique() >= 2:
+            ajuste = stats.linregress(
+                grupo["score_overall"], grupo["score_value_for_money"]
+            )
+            filas.append(
+                {
+                    "Perfil": nombre,
+                    "Reseñas": len(grupo),
+                    "Pendiente": ajuste.slope,
+                    "Intercepto": ajuste.intercept,
+                    "R²": ajuste.rvalue**2,
+                    "p-valor": ajuste.pvalue,
+                }
+            )
+    if filas:
+        tabla = pd.DataFrame(filas).sort_values("Pendiente", ascending=False)
+        st.dataframe(
+            tabla,
+            hide_index=True,
+            column_config={
+                "Pendiente": st.column_config.NumberColumn(format="%.3f"),
+                "Intercepto": st.column_config.NumberColumn(format="%.3f"),
+                "R²": st.column_config.NumberColumn(format="%.3f"),
+                "p-valor": st.column_config.NumberColumn(format="%.2e"),
+            },
+        )
+        if len(tabla) >= 2:
+            mayor, menor = tabla.iloc[0], tabla.iloc[-1]
+            st.caption(
+                f"**{mayor['Perfil']}** es el perfil que más amplifica la relación "
+                f"(pendiente {mayor['Pendiente']:.3f}) y **{menor['Perfil']}** el que "
+                f"más la suaviza ({menor['Pendiente']:.3f})."
+            )
+    else:
+        st.info("No hay perfiles con reseñas suficientes con los filtros elegidos.")
 
 # --- agregados por hotel + promedio bayesiano ---
 resumen = (
