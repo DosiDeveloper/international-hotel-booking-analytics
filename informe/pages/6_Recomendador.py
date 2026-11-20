@@ -35,7 +35,6 @@ def cargar_datos():
             h.hotel_name,
             h.city,
             h.country AS hotel_country,
-            h.star_rating,
             u.traveller_type AS user_type,
             u.country AS user_country,
             r.score_overall,
@@ -66,24 +65,15 @@ df["turismo"] = (df["user_country"] == df["hotel_country"]).map(
 )
 
 # --- filtros ---
-col_f1, col_f2, col_f3, col_f4 = st.columns(4)
+col_f1, col_f2 = st.columns(2)
 with col_f1:
     perfil = st.selectbox("Perfil de viajero", ["Todos"] + sorted(df["perfil"].unique()))
 with col_f2:
     turismo = st.selectbox("Modalidad", ["Todas", "Turismo Interno", "Turismo Receptivo"])
-with col_f3:
-    categorias = sorted(df["star_rating"].dropna().unique())
-    categoria = st.selectbox("Categoría", ["Todas"] + [f"{int(c)} Estrellas" for c in categorias])
-with col_f4:
-    pais = st.selectbox("País del hotel", ["Todos"] + sorted(df["hotel_country"].unique()))
 
 base = df
 if turismo != "Todas":
     base = base[base["turismo"] == turismo]
-if categoria != "Todas":
-    base = base[base["star_rating"] == int(categoria.split()[0])]
-if pais != "Todos":
-    base = base[base["hotel_country"] == pais]
 
 # el filtro de perfil solo aplica al ranking, no a la tabla por segmento
 df_f = base if perfil == "Todos" else base[base["perfil"] == perfil]
@@ -245,7 +235,7 @@ with st.expander("📖 Cómo se construye la recomendación"):
         **Limitaciones:** el modelo asume una relación lineal y predice la
         calidad-precio desde la calificación general (no al revés). Además, cada
         ciudad y cada país del conjunto tienen un único hotel y todos son de 5
-        estrellas, por lo que el ranking de destinos y la comparación por categoría
-        no aportan información en estos datos.
+        estrellas, por lo que no se ofrece filtro por país ni por categoría: no
+        compararían nada.
         """
     )
