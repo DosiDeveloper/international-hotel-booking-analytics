@@ -1,4 +1,4 @@
-.import streamlit as st
+import streamlit as st
 import pandas as pd
 
 st.title("Marco Metodológico")
@@ -15,7 +15,7 @@ st.write(
   "Pareja, Familia y Negocios), la modalidad de turismo (Todos, Turismo Interno y Turismo Receptivo) y la categoría de alojamiento por estrellas."
 )
 
-st. subheader("Nota sobre el alcance geográfico")
+st.subheader("Nota sobre el alcance geográfico")
 st.info(
   "Dado que el mapa de ubicación describe la distribución espacial de los 25 establecimientos (un hotel por ciudad y país) y no múltiples hoteles dentro de un mismo destino,"
   "su alcance es descriptivo de la cobertura muestral y no permite estimar un efecto geográfico causal entre ciudades o paises."
