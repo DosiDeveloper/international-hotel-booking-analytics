@@ -74,6 +74,8 @@ def breusch_pagan(x, residuos):
     return lm, p_valor
 
 
+
+
 def render_banner_imagen(ruta_imagen: str, alto_px: int = 240):
     img_path = Path(ruta_imagen)
     if not img_path.exists():
@@ -116,11 +118,12 @@ def render_banner_imagen(ruta_imagen: str, alto_px: int = 240):
 
 render_banner_imagen("imagenes/banner.jpg", alto_px=240)
 
+
 @st.cache_resource
 def init_connection():
     token = st.secrets["MOTHERDUCK_TOKEN"]
 
-    return duckdb.connect(f"md:international_hotel_booking?motherduck_token={token}")
+    return duckdb.connect(f"md:my_db?motherduck_token={token}")
 
 
 con = init_connection()
@@ -184,6 +187,11 @@ with st.sidebar:
     st.subheader("Modalidad de Turismo:")
     tipo_turismo = st.radio("Tipo:", ["Todos", "Turismo Interno", "Turismo Receptivo"])
 
+    st.subheader("Categoría:")
+    categoria = st.selectbox(
+        "Estrellas:",
+        ["Todas las categorías", "3 Estrellas", "4 Estrellas", "5 Estrellas"],
+    )
 
 # pestañas principales
 tab_obj1, tab_obj2, tab_obj3, tab_equipo = st.tabs(
@@ -215,15 +223,14 @@ with tab_obj1:
         df_raw = con.sql(query).df()
 
         if perfil_viajero != "Todos los perfiles":
-            df_raw = df_raw[df_raw["user_type"] == PERFILES_DB[perfil_viajero]]
+            df_raw = df_raw[df_raw["user_type"] == perfil_viajero]
 
         if tipo_turismo == "Turismo Interno":
             df_raw = df_raw[df_raw["user_country"] == df_raw["hotel_country"]]
         elif tipo_turismo == "Turismo Receptivo":
             df_raw = df_raw[df_raw["user_country"] != df_raw["hotel_country"]]
 
-        st.subheader(f"Métricas para: {tipo_turismo}")
-
+        st.subheader(f"Métricas para: {tipo_turismo} | {categoria}")
 
         if df_raw is not None and not df_raw.empty:
             df_stats = (
@@ -239,22 +246,10 @@ with tab_obj1:
                 df_stats["v"] + C
             )
 
-            # puesto 1 = mejor; el desplazamiento positivo indica que el hotel sube
-            # al penalizar el bajo volumen de resenas (objetivo 1 del README)
-            df_stats["puesto_simple"] = (
-                df_stats["R"].rank(ascending=False, method="min").astype(int)
-            )
-            df_stats["puesto_bayesiano"] = (
-                df_stats["bayesian_avg"].rank(ascending=False, method="min").astype(int)
-            )
-            df_stats["desplazamiento"] = (
-                df_stats["puesto_simple"] - df_stats["puesto_bayesiano"]
-            )
-
             total_evaluaciones = df_stats["v"].sum()
             promedio_simple_global = m
             promedio_bayesiano_global = df_stats["bayesian_avg"].mean()
-            puestos_alterados = int((df_stats["desplazamiento"] != 0).sum())
+            desviacion_ranking = (df_stats["R"] - df_stats["bayesian_avg"]).abs().mean()
 
             col1, col2, col3, col4, col5 = st.columns(5)
             col1.metric(label=f"Total Eval. ({perfil_viajero})",value=f"{total_evaluaciones:,.0f}".replace(',', '.'),)
@@ -265,25 +260,20 @@ with tab_obj1:
 
             col4.metric(label="Factor (C)",value=f"{C:,.1f}".replace('.', ','))
 
-            col5.metric(label="Puestos alterados",value=f"{puestos_alterados} de {len(df_stats)}")
-            
+            col5.metric(label="Desviación Ránking",value=f"{desviacion_ranking:,.2f}".replace('.', ','))
+
 
             st.markdown("---")
-           
-            st.markdown("---")
             st.warning(
-                f" **Vista Seleccionada:** Perfil **{perfil_viajero}** | Modalidad **{tipo_turismo}**."
+                f" **Vista Seleccionada:** Perfil **{perfil_viajero}** | Modalidad **{tipo_turismo}** | Categoría **{categoria}**."
             )
+            st.markdown("---")
+
             st.subheader("Análisis de Objetivos de Investigación")
             with st.container(border=True):
                 st.markdown("### Ranking Bayesiano Interactivo")
                 st.caption(
                     "Clasificación de hoteles penalizando el bajo volumen de evaluaciones frente al promedio simple."
-                )
-                st.caption(
-                    "**Ranking de destinos:** no se calcula porque cada ciudad y cada país "
-                    "del conjunto tienen un único hotel; ordenar por destino daría "
-                    "exactamente el mismo resultado que ordenar por hotel."
                 )
 
                 col_filtros1, col_filtros2 = st.columns(2)
@@ -322,10 +312,10 @@ with tab_obj1:
                 fig_o1.update_layout(
                     paper_bgcolor="rgba(0,0,0,0)",
                     plot_bgcolor="rgba(0,0,0,0)",
-                    font=dict(color="#0a0a0a", size=12),
+                    font=dict(color="#FAFAFA", size=12),
                     margin=dict(t=20, b=20, l=20, r=20),
                     height=450,
-                    xaxis=dict(showgrid=True, gridcolor="rgba(0,0,0,0.08)"),
+                    xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.08)"),
                     yaxis=dict(showgrid=False),
                     coloraxis_showscale=False,
                 )
@@ -335,29 +325,14 @@ with tab_obj1:
 
                 if mostrar_tabla:
                     st.markdown("#### Desglose Estadístico")
-                    st.caption(
-                        "Desplazamiento positivo = el hotel gana puestos al comparar el "
-                        "promedio bayesiano contra el promedio simple."
-                    )
                     df_tabla = df_top.sort_values(by="bayesian_avg", ascending=False)[
-                        [
-                            "hotel_name",
-                            "v",
-                            "R",
-                            "puesto_simple",
-                            "bayesian_avg",
-                            "puesto_bayesiano",
-                            "desplazamiento",
-                        ]
+                        ["hotel_name", "v", "R", "bayesian_avg"]
                     ]
                     df_tabla.columns = [
                         "Nombre del Hotel",
                         "Volumen de Reseñas",
                         "Promedio Simple",
-                        "Puesto Simple",
                         "Promedio Bayesiano",
-                        "Puesto Bayesiano",
-                        "Desplazamiento",
                     ]
                     st.dataframe(df_tabla, width="stretch", hide_index=True)
 
@@ -376,28 +351,14 @@ with tab_obj2:
         st.subheader("Percepción de Calidad-Precio")
 
         usuarios_percepcion = """
-            SELECT
-                u.traveller_type,
-                u.age_group,
-                h.star_rating AS hotel_category,
-                u.country AS user_country,
-                h.country AS hotel_country,
-                r.score_value_for_money
+            SELECT u.traveller_type, r.score_value_for_money
             FROM analytics.fact_reviews r
-            JOIN analytics.dim_hotels h ON r.hotel_id = h.hotel_id
             JOIN analytics.dim_users u ON r.user_id = u.user_id
         """
         df_obj2 = con.sql(usuarios_percepcion).df()
 
         traduccion = {'Solo': 'Solo', 'Couple': 'Pareja', 'Business': 'Negocios', 'Family': 'Familia'}
         df_obj2['traveller_type'] = df_obj2['traveller_type'].map(traduccion).fillna(df_obj2['traveller_type'])
-
-        # variable derivada para el contraste interno vs. receptivo del objetivo 2
-        df_obj2["turismo"] = np.where(
-            df_obj2["user_country"] == df_obj2["hotel_country"],
-            "Turismo Interno",
-            "Turismo Receptivo",
-        )
 
         if df_obj2 is not None and not df_obj2.empty:
             # grafico
@@ -418,132 +379,63 @@ with tab_obj2:
             )
             st.plotly_chart(fig2, use_container_width=True)
 
-            segmentaciones = {
-                "Tipo de viajero": "traveller_type",
-                "Grupo etario": "age_group",
-                "Turismo interno vs. receptivo": "turismo",
-                "Categoría del hotel": "hotel_category",
-            }
-            sele_segmentacion = st.selectbox(
-                "Segmentar la prueba de hipótesis por:",
-                list(segmentaciones.keys()),
-            )
-            columna_seg = segmentaciones[sele_segmentacion]
-
-            if columna_seg == "hotel_category":
-                etiquetas = df_obj2[columna_seg].map(lambda v: f"{int(v)} Estrellas")
-            else:
-                etiquetas = df_obj2[columna_seg].astype(str)
-
-            tipos = etiquetas.dropna().unique()
+            tipos = df_obj2["traveller_type"].unique()
             grupos = [
-                df_obj2.loc[etiquetas == t, "score_value_for_money"].dropna()
+                df_obj2[df_obj2["traveller_type"] == t]["score_value_for_money"].dropna()
                 for t in tipos
             ]
 
-            if len(tipos) < 2:
-                st.info(
-                    f"La segmentación por **{sele_segmentacion.lower()}** no es "
-                    "aplicable con los datos actuales: la variable es constante "
-                    f"({', '.join(tipos)}), por lo que no existen grupos que comparar."
-                )
+            #validacion de supuestos
+            with st.expander("🔍 Verificación de Supuestos Estadísticos"):
+                st.markdown("Para determinar si se debe aplicar una prueba parametrica o no paramétrica, evaluamos los supuestos clave:")
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.markdown("**1. Supuesto de Normalidad**")
+                    st.caption("Prueba de Shapiro-Wilk por grupo ($p > 0.05$ indica normalidad)")
+
+                    normalidad_global = True
+                    for t, g in zip(tipos, grupos):
+                        if len(g) >= 3:
+                            g_muestra = g.sample(min(len(g), 4000), random_state=42)
+                            _, p_shap = stats.shapiro(g_muestra)
+                            st.text(f"• {t}: p = {p_shap:.5f}")
+                            if p_shap < 0.05:
+                                normalidad_global = False
+
+                    if normalidad_global:
+                        st.success("✅ Los grupos muestran normalidad.")
+                    else:
+                        st.warning("⚠️ No se cumple la normalidad en los grupos ($p \\le 0.05$). Esto justifica el uso de Kruskal-Wallis.")
+
+                with col2:
+                    st.markdown("**2. Homogeneidad de Varianzas**")
+                    st.caption("Prueba de Levene para homocedasticidad")
+
+                    stat_lev, p_lev = stats.levene(*grupos)
+                    st.metric(label="Estadístico de Levene", value=f"{stat_lev:.4f}")
+                    st.metric(label="p-valor (Levene)", value=f"{p_lev:.5f}")
+
+                    if p_lev > 0.05:
+                        st.success("✅ Se cumple la homocedasticidad (varianzas iguales).")
+                    else:
+                        st.warning("⚠️ Las varianzas son heterogéneas ($p \\le 0.05$).")
+
+            #prueba de hipotesis
+            st.markdown("### Resultado de la Prueba No Paramétrica")
+            h_stat, p_val = stats.kruskal(*grupos)
+
+            col_res1, col_res2 = st.columns(2)
+            with col_res1:
+                st.metric(label="Estadístico H (Kruskal-Wallis)", value=f"{h_stat:.4f}")
+            with col_res2:
+                st.metric(label="Valor P", value=f"{p_val:.5f}")
+
+            if p_val < 0.05:
+                st.success("**Conclusión:** Sí existen diferencias estadísticamente significativas en cómo evalúan la relación calidad-precio los distintos tipos de viajeros ($p < 0.05$). Rechazamos la hipótesis nula.")
             else:
-                #validacion de supuestos
-                with st.expander("🔍 Verificación de Supuestos Estadísticos"):
-                    st.markdown("Para determinar si se debe aplicar una prueba parametrica o no paramétrica, evaluamos los supuestos clave:")
-
-                    col1, col2 = st.columns(2)
-
-                    with col1:
-                        st.markdown("**1. Normalidad práctica de los grupos**")
-                        st.caption(
-                            "Asimetría y curtosis estandarizadas ($|z| \\le 2$ indica desviación "
-                            "trivial). Con n grande, los p-valores de normalidad detectan "
-                            "desviaciones sin relevancia práctica."
-                        )
-
-                        desviaciones_relevantes = []
-                        for t, g in zip(tipos, grupos):
-                            if len(g) >= 8:
-                                asim, curt, z_asim, z_curt = z_asimetria_curtosis(g)
-                                st.text(
-                                    f"• {t}: asimetría z = {z_asim:+.2f} | "
-                                    f"curtosis z = {z_curt:+.2f}"
-                                )
-                                if abs(z_asim) > 2 or abs(z_curt) > 2:
-                                    desviaciones_relevantes.append(t)
-
-                        if not desviaciones_relevantes:
-                            st.success(
-                                "✅ Asimetría y curtosis compatibles con normalidad práctica "
-                                "en todos los grupos."
-                            )
-                        else:
-                            st.warning(
-                                "⚠️ Desviación no trivial en: "
-                                + ", ".join(desviaciones_relevantes)
-                                + ". Junto con la escala ordinal y acotada de los datos, "
-                                "esto respalda el uso de Kruskal-Wallis."
-                            )
-
-                    with col2:
-                        st.markdown("**2. Homogeneidad de Varianzas**")
-                        st.caption("Prueba de Levene para homocedasticidad")
-
-                        stat_lev, p_lev = stats.levene(*grupos)
-                        st.metric(label="Estadístico de Levene", value=f"{stat_lev:.4f}")
-                        st.metric(label="p-valor (Levene)", value=f"{p_lev:.5f}")
-
-                        if p_lev > 0.05:
-                            st.success("✅ Se cumple la homocedasticidad (varianzas iguales).")
-                        else:
-                            st.warning("⚠️ Las varianzas son heterogéneas ($p \\le 0.05$).")
-
-                    st.caption(
-                        "Kruskal-Wallis se justifica por diseño: la variable es una escala "
-                        "ordinal, discreta y acotada entre 1 y 10, más allá del resultado de "
-                        "las pruebas de normalidad."
-                    )
-
-                #prueba de hipotesis
-                st.markdown(f"### Resultado: {sele_segmentacion}")
-                h_stat, p_val = stats.kruskal(*grupos)
-
-                # tamano de efecto epsilon cuadrado (Tomczak y Tomczak, 2014)
-                n_total = sum(len(g) for g in grupos)
-                epsilon2 = h_stat / ((n_total**2 - 1) / (n_total + 1))
-                if epsilon2 >= 0.14:
-                    magnitud = "grande"
-                elif epsilon2 >= 0.06:
-                    magnitud = "mediano"
-                elif epsilon2 >= 0.01:
-                    magnitud = "pequeño"
-                else:
-                    magnitud = "despreciable"
-
-                col_res1, col_res2, col_res3 = st.columns(3)
-                with col_res1:
-                    st.metric(label="Estadístico H (Kruskal-Wallis)", value=f"{h_stat:.4f}")
-                with col_res2:
-                    st.metric(label="Valor P", value=f"{p_val:.5f}")
-                with col_res3:
-                    st.metric(label="Tamaño del efecto (ε²)", value=f"{epsilon2:.4f}")
-
-                if p_val < 0.05:
-                    st.success(
-                        "**Conclusión:** Sí existen diferencias estadísticamente "
-                        f"significativas en la percepción de calidad-precio según "
-                        f"{sele_segmentacion.lower()} ($p < 0.05$). Rechazamos la "
-                        f"hipótesis nula; el tamaño del efecto es **{magnitud}** "
-                        f"(ε² = {epsilon2:.4f})."
-                    )
-                else:
-                    st.info(
-                        "**Conclusión:** No se encuentran diferencias estadísticamente "
-                        f"significativas en la percepción de calidad-precio según "
-                        f"{sele_segmentacion.lower()} ($p \\ge 0.05$); el tamaño del "
-                        f"efecto es {magnitud} (ε² = {epsilon2:.4f})."
-                    )
+                st.info("**Conclusión:** No se encuentran diferencias estadísticamente significativas entre los grupos de viajeros analizados ($p \\ge 0.05$).")
 
         else:
             st.warning("No se encontraron datos de calidad-precio para realizar la prueba.")
@@ -824,6 +716,7 @@ with tab_obj3:
     except Exception as e:
         st.error(f"Ocurrió un error en la regresion: {e}")
 
+
 # pestaña 3  presentacion de nuestro equipo
 with tab_equipo:
     st.title("Equipo de investigación y recomendación hotelera")
@@ -841,12 +734,11 @@ with tab_equipo:
             st.image("imagenes/douglas.jpg", use_container_width=True)
         with c_txt:
             st.markdown("### Douglas Barreto")
-            st.caption("**Rol:** ...")
+            st.caption("**Rol:** Ingeniero de datos SQL y consultas analíticas")
             st.markdown("""
             **Encargado de:**
-            * ..
-            * ..
-            * ..
+            * Ejecuto la normalización de las tablas para optimizar el procesamiento.
+            * Construyo el cuestionario de consultas SQL.
             """)
 
     st.write("")
@@ -858,12 +750,11 @@ with tab_equipo:
             st.image("imagenes/eymi2.jpg", use_container_width=True)
         with c_txt:
             st.markdown("### Eymi Borjas")
-            st.caption("**Rol:** ...")
+            st.caption("**Rol:** Arquitectura visual de la aplicación de Streamlit")
             st.markdown("""
             **Encargado de:**
-            * ..
-            * ..
-            * ..
+            * Diseño modulos de reporte en Streamlit
+            * Colaboracion con la estetica del Power BI y app de Streamlit
             """)
 
     st.write("")
@@ -872,15 +763,14 @@ with tab_equipo:
     with st.container(border=True):
         c_img, c_txt = st.columns([1, 3])
         with c_img:
-            st.image("https://via.placeholder.com/300", width="stretch")
+            st.image("imagenes/angel.jpg", width="stretch")
         with c_txt:
             st.markdown("### Angel Reina")
-            st.caption("**Rol:** ...")
+            st.caption("**Rol:** Arquitectura y modelado de datos")
             st.markdown("""
             **Encargado de:**
-            * ..
-            * ..
-            * ..
+            * Diseño el modelo relacional/esquema de datos.
+            * Apoyo en objetivos y parte teórica del estudio.
             """)
 
     st.write("")
@@ -889,15 +779,14 @@ with tab_equipo:
     with st.container(border=True):
         c_img, c_txt = st.columns([1, 3])
         with c_img:
-            st.image("https://via.placeholder.com/300", width="stretch")
+            st.image("imagenes/andres.jpg", width="stretch")
         with c_txt:
             st.markdown("### Andres Ortega")
-            st.caption("**Rol:** ...")
+            st.caption("**Rol:** Arquitectura visual de aplicacion de Streamlit")
             st.markdown("""
                 **Encargado de:**
-                * ..
-                * ..
-                * ..
+                * Diseño de la interfaz interactiva en streamlit para la visualizacion de resultados.
+                * Formulación de objetivos analíticos.
                 """)
 
     st.write("")
@@ -906,15 +795,14 @@ with tab_equipo:
     with st.container(border=True):
         c_img, c_txt = st.columns([1, 3])
         with c_img:
-            st.image("https://via.placeholder.com/300", width="stretch")
+            st.image("imagenes/gabriel.jpg", width="stretch")
         with c_txt:
             st.markdown("### Gabriel Guevara")
-            st.caption("**Rol:** ...")
+            st.caption("**Rol:** Visualización analítica en Power BI")
             st.markdown("""
                 **Encargado de:**
-                * ..
-                * ..
-                * ..
+                * Desarrollo de dashboard analítico en Power BI para la exploración de métricas.
+                * estructura de Marco Metodológico
                 """)
 
     st.markdown("---")
