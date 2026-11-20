@@ -4,6 +4,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 from scipy import stats
+import base64
+from pathlib import Path
 
 st.set_page_config(
     page_title="Recomendador y Ranking Hotelero", page_icon="🏨", layout="wide"
@@ -50,11 +52,11 @@ def fig_qq(datos, titulo):
         showlegend=False,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#FAFAFA", size=11),
+        font=dict(color="#0a0a0a", size=11),
         margin=dict(t=35, b=10, l=10, r=10),
         height=280,
-        xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.08)"),
-        yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.08)"),
+        xaxis=dict(showgrid=True, gridcolor="rgba(0,0,0,0.08)"),
+        yaxis=dict(showgrid=True, gridcolor="rgba(0,0,0,0.08)"),
     )
     return fig
 
@@ -72,77 +74,47 @@ def breusch_pagan(x, residuos):
     return lm, p_valor
 
 
-def render_bloque_principal():
-    hero_html = """
-    <style>
-    .welcome-container {
-        background: linear-gradient(135deg, #383838 0%, #2b2b2b 100%);
-        padding: 60px 20px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        border-left: 5px solid #f39c12;
-    }
+def render_banner_imagen(ruta_imagen: str, alto_px: int = 240):
+    img_path = Path(ruta_imagen)
+    if not img_path.exists():
+        st.warning(f"No se encontró la imagen en: {ruta_imagen}")
+        return
 
-    .glass-card {
-        background: rgba(40, 40, 40, 0.4);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        padding: 40px 50px;
-        max-width: 850px;
-        text-align: center;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    }
+    extension = img_path.suffix.lower().lstrip(".")
+    if extension == "jpg":
+        extension = "jpeg"
 
-    .eyebrow {
-        font-size: 0.85rem;
-        font-weight: 700;
-        letter-spacing: 2.5px;
-        text-transform: uppercase;
-        color: #f39c12;
-        margin-bottom: 12px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    img_base64 = base64.b64encode(img_path.read_bytes()).decode("utf-8")
 
-    .main-title {
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin-bottom: 24px;
-        color: #ffffff;
-        line-height: 1.2;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .description {
-        font-size: 1.05rem;
-        line-height: 1.6;
-        color: #d1d5db;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        margin-bottom: 0;
-    }
-    </style>
-
-    <div class="welcome-container">
-        <div class="glass-card">
-            <div class="eyebrow">Dashboard</div>
-            <div class="main-title">Bienvenidos a...</div>
-            <div class="description">
-                Aqui pondriamos.... (por definir)
-            </div>
+    st.markdown(
+        f"""
+        <div style="
+            width: 100%;
+            height: {alto_px}px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.14);
+            margin-top: 8px;
+            margin-bottom: 18px;
+        ">
+            <img
+                src="data:image/{extension};base64,{img_base64}"
+                alt="Banner de bienvenida"
+                style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    object-position: center;
+                    display: block;
+                "
+            />
         </div>
-    </div>
-    """
+        """,
+        unsafe_allow_html=True,
+    )
 
-    st.markdown(hero_html, unsafe_allow_html=True)
 
-
-render_bloque_principal()
-
+render_banner_imagen("imagenes/banner.jpg", alto_px=240)
 
 @st.cache_resource
 def init_connection():
@@ -212,11 +184,6 @@ with st.sidebar:
     st.subheader("Modalidad de Turismo:")
     tipo_turismo = st.radio("Tipo:", ["Todos", "Turismo Interno", "Turismo Receptivo"])
 
-    st.subheader("Categoría:")
-    categoria = st.selectbox(
-        "Estrellas:",
-        ["Todas las categorías", "3 Estrellas", "4 Estrellas", "5 Estrellas"],
-    )
 
 # pestañas principales
 tab_obj1, tab_obj2, tab_obj3, tab_equipo = st.tabs(
@@ -250,16 +217,13 @@ with tab_obj1:
         if perfil_viajero != "Todos los perfiles":
             df_raw = df_raw[df_raw["user_type"] == PERFILES_DB[perfil_viajero]]
 
-        if categoria != "Todas las categorías":
-            estrellas = int(categoria.split()[0])
-            df_raw = df_raw[df_raw["hotel_category"] == estrellas]
-
         if tipo_turismo == "Turismo Interno":
             df_raw = df_raw[df_raw["user_country"] == df_raw["hotel_country"]]
         elif tipo_turismo == "Turismo Receptivo":
             df_raw = df_raw[df_raw["user_country"] != df_raw["hotel_country"]]
 
-        st.subheader(f"Métricas para: {tipo_turismo} | {categoria}")
+        st.subheader(f"Métricas para: {tipo_turismo}")
+
 
         if df_raw is not None and not df_raw.empty:
             df_stats = (
@@ -305,11 +269,11 @@ with tab_obj1:
             
 
             st.markdown("---")
-            st.warning(
-                f" **Vista Seleccionada:** Perfil **{perfil_viajero}** | Modalidad **{tipo_turismo}** | Categoría **{categoria}**."
-            )
+           
             st.markdown("---")
-
+            st.warning(
+                f" **Vista Seleccionada:** Perfil **{perfil_viajero}** | Modalidad **{tipo_turismo}**."
+            )
             st.subheader("Análisis de Objetivos de Investigación")
             with st.container(border=True):
                 st.markdown("### Ranking Bayesiano Interactivo")
@@ -358,10 +322,10 @@ with tab_obj1:
                 fig_o1.update_layout(
                     paper_bgcolor="rgba(0,0,0,0)",
                     plot_bgcolor="rgba(0,0,0,0)",
-                    font=dict(color="#FAFAFA", size=12),
+                    font=dict(color="#0a0a0a", size=12),
                     margin=dict(t=20, b=20, l=20, r=20),
                     height=450,
-                    xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.08)"),
+                    xaxis=dict(showgrid=True, gridcolor="rgba(0,0,0,0.08)"),
                     yaxis=dict(showgrid=False),
                     coloraxis_showscale=False,
                 )
@@ -614,10 +578,6 @@ with tab_obj3:
         if perfil_viajero != "Todos los perfiles":
             df_obj3 = df_obj3[df_obj3["user_type"] == PERFILES_DB[perfil_viajero]]
 
-        if categoria != "Todas las categorías":
-            estrellas = int(categoria.split()[0])
-            df_obj3 = df_obj3[df_obj3["hotel_category"] == estrellas]
-
         if tipo_turismo == "Turismo Interno":
             df_obj3 = df_obj3[df_obj3["user_country"] == df_obj3["hotel_country"]]
         elif tipo_turismo == "Turismo Receptivo":
@@ -689,10 +649,10 @@ with tab_obj3:
             fig3.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="#FAFAFA", size=12),
+                font=dict(color="#0a0a0a", size=12),
                 margin=dict(t=20, b=20, l=20, r=20),
                 height=450,
-                xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.08)"),
+                xaxis=dict(showgrid=True, gridcolor="rgba(0,0,0,0.08)"),
                 yaxis=dict(showgrid=False),
             )
             st.plotly_chart(fig3, use_container_width=True)
