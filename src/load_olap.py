@@ -30,10 +30,11 @@ def load_data_to_duckdb(
         print(f"Inserted data from {path_reviews_csv} into REVIEWS table")
 
         # loading data of star schema
-        with open(script_sql_dir / "modelado_de_datos.sql", "r") as f:
-            sql_star_schema = f.read()
-            conn.execute(sql_star_schema)
-            print("loading schema")
+        for sql_script in ("olap_schema.sql", "modelado_de_datos.sql"):
+            with open(script_sql_dir / sql_script, "r") as f:
+                conn.execute(f.read())
+            print(f"Executed {sql_script}")
         conn.close()
     except Exception as e:
         print(e)
+        raise
