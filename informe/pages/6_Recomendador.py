@@ -93,17 +93,7 @@ with tab_perfil:
     col_m1.metric("Pendiente", f"{modelo.slope:,.3f}".replace(".", ","))
     col_m2.metric("Intercepto", f"{modelo.intercept:,.3f}".replace(".", ","))
     col_m3.metric("R cuadrado", f"{modelo.rvalue**2:,.3f}".replace(".", ","))
-    col_m4.metric("Valor P (pendiente)", f"{modelo.pvalue:.2e}")
-
-    calificacion_objetivo = st.slider(
-        "Calificación general esperada del hotel:", 1.0, 10.0, 8.0, 0.1
-    )
-    proyeccion_objetivo = modelo.intercept + modelo.slope * calificacion_objetivo
-    st.info(
-        f"Con una calificación general de **{calificacion_objetivo:.1f}**, el modelo "
-        f"proyecta una percepción de calidad-precio de **{proyeccion_objetivo:.2f}** "
-        f"para {perfil.lower() if perfil != 'Todos' else 'el conjunto filtrado'}."
-    )
+    col_m4.metric("Valor P", f"{modelo.pvalue:.2e}")
 
 with tab_segmentos:
     st.caption(
@@ -175,9 +165,20 @@ criterios = {
     "Calidad-precio observada": "valor",
     "Calidad-precio proyectada": "proyectado",
 }
+def aplicar_correccion_bayesiana():
+    st.session_state.criterio = "Ranking bayesiano"
+
+
 col_c1, col_c2 = st.columns([2, 1])
 with col_c1:
-    etiqueta_criterio = st.selectbox("Criterio de ordenamiento", list(criterios))
+    etiqueta_criterio = st.selectbox(
+        "Criterio de ordenamiento", list(criterios), key="criterio"
+    )
+    st.button(
+        "Aplicar corrección bayesiana",
+        on_click=aplicar_correccion_bayesiana,
+        disabled=etiqueta_criterio == "Ranking bayesiano",
+    )
 with col_c2:
     top_n = st.slider("Hoteles a mostrar", 5, min(20, len(resumen)), 8)
 
