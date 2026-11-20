@@ -1,12 +1,7 @@
--- Creamos los esquemas a utilizar
-CREATE SCHEMA IF NOT EXISTS analytics;
-CREATE SCHEMA IF NOT EXISTS analytics_models;
-
--- Creamos la Tabla Denormalizada 
-CREATE OR REPLACE TABLE analytics.hotel_reviews_master AS
+CREATE TEMPORARY TABLE hotel_reviews_master AS
 SELECT
     r.review_id,
-    CAST(r.review_date AS DATE) AS review_date, 
+    CAST(r.review_date AS DATE) AS review_date,
     r.score_overall,
     r.score_cleanliness,
     r.score_comfort,
@@ -27,30 +22,12 @@ SELECT
     u.country AS user_country,
     u.age_group,
     u.traveller_type,
-    CAST(u.join_date AS DATE) AS user_join_date 
+    CAST(u.join_date AS DATE) AS user_join_date
 FROM main.REVIEWS r
 LEFT JOIN main.HOTELES h ON r.hotel_id = h.hotel_id
 LEFT JOIN main.USUARIOS u ON r.user_id = u.user_id;
 
--- Creamos la Tabla de Factos
-CREATE OR REPLACE TABLE analytics.fact_reviews AS
-SELECT 
-    review_id,
-    hotel_id,
-    user_id,
-    CAST(STRFTIME(review_date, '%Y%m%d') AS INT) AS date_id, 
-    review_date,
-    score_overall,
-    score_cleanliness,
-    score_comfort,
-    score_facilities,
-    score_location,
-    score_staff,
-    score_value_for_money
-FROM analytics.hotel_reviews_master;
-
--- Creamos las Tablas de Dimensiones 
-CREATE OR REPLACE TABLE analytics.dim_hotels AS
+INSERT INTO analytics.dim_hotels
 SELECT DISTINCT
     hotel_id,
     hotel_name,
@@ -59,9 +36,9 @@ SELECT DISTINCT
     star_rating,
     lat,
     lon
-FROM analytics.hotel_reviews_master;
+FROM hotel_reviews_master;
 
-CREATE OR REPLACE TABLE analytics.dim_users AS
+INSERT INTO analytics.dim_users
 SELECT DISTINCT
     user_id,
     user_gender,
@@ -69,21 +46,38 @@ SELECT DISTINCT
     age_group,
     traveller_type,
     user_join_date
-FROM analytics.hotel_reviews_master;
+FROM hotel_reviews_master;
 
-CREATE OR REPLACE TABLE analytics.dim_tiempo AS
+INSERT INTO analytics.dim_tiempo
 SELECT DISTINCT
-    CAST(STRFTIME(review_date, '%Y%m%d') AS INT) AS date_id, 
+    CAST(STRFTIME(review_date, '%Y%m%d') AS INT) AS date_id,
     review_date,
-    EXTRACT(year FROM review_date) AS year,
-    EXTRACT(month FROM review_date) AS month,
-    EXTRACT(day FROM review_date) AS day,
-    STRFTIME(review_date, '%A') AS day_of_week, 
-    EXTRACT(quarter FROM review_date) AS quarter
-FROM analytics.fact_reviews;
+    CAST(EXTRACT(year FROM review_date) AS INT) AS year,
+    CAST(EXTRACT(month FROM review_date) AS INT) AS month,
+    CAST(EXTRACT(day FROM review_date) AS INT) AS day,
+    STRFTIME(review_date, '%A') AS day_of_week,
+    CAST(EXTRACT(quarter FROM review_date) AS INT) AS quarter
+FROM hotel_reviews_master;
+
+-- Creamos la Tabla de Factos
+INSERT INTO analytics.fact_reviews
+SELECT
+    review_id,
+    hotel_id,
+    user_id,
+    CAST(STRFTIME(review_date, '%Y%m%d') AS INT) AS date_id,
+    review_date,
+    score_overall,
+    score_cleanliness,
+    score_comfort,
+    score_facilities,
+    score_location,
+    score_staff,
+    score_value_for_money
+FROM hotel_reviews_master;
 
 -- Creamos las Tablas para los Análisis Estadísticos en el esquema de analytics_models
-CREATE OR REPLACE TABLE analytics_models.hotel_bayesian_inputs AS
+INSERT INTO analytics_models.hotel_bayesian_inputs
 WITH global_stats AS (
     SELECT AVG(score_overall) AS global_avg_score
     FROM main.REVIEWS
@@ -92,15 +86,15 @@ SELECT
     h.hotel_id,
     h.hotel_name,
     h.star_rating,
-    COUNT(r.review_id) AS total_reviews,      
-    AVG(r.score_overall) AS avg_hotel_score,  
-    g.global_avg_score                        
+    COUNT(r.review_id) AS total_reviews,
+    AVG(r.score_overall) AS avg_hotel_score,
+    g.global_avg_score
 FROM main.HOTELES h
 LEFT JOIN main.REVIEWS r ON h.hotel_id = r.hotel_id
 CROSS JOIN global_stats g
 GROUP BY h.hotel_id, h.hotel_name, h.star_rating, g.global_avg_score;
 
-CREATE OR REPLACE TABLE analytics_models.hotel_traveller_profiles AS
+INSERT INTO analytics_models.hotel_traveller_profiles
 SELECT
     h.hotel_id,
     h.hotel_name,
@@ -115,5 +109,4 @@ LEFT JOIN main.REVIEWS r ON h.hotel_id = r.hotel_id
 LEFT JOIN main.USUARIOS u ON r.user_id = u.user_id
 GROUP BY h.hotel_id, h.hotel_name, h.star_rating;
 
--- Eliminamos la Tabla Denormalizada ya que no la necesitaremos más
-DROP TABLE analytics.hotel_reviews_master;
+DROP TABLE hotel_reviews_master;
