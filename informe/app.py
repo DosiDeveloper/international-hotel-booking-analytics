@@ -120,7 +120,7 @@ render_banner_imagen("imagenes/banner.jpg", alto_px=240)
 def init_connection():
     token = st.secrets["MOTHERDUCK_TOKEN"]
 
-    return duckdb.connect(f"md:my_db?motherduck_token={token}")
+    return duckdb.connect(f"md:international_hotel_booking?motherduck_token={token}")
 
 
 con = init_connection()
@@ -260,7 +260,7 @@ with tab_obj1:
             col1.metric(label=f"Total Eval. ({perfil_viajero})",value=f"{total_evaluaciones:,.0f}".replace(',', '.'),)
 
             col2.metric(label="Prom. Simple",value=f"{promedio_simple_global:,.2f}".replace('.', ','))
-        
+
             col3.metric(label="Prom. Bayesiano", value=f"{promedio_bayesiano_global:,.2f}".replace('.', ','))
 
             col4.metric(label="Factor (C)",value=f"{C:,.1f}".replace('.', ','))
@@ -368,7 +368,7 @@ with tab_obj1:
 
     except Exception as e:
         st.error(f"Ocurrió un error en el procesamiento: {e}")
-        
+
 with tab_obj2:
         # para el objetivo 2 (percecpcion calidad-precio)
         st.title("Percepcion calidad-precio")
