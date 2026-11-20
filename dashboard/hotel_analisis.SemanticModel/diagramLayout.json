@@ -85,10 +85,23 @@
             "width": 234
           },
           "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1099.465548958427,
+            "y": 473.30449100932015
+          },
+          "nodeIndex": "Simulador Satisfaccion",
+          "nodeLineageTag": "6225fe5a-d892-4065-8695-cae1d1861eac",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
         }
       ],
       "name": "All tables",
-      "zoomValue": 100,
+      "zoomValue": 44.905697313103978,
       "pinKeyFieldsToTop": false,
       "showExtraHeaderInfo": false,
       "hideKeyFieldsWhenCollapsed": false,
