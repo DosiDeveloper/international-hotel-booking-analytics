@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "a778b87a03c662eab1d0",
   "position": {
-    "x": 1383.1950283924355,
-    "y": 72.041407728772668,
-    "z": 23001,
-    "height": 76.15805959898826,
-    "width": 469.29831320457629,
-    "tabOrder": 23001
+    "x": 541.1071761416589,
+    "y": 75.460524563972839,
+    "z": 24000,
+    "height": 75.460524563972839,
+    "width": 675.46371987751309,
+    "tabOrder": 24000
   },
   "visual": {
     "visualType": "slicer",
@@ -229,30 +229,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "7cd3e49beaa5a69a9202",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics dim_hotels"
-              }
-            },
-            "Property": "hotel_name"
-          }
-        },
-        "type": "Categorical",
-        "objects": {
-          "general": [
-            {
-              "properties": {}
-            }
-          ]
-        }
-      }
-    ]
   }
 }

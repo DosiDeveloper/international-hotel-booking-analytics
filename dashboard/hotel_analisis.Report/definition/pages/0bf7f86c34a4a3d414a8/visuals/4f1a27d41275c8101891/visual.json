@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "4f1a27d41275c8101891",
   "position": {
-    "x": 1216.4706276487043,
-    "y": 232.59083066718034,
+    "x": 1216.5708960191721,
+    "y": 213.49806949806953,
     "z": 0,
     "height": 732.76403289837344,
     "width": 636.02271394830734,
@@ -1079,34 +1079,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "34f5d42d3002a89dd04e",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Promedio_Bayesiano_Año"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "accdda1d33ba135a4ae3",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics dim_hotels"
-              }
-            },
-            "Property": "hotel_name"
-          }
-        },
-        "type": "Categorical"
       }
     ]
   }
