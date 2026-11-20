@@ -54,8 +54,8 @@ def cargar_datos():
 
 st.title("🎯 Recomendador de hoteles")
 st.caption(
-    "Ordena los hoteles según la percepción del perfil elegido, con el modelo de "
-    "regresión (objetivo 3) como proyección de la calidad-precio."
+    "Combina el ranking bayesiano (objetivo 1) con el modelo de regresión "
+    "(objetivo 3) para ordenar los hoteles según la percepción del perfil elegido."
 )
 
 df = cargar_datos()
@@ -82,6 +82,7 @@ if len(df_f) < 3:
     st.warning("No hay reseñas suficientes para los filtros seleccionados.")
     st.stop()
 
+# --- modelo: percepcion de calidad-precio a partir de la calificacion general ---
 modelo = stats.linregress(df_f["score_overall"], df_f["score_value_for_money"])
 
 st.subheader("Modelo de regresión")
@@ -147,7 +148,7 @@ with tab_segmentos:
     else:
         st.info("No hay perfiles con reseñas suficientes con los filtros elegidos.")
 
-# --- agregados por hotel ---
+# --- agregados por hotel + promedio bayesiano ---
 resumen = (
     df_f.groupby(["hotel_name", "city", "hotel_country"])
     .agg(
@@ -164,9 +165,13 @@ resumen = (
     .reset_index()
 )
 
+C = resumen["v"].quantile(0.50)
+m = resumen["R"].mean()
+resumen["bayesiano"] = (resumen["v"] * resumen["R"] + C * m) / (resumen["v"] + C)
 resumen["proyectado"] = modelo.intercept + modelo.slope * resumen["R"]
 
 criterios = {
+    "Ranking bayesiano": "bayesiano",
     "Calidad-precio observada": "valor",
     "Calidad-precio proyectada": "proyectado",
 }
@@ -185,7 +190,8 @@ for posicion, fila in ranking.head(top_n).iterrows():
     col_nombre.markdown(f"**{posicion + 1}. {fila['hotel_name']}**")
     col_nombre.caption(f"{fila['city']}, {fila['hotel_country']}")
     col_datos.caption(
-        f"{fila['v']:,.0f} reseñas | promedio simple {fila['R']:.2f}".replace(",", ".")
+        f"{fila['v']:,.0f} reseñas | promedio simple {fila['R']:.2f} | "
+        f"bayesiano {fila['bayesiano']:.2f}".replace(",", ".")
     )
     col_puntaje.markdown(f"**{fila[columna_criterio]:.2f}**")
     st.progress(min(int(round(fila[columna_criterio] * 10)), 100))
@@ -201,6 +207,7 @@ fila = ranking[ranking["hotel_name"] == hotel].iloc[0]
 
 col_ficha1, col_ficha2 = st.columns([1, 2])
 with col_ficha1:
+    st.metric("Promedio bayesiano", f"{fila['bayesiano']:.2f}")
     st.metric("Promedio simple", f"{fila['R']:.2f}")
     st.metric("Calidad-precio proyectada", f"{fila['proyectado']:.2f}")
     st.caption(f"{fila['v']:,.0f} reseñas del perfil y filtros elegidos".replace(",", "."))
@@ -210,15 +217,19 @@ with col_ficha2:
         st.caption(f"{etiqueta}: {fila[columna]:.2f}")
         st.progress(min(int(round(fila[columna] * 10)), 100))
 
-with st.expander("Cómo se construye la recomendación"):
+with st.expander("📖 Cómo se construye la recomendación"):
     st.markdown(
         f"""
-        1. **Regresión lineal:** sobre las reseñas del perfil seleccionado se ajusta
+        1. **Ranking bayesiano:** el promedio de cada hotel se corrige hacia la media
+        global ponderando por su volumen de reseñas, con lo que un hotel con pocas
+        evaluaciones no lidera el ranking por azar.
+
+        2. **Regresión lineal:** sobre las reseñas del perfil seleccionado se ajusta
         `calidad-precio = {modelo.slope:.3f} x calificación general + {modelo.intercept:.3f}`
         (R² = {modelo.rvalue**2:.3f}, p = {modelo.pvalue:.2e}). La calidad-precio
         proyectada de cada hotel usa su calificación general promedio.
 
-        2. **Ordenamiento:** el criterio elegido define la posición final; las barras
+        3. **Ordenamiento:** el criterio elegido define la posición final; las barras
         comparan cada hotel contra el máximo de la escala (10 puntos).
 
         **Limitaciones:** el modelo asume una relación lineal y predice la
