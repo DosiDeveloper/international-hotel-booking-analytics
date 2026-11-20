@@ -26,12 +26,14 @@ class Setup:
         """
         if not self.root_data_dir.exists():
             self.root_data_dir.mkdir()
-            self.raw_data_dir.mkdir()
-            self.clean_data_dir.mkdir()
-            self.olap_data_dir.mkdir()
+            if not self.raw_data_dir.exists():
+                self.raw_data_dir.mkdir()
+            if not self.clean_data_dir.exists():
+                self.clean_data_dir.mkdir()
+            if not self.olap_data_dir.exists():
+                self.olap_data_dir.mkdir()
             print("Directories created successfully")
             return True
-        print("Directories already exist")
         return False
 
     def download_data_from_drive(self):
@@ -71,9 +73,9 @@ class Setup:
         import subprocess
 
         setup.create_dirs()
-        # setup.download_data_from_drive()
+        setup.download_data_from_drive()
         subprocess.run(["python", "notebook/limpieza.py"], shell=True, check=False)
-        load_data_to_supabase(self.script_sql_dir, self.clean_data_dir)
+        load_data_to_supabase(self.script_sql_dir, self.clean_data_dir, self.raw_data_dir)
         load_data_to_duckdb(
             self.olap_data_dir, self.script_sql_dir, self.clean_data_dir
         )
