@@ -1,83 +1,122 @@
 import duckdb
+import numpy as np
+import pandas as pd
 import plotly.express as px
 import streamlit as st
 from scipy import stats
+import base64
+from pathlib import Path
 
 st.set_page_config(
     page_title="Recomendador y Ranking Hotelero", page_icon="🏨", layout="wide"
 )
 
+# el filtro lateral muestra las etiquetas en espanol; la DB guarda el valor en ingles
+PERFILES_DB = {
+    "Solo": "Solo",
+    "Pareja": "Couple",
+    "Familia": "Family",
+    "Negocios": "Business",
+}
 
-def render_bloque_principal():
-    hero_html = """
-    <style>
-    .welcome-container {
-        background: linear-gradient(135deg, #383838 0%, #2b2b2b 100%);
-        padding: 60px 20px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        border-left: 5px solid #f39c12;
-    }
 
-    .glass-card {
-        background: rgba(40, 40, 40, 0.4);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        padding: 40px 50px;
-        max-width: 850px;
-        text-align: center;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    }
+def z_asimetria_curtosis(serie):
+    # z estandarizados: |z| <= 2 se considera desviacion trivial de la normalidad
+    n = len(serie)
+    asimetria = serie.skew()
+    curtosis = serie.kurt()
+    se_asimetria = np.sqrt(6 * n * (n - 1) / ((n - 2) * (n + 1) * (n + 3)))
+    se_curtosis = 2 * se_asimetria * np.sqrt((n**2 - 1) / ((n - 3) * (n + 5)))
+    return asimetria, curtosis, asimetria / se_asimetria, curtosis / se_curtosis
 
-    .eyebrow {
-        font-size: 0.85rem;
-        font-weight: 700;
-        letter-spacing: 2.5px;
-        text-transform: uppercase;
-        color: #f39c12;
-        margin-bottom: 12px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
 
-    .main-title {
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin-bottom: 24px;
-        color: #ffffff;
-        line-height: 1.2;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+def fig_qq(datos, titulo):
+    osm, osr = stats.probplot(datos, dist="norm")[0]
+    fig = px.scatter(
+        x=osm,
+        y=osr,
+        opacity=0.5,
+        labels={"x": "Cuantiles teoricos", "y": "Cuantiles observados"},
+        color_discrete_sequence=["#256fbe"],
+    )
+    extremos = np.polyfit(osm, osr, 1)
+    fig.add_scatter(
+        x=[osm.min(), osm.max()],
+        y=np.polyval(extremos, [osm.min(), osm.max()]),
+        mode="lines",
+        name="Referencia normal",
+        line=dict(color="#ec6f0f", width=2),
+    )
+    fig.update_layout(
+        title=dict(text=titulo, font=dict(size=13)),
+        showlegend=False,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#0a0a0a", size=11),
+        margin=dict(t=35, b=10, l=10, r=10),
+        height=280,
+        xaxis=dict(showgrid=True, gridcolor="rgba(0,0,0,0.08)"),
+        yaxis=dict(showgrid=True, gridcolor="rgba(0,0,0,0.08)"),
+    )
+    return fig
 
-    .description {
-        font-size: 1.05rem;
-        line-height: 1.6;
-        color: #d1d5db;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        margin-bottom: 0;
-    }
-    </style>
 
-    <div class="welcome-container">
-        <div class="glass-card">
-            <div class="eyebrow">Dashboard</div>
-            <div class="main-title">Bienvenidos a...</div>
-            <div class="description">
-                Aqui pondriamos.... (por definir)
-            </div>
+def breusch_pagan(x, residuos):
+    # auxiliar: residuos al cuadrado sobre X; LM = n * R2_aux ~ chi2(1)
+    x = np.asarray(x, dtype=float)
+    residuos2 = np.asarray(residuos, dtype=float) ** 2
+    ajuste = np.polyval(np.polyfit(x, residuos2, 1), x)
+    ss_res = np.sum((residuos2 - ajuste) ** 2)
+    ss_tot = np.sum((residuos2 - residuos2.mean()) ** 2)
+    r2_aux = 1 - ss_res / ss_tot
+    lm = len(x) * r2_aux
+    p_valor = stats.chi2.sf(lm, df=1)
+    return lm, p_valor
+
+
+
+
+def render_banner_imagen(ruta_imagen: str, alto_px: int = 240):
+    img_path = Path(ruta_imagen)
+    if not img_path.exists():
+        st.warning(f"No se encontró la imagen en: {ruta_imagen}")
+        return
+
+    extension = img_path.suffix.lower().lstrip(".")
+    if extension == "jpg":
+        extension = "jpeg"
+
+    img_base64 = base64.b64encode(img_path.read_bytes()).decode("utf-8")
+
+    st.markdown(
+        f"""
+        <div style="
+            width: 100%;
+            height: {alto_px}px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.14);
+            margin-top: 8px;
+            margin-bottom: 18px;
+        ">
+            <img
+                src="data:image/{extension};base64,{img_base64}"
+                alt="Banner de bienvenida"
+                style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    object-position: center;
+                    display: block;
+                "
+            />
         </div>
-    </div>
-    """
+        """,
+        unsafe_allow_html=True,
+    )
 
-    st.markdown(hero_html, unsafe_allow_html=True)
 
-
-render_bloque_principal()
+render_banner_imagen("imagenes/banner.jpg", alto_px=240)
 
 
 @st.cache_resource
@@ -406,8 +445,281 @@ with tab_obj2:
             st.warning("No se encontraron datos de calidad-precio para realizar la prueba.")
 
 with tab_obj3:
+    # para el objetivo 3 (regresion lineal y proyeccion calidad-precio)
     st.title("Regresion lineal")
-    st.subheader("analisis de regresion lineal simple (por construir)")
+    st.markdown("---")
+    st.subheader("Regresion lineal simple: calificacion general vs percepcion calidad-precio")
+
+    st.caption(
+        "Modelo que proyecta la percepcion de calidad-precio esperada de un hotel "
+        "a partir de su calificacion general."
+    )
+
+    try:
+        query_obj3 = """
+            SELECT
+                h.star_rating AS hotel_category,
+                h.country AS hotel_country,
+                u.traveller_type AS user_type,
+                u.country AS user_country,
+                r.score_overall,
+                r.score_value_for_money
+            FROM analytics.fact_reviews r
+            JOIN analytics.dim_hotels h ON r.hotel_id = h.hotel_id
+            JOIN analytics.dim_users u ON r.user_id = u.user_id
+        """
+        df_obj3 = con.sql(query_obj3).df()
+
+        # mismos filtros de la vista, para coherencia con los objetivos 1 y 2
+        if perfil_viajero != "Todos los perfiles":
+            df_obj3 = df_obj3[df_obj3["user_type"] == PERFILES_DB[perfil_viajero]]
+
+        if tipo_turismo == "Turismo Interno":
+            df_obj3 = df_obj3[df_obj3["user_country"] == df_obj3["hotel_country"]]
+        elif tipo_turismo == "Turismo Receptivo":
+            df_obj3 = df_obj3[df_obj3["user_country"] != df_obj3["hotel_country"]]
+
+        df_obj3 = df_obj3.dropna(subset=["score_overall", "score_value_for_money"])
+
+        if df_obj3 is not None and not df_obj3.empty:
+            x = df_obj3["score_overall"]
+            y = df_obj3["score_value_for_money"]
+
+            # modelo de regresion lineal simple
+            regresion = stats.linregress(x, y)
+            r2 = regresion.rvalue ** 2
+
+            col_r1, col_r2, col_r3, col_r4 = st.columns(4)
+            col_r1.metric(
+                label="Pendiente",
+                value=f"{regresion.slope:,.4f}".replace(".", ","),
+            )
+            col_r2.metric(
+                label="Intercepto",
+                value=f"{regresion.intercept:,.4f}".replace(".", ","),
+            )
+            col_r3.metric(
+                label="R cuadrado",
+                value=f"{r2:,.4f}".replace(".", ","),
+            )
+            col_r4.metric(
+                label="Valor P (pendiente)",
+                value=f"{regresion.pvalue:.2e}",
+            )
+
+            st.info(
+                f"**Modelo:** Percepcion calidad-precio es aproximada con "
+                f"{regresion.slope:,.4f} x Calificacion general + {regresion.intercept:,.4f}"
+            )
+
+            # grafico de dispersion con la recta de regresion
+            if len(df_obj3) > 5000:
+                df_plot = df_obj3.sample(5000, random_state=42)
+            else:
+                df_plot = df_obj3
+
+            fig3 = px.scatter(
+                df_plot,
+                x="score_overall",
+                y="score_value_for_money",
+                opacity=0.4,
+                labels={
+                    "score_overall": "Calificacion General",
+                    "score_value_for_money": "Calidad-Precio (Puntuacion)",
+                },
+                color_discrete_sequence=["#256fbe"],
+            )
+
+            x_line = np.linspace(
+                df_obj3["score_overall"].min(), df_obj3["score_overall"].max(), 100
+            )
+            y_line = regresion.intercept + regresion.slope * x_line
+            fig3.add_scatter(
+                x=x_line,
+                y=y_line,
+                mode="lines",
+                name="Regresion lineal",
+                line=dict(color="#ec6f0f", width=3),
+            )
+
+            fig3.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#0a0a0a", size=12),
+                margin=dict(t=20, b=20, l=20, r=20),
+                height=450,
+                xaxis=dict(showgrid=True, gridcolor="rgba(0,0,0,0.08)"),
+                yaxis=dict(showgrid=False),
+            )
+            st.plotly_chart(fig3, use_container_width=True)
+
+            # verificacion de supuestos de la regresion
+            with st.expander("🔍 Verificación de Supuestos de la Regresion"):
+                st.markdown(
+                    "Para confiar en la proyeccion evaluamos los supuestos clave del modelo:"
+                )
+                col_s1, col_s2 = st.columns(2)
+
+                residuos = y - (regresion.intercept + regresion.slope * x)
+
+                with col_s1:
+                    st.markdown("**1. Normalidad práctica de los residuos**")
+                    st.caption(
+                        "Asimetría y curtosis estandarizadas ($|z| \\le 2$ = desviación "
+                        "trivial); QQ-plot y Shapiro-Wilk como apoyo."
+                    )
+                    if len(residuos) >= 8:
+                        asim, curt, z_asim, z_curt = z_asimetria_curtosis(residuos)
+                        st.text(
+                            f"Asimetría z = {z_asim:+.2f} | Curtosis z = {z_curt:+.2f}"
+                        )
+                        _, p_res = stats.shapiro(
+                            residuos.sample(
+                                min(len(residuos), 4000), random_state=42
+                            )
+                        )
+                        st.metric(
+                            label="p-valor (Shapiro, n = 4,000)", value=f"{p_res:.2e}"
+                        )
+                        if abs(z_asim) <= 2 and abs(z_curt) <= 2:
+                            st.success(
+                                "✅ Desviación trivial de la normalidad: la proyección "
+                                "puntual es razonable."
+                            )
+                        else:
+                            st.warning(
+                                "⚠️ Desviación no trivial (asimetría o colas): usar la "
+                                "proyección como ordenamiento relativo."
+                            )
+                        st.plotly_chart(
+                            fig_qq(
+                                residuos.sample(
+                                    min(len(residuos), 5000), random_state=42
+                                ),
+                                "QQ-plot de los residuos",
+                            ),
+                            use_container_width=True,
+                        )
+
+                with col_s2:
+                    st.markdown("**2. Homocedasticidad (Breusch-Pagan)**")
+                    st.caption(
+                        "Regresión auxiliar de los residuos al cuadrado sobre X; "
+                        "$p > 0.05$ indica varianza constante."
+                    )
+                    lm_bp, p_bp = breusch_pagan(x, residuos)
+                    st.metric(
+                        label="Estadístico LM",
+                        value=f"{lm_bp:,.2f}".replace(".", ","),
+                    )
+                    st.metric(label="p-valor (Breusch-Pagan)", value=f"{p_bp:.2e}")
+                    if p_bp > 0.05:
+                        st.success("✅ No se detecta heterocedasticidad.")
+                    else:
+                        st.warning(
+                            "⚠️ Heterocedasticidad detectada: los errores estándar y "
+                            "los valores p del modelo no son exactos."
+                        )
+
+                    st.markdown("**3. Significancia de la relación**")
+                    st.caption("Test de significancia de la pendiente del modelo")
+                    if regresion.pvalue < 0.05:
+                        st.success(
+                            "✅ La relación es estadísticamente significativa ($p < 0.05$)."
+                        )
+                    else:
+                        st.warning(
+                            "⚠️ No hay evidencia de relación lineal significativa ($p \\ge 0.05$)."
+                        )
+
+            # comparacion de rectas por perfil de viajero (objetivo 3)
+            with st.expander("📊 Comparación de rectas por perfil de viajero"):
+                st.caption(
+                    "El mismo modelo ajustado por separado en cada perfil: la pendiente "
+                    "indica cuánto se amplifica la percepción de calidad-precio por cada "
+                    "punto de calificación general."
+                )
+                filas_perfil = []
+                for perfil, grupo in df_obj3.groupby("user_type"):
+                    if len(grupo) >= 3 and grupo["score_overall"].nunique() >= 2:
+                        ajuste = stats.linregress(
+                            grupo["score_overall"], grupo["score_value_for_money"]
+                        )
+                        filas_perfil.append(
+                            {
+                                "Perfil": traduccion.get(perfil, perfil),
+                                "Reseñas": len(grupo),
+                                "Pendiente": ajuste.slope,
+                                "Intercepto": ajuste.intercept,
+                                "R²": ajuste.rvalue**2,
+                                "p-valor": ajuste.pvalue,
+                            }
+                        )
+
+                if filas_perfil:
+                    df_perfiles = pd.DataFrame(filas_perfil).sort_values(
+                        "Pendiente", ascending=False
+                    )
+                    st.dataframe(
+                        df_perfiles,
+                        hide_index=True,
+                        width="stretch",
+                        column_config={
+                            "Pendiente": st.column_config.NumberColumn(format="%.3f"),
+                            "Intercepto": st.column_config.NumberColumn(format="%.3f"),
+                            "R²": st.column_config.NumberColumn(format="%.3f"),
+                            "p-valor": st.column_config.NumberColumn(format="%.2e"),
+                        },
+                    )
+                    if len(df_perfiles) >= 2:
+                        mayor = df_perfiles.iloc[0]
+                        menor = df_perfiles.iloc[-1]
+                        st.caption(
+                            f"**{mayor['Perfil']}** es el perfil que más amplifica la "
+                            f"relación (pendiente {mayor['Pendiente']:.3f}) y "
+                            f"**{menor['Perfil']}** el que más la suaviza "
+                            f"({menor['Pendiente']:.3f})."
+                        )
+                else:
+                    st.info(
+                        "No hay perfiles con reseñas suficientes para ajustar una recta "
+                        "con los filtros seleccionados."
+                    )
+
+            st.markdown("---")
+            st.markdown("### Proyeccion de Calidad-Precio")
+            st.caption(
+                "Ingresa una calificacion general esperada y el modelo proyecta la "
+                "percepcion de calidad-precio asociada."
+            )
+            calificacion_proyectada = st.slider(
+                "Calificacion general esperada del hotel:",
+                min_value=1.0,
+                max_value=10.0,
+                value=8.0,
+                step=0.1,
+            )
+            prediccion = regresion.intercept + regresion.slope * calificacion_proyectada
+            st.metric(
+                label="Percepcion calidad-precio proyectada",
+                value=f"{prediccion:,.2f}".replace(".", ","),
+            )
+            if not (
+                df_obj3["score_overall"].min()
+                <= calificacion_proyectada
+                <= df_obj3["score_overall"].max()
+            ):
+                st.warning(
+                    "⚠️ La calificacion proyectada esta fuera del rango observado en los datos; "
+                    "la estimacion es una extrapolacion."
+                )
+
+        else:
+            st.warning("No se encontraron datos para construir la regresion lineal.")
+
+    except Exception as e:
+        st.error(f"Ocurrió un error en la regresion: {e}")
+
 
 # pestaña 3  presentacion de nuestro equipo
 with tab_equipo:
