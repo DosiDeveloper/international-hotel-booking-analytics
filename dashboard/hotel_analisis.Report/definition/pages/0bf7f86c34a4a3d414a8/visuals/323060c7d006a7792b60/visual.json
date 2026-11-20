@@ -2,19 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "323060c7d006a7792b60",
   "position": {
-<<<<<<< HEAD
-    "x": 1288.3504193849024,
-    "y": 68.098522167487687,
-    "z": 1000,
-    "height": 99.3870323525496,
-    "width": 531.90467314605246,
-=======
     "x": 493.99822442586975,
     "y": 63.808103988341514,
     "z": 1000,
     "height": 111.14960049582069,
     "width": 428.13179450242046,
->>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
     "tabOrder": 1000
   },
   "visual": {
@@ -31,19 +23,11 @@
                       "Entity": "analytics dim_hotels"
                     }
                   },
-<<<<<<< HEAD
-                  "Property": "country"
-                }
-              },
-              "queryRef": "analytics dim_hotels.country",
-              "nativeQueryRef": "country",
-=======
                   "Property": "city"
                 }
               },
               "queryRef": "analytics dim_hotels.city",
               "nativeQueryRef": "city",
->>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
               "active": true
             }
           ]
@@ -263,24 +247,12 @@
         }
       ]
     },
-<<<<<<< HEAD
-    "syncGroup": {
-      "groupName": "city",
-      "fieldChanges": true,
-      "filterChanges": true
-    },
-=======
->>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
     "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [
       {
-<<<<<<< HEAD
-        "name": "945480e9600975108b7e",
-=======
         "name": "50c7ebb00ccc5956866a",
->>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
         "field": {
           "Column": {
             "Expression": {
@@ -288,11 +260,7 @@
                 "Entity": "analytics dim_hotels"
               }
             },
-<<<<<<< HEAD
-            "Property": "country"
-=======
             "Property": "city"
->>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
           }
         },
         "type": "Categorical"

@@ -151,23 +151,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "a17b86cc744488990717",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "analytics fact_reviews"
-              }
-            },
-            "Property": "Total_Usuarios"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }
