@@ -236,3 +236,8 @@ Las relaciones del esquema en estrella siguen un patrón estricto de Uno a Mucho
 
 
 Dataset [en kaggle](https://www.kaggle.com/datasets/alperenmyung/international-hotel-booking-analytics)
+
+## Enlaces de nuestro proyecto
+
+- [Dashboard en Power BI](https://app.powerbi.com/view?r=eyJrIjoiMmNmMTAyNzUtMjRmZC00Yjg5LTg2Y2YtOGY5ZDg1YmNjODYzIiwidCI6IjRjODE4Zjc5LWFiODQtNDU1Mi05YjdjLTJmZTcxNWIwZDBkNSIsImMiOjR9&embedImagePlaceholder=true&pageName=35a7d47e2bc7aa221dbe)
+- [App interactiva en Streamlit](https://international-hotel-booking-analytics.streamlit.app/)
