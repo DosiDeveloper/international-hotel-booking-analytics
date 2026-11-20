@@ -77,10 +77,109 @@ from
 
 with tab_pregunta3:
     query = """
-select
-    *
-from
-    users
+    WITH promedios_anuales AS (
+        SELECT
+            r.hotel_id,
+            CAST(strftime('%Y', r.review_date) AS INTEGER) AS anio,
+            AVG(r.score_overall) AS puntaje_promedio
+        FROM reviews AS r
+        GROUP BY r.hotel_id, strftime('%Y', r.review_date)
+    ),
+    rankings_anuales AS (
+        SELECT
+            hotel_id,
+            anio,
+            puntaje_promedio,
+            RANK() OVER (PARTITION BY anio ORDER BY puntaje_promedio DESC) AS puesto
+        FROM promedios_anuales
+    ),
+    cambios_de_puesto AS (
+        SELECT
+            hotel_id,
+            anio,
+            puesto,
+            LAG(puesto) OVER (PARTITION BY hotel_id ORDER BY anio) AS puesto_anterior
+        FROM rankings_anuales
+    ),
+    movimientos AS (
+        SELECT
+            hotel_id,
+            anio,
+            puesto,
+            puesto_anterior,
+            CASE
+                WHEN puesto_anterior IS NOT NULL AND puesto < puesto_anterior
+                THEN puesto_anterior - puesto
+            END AS posiciones_ganadas
+            CASE
+                WHEN puesto_anterior IS NOT NULL AND puesto > puesto_anterior 
+                THEN puesto - puesto_anterior
+            END AS posiciones_perdidas
+        FROM cambios_de_puestp
+    ),
+    mayor_ascenso AS (
+        SELECT hotel_id, anio, posiciones_ganadas
+        FROM (
+            SELECT
+                hotel_id,
+                anio,
+                posiciones_ganadas,
+                ROW_NUMBER() OVER (
+                    PARTITION BY hotel_id
+                    ORDER BY posiciones_ganadas DESC, anio ASC
+                ) AS rn
+            FROM movimientos
+            Where posiciones_ganadas IS NO NULL
+        )
+        WHERE rn = 1
+    ),
+    mayor_caida AS (
+        SELECT hotel_id, anio, posiciones_perdidas
+        FROM (
+            SELECT
+                hotel_id,
+                anio,
+                posiciones_perdidas,
+                ROW_NUMBER() OVER (
+                    PARTITION BY hotel_id
+                    ORDER BY posiciones_perdidas DESC, anio ASC
+                ) AS rn
+            FROM movimientos
+            WHERE posiciones_perdidas IS NOT NULL
+        )
+        WHERE rn = 1
+    ),
+    resumen_por_hotel AS (
+        SELECT
+            hotel_id,
+            COUNT(CASE WHEN puesto <= 5 THEN 1 END) AS anios_en_top5,
+            MIN(puesto) AS mejor_puesto,
+            MAX(puesto) AS peor_puesto,
+            MAX(puesto) - MIN(puesto) AS amplitud
+        FROM rankings_anuales
+        GROUP BY hotel_id
+    )
+
+    SELECT
+        h.hotel_id,
+        h.hotel_name AS nombre_hotel,
+        s.anios_en_top5 AS anios_top5,
+        s.mejor_puesto,
+        s.peor_puesto,
+        s.amplitud,
+        ma.anio AS anio_mayor_ascenso,
+        ma.posiciones_ganadas,
+        mc.anio AS anio_mayor_caida,
+        mc.posiciones_perdidas
+    FROM resumen_por_hotel AS s
+    JOIN hotels AS h
+        ON h.hotel_id = s.hotel_id
+    LEFT JOIN mayor_ascenso AS ma
+        ON ma.hotel_id = s.hotel_id
+    LEFT JOIN mayor_caida AS mc
+        ON mc.hotel_id = s.hotel_id
+    WHERE s.amplitud >= 2
+    ORDER BY s.amplitud DESC;
 """
     st.markdown("""
         Se quiere saber cuán estable es la jerarquía de los hoteles a lo largo del tiempo.
