@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "ba7970c140996a738a71",
   "position": {
-    "x": 577.91718812408476,
-    "y": 213.49806949806953,
+    "x": 580.447913700397,
+    "y": 232.59083066718034,
     "z": 2000,
     "height": 732.76403289837344,
     "width": 636.02271394830734,
@@ -1166,6 +1166,34 @@
             }
           ]
         }
+      },
+      {
+        "name": "4ea3955b770006cb8217",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics_models hotel_bayesian_inputs"
+              }
+            },
+            "Property": "hotel_name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "61ddb1e6ad05cac10605",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "analytics fact_reviews"
+              }
+            },
+            "Property": "Promedio_Simple_Año"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }

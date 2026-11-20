@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "323060c7d006a7792b60",
   "position": {
-    "x": 1288.3504193849024,
-    "y": 68.098522167487687,
+    "x": 493.99822442586975,
+    "y": 63.808103988341514,
     "z": 1000,
-    "height": 99.3870323525496,
-    "width": 531.90467314605246,
+    "height": 111.14960049582069,
+    "width": 428.13179450242046,
     "tabOrder": 1000
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "analytics dim_hotels"
                     }
                   },
-                  "Property": "country"
+                  "Property": "city"
                 }
               },
-              "queryRef": "analytics dim_hotels.country",
-              "nativeQueryRef": "country",
+              "queryRef": "analytics dim_hotels.city",
+              "nativeQueryRef": "city",
               "active": true
             }
           ]
@@ -247,17 +247,12 @@
         }
       ]
     },
-    "syncGroup": {
-      "groupName": "city",
-      "fieldChanges": true,
-      "filterChanges": true
-    },
     "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [
       {
-        "name": "068b6921a9d54e6bd544",
+        "name": "50c7ebb00ccc5956866a",
         "field": {
           "Column": {
             "Expression": {
@@ -265,7 +260,7 @@
                 "Entity": "analytics dim_hotels"
               }
             },
-            "Property": "country"
+            "Property": "city"
           }
         },
         "type": "Categorical"

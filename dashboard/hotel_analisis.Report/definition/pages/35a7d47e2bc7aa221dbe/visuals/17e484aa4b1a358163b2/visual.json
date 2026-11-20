@@ -87,7 +87,11 @@
             "text": {
               "expr": {
                 "Literal": {
+<<<<<<< HEAD
                   "Value": "'PERFIL Y MODELADO'"
+=======
+                  "Value": "'RANKING Y BAYES'"
+>>>>>>> 9b0f2c1 (Arreglo de merge conflict con los archivos del dashboard powerbi)
                 }
               }
             },
